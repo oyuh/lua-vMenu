@@ -26,6 +26,9 @@ read_globals = {
     'CreateThread', 'Wait', 'SetTimeout', 'IsDuplicityVersion',
     'GetPlayers', 'GetPlayerName', 'GetPlayerPed', 'PlayerId', 'PlayerPedId', 'GetPlayerServerId',
     'IsPlayerAceAllowed', 'DoesPlayerExist', 'ExecuteCommand',
+    -- game state / hud
+    'IsPauseMenuActive', 'IsScreenFadedOut', 'IsPlayerSwitchInProgress', 'IsEntityDead',
+    'PlaySoundFrontend',
     -- cfx lua extensions
     'vector2', 'vector3', 'vector4', 'quat', 'json', 'msgpack',
     'exports', 'Citizen', 'GlobalState', 'LocalPlayer',
