@@ -1,0 +1,4 @@
+fxmanifest.lua
+client/data/
+vendor/
+.upstream/

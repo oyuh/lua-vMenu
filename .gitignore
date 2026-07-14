@@ -1,0 +1,12 @@
+# upstream clone cache used by scripts/upstream-diff.ps1
+.upstream/
+
+# lua tooling artifacts
+luacov.*.out
+*.rock
+
+# editor/os noise
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
