@@ -27,11 +27,30 @@ read_globals = {
     'GetPlayers', 'GetPlayerName', 'GetPlayerPed', 'PlayerId', 'PlayerPedId', 'GetPlayerServerId',
     'IsPlayerAceAllowed', 'DoesPlayerExist', 'ExecuteCommand',
     -- game state / hud
-    'IsPauseMenuActive', 'IsScreenFadedOut', 'IsPlayerSwitchInProgress', 'IsEntityDead',
-    'PlaySoundFrontend',
+    'IsPauseMenuActive', 'IsPauseMenuRestarting', 'IsScreenFadedOut', 'IsScreenFadedIn',
+    'IsPlayerSwitchInProgress', 'IsEntityDead', 'IsWarningMessageActive', 'UpdateOnscreenKeyboard',
+    'PlaySoundFrontend', 'GetGameTimer', 'IsPedInAnyVehicle', 'GetLabelText',
+    -- controls
+    'IsControlPressed', 'IsDisabledControlPressed', 'IsControlJustPressed',
+    'IsDisabledControlJustPressed', 'IsControlJustReleased', 'IsDisabledControlJustReleased',
+    'DisableControlAction', 'IsInputDisabled', 'GetControlInstructionalButton',
+    -- drawing / text
+    'GetAspectRatio', 'GetSafeZoneSize', 'SetScriptGfxAlign', 'SetScriptGfxAlignParams',
+    'ResetScriptGfxAlign', 'SetScriptGfxDrawOrder', 'DrawRect', 'DrawSprite',
+    'HasStreamedTextureDictLoaded', 'RequestStreamedTextureDict', 'SetStreamedTextureDictAsNoLongerNeeded',
+    'BeginTextCommandDisplayText', 'EndTextCommandDisplayText', 'AddTextComponentSubstringPlayerName',
+    'SetTextFont', 'SetTextScale', 'SetTextJustification', 'SetTextColour', 'SetTextWrap',
+    'GetTextScaleHeight', 'BeginTextCommandLineCount', 'EndTextCommandLineCount',
+    -- scaleforms
+    'RequestScaleformMovie', 'HasScaleformMovieLoaded', 'SetScaleformMovieAsNoLongerNeeded',
+    'BeginScaleformMovieMethod', 'EndScaleformMovieMethod', 'PushScaleformMovieMethodParameterString',
+    'ScaleformMovieMethodAddParamInt', 'ScaleformMovieMethodAddParamBool',
+    'BeginTextCommandScaleformString', 'EndTextCommandScaleformString', 'AddTextComponentInteger',
+    'DrawScaleformMovie', 'DrawScaleformMovieFullscreen', 'GetHairRgbColor', 'GetMakeupRgbColor',
     -- cfx lua extensions
     'vector2', 'vector3', 'vector4', 'quat', 'json', 'msgpack',
     'exports', 'Citizen', 'GlobalState', 'LocalPlayer',
+    'source', -- implicit event source (server-side handlers)
 }
 
 -- fxmanifest.lua is a DSL, not a script: every directive is a "global" call.

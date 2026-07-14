@@ -137,6 +137,11 @@ function MenuCheckboxItem:Select()
     self.ParentMenu:CheckboxChangedEvent(self, self:Index(), self.Checked)
 end
 
+-- MenuAPI quirk: pressing right on a checkbox toggles it.
+function MenuCheckboxItem:GoRight()
+    self.ParentMenu:SelectItem(self)
+end
+
 -- ---------------------------------------------------------------------------
 -- MenuListItem
 -- ---------------------------------------------------------------------------
@@ -213,6 +218,9 @@ function MenuSliderItem.new(text, min, max, position, description)
     item.ShowDivider = false
     item.SliderLeftIcon = Items.Icon.NONE
     item.SliderRightIcon = Items.Icon.NONE
+    -- MenuAPI slider bar colors ({r,g,b,a}); verify against C# in-game (M3 checklist)
+    item.BackgroundColor = { 23, 55, 93, 255 }
+    item.BarColor = { 93, 182, 229, 255 }
     return setmetatable(item, MenuSliderItem)
 end
 

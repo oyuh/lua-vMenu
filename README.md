@@ -30,9 +30,12 @@ this tracks the upstream C# project.
   golden fixtures — plus `shared/config.lua` and `shared/permissions.lua` ports with 41 specs
 - ✅ M2: shared core — require() bootstrap for CfxLua, JSON compat layer, full permission
   sync flow (server ACE collection → client resolution with staff gate), locations loader
-- 🚧 M3: menu framework (MenuAPI port) — **core done** (items, menu navigation, controller,
-  submenu binding — all quirks ported behavior-for-behavior, 21 navigation specs); rendering
-  (draw.lua scaleforms/text) and input processing are next, then in-game side-by-side verification
+- ✅ M3: menu framework (MenuAPI port) — **code complete**: items + navigation core, full
+  rendering pipeline (header/subtitle/gradient/items/overflow/description/stats/color panels),
+  input ticks with hold-to-scroll acceleration, instructional buttons, control disabling, and
+  client/server entrypoints with the permission push wired up. A demo menu covering every item
+  type ships behind `experimental_features_enabled '1'` (`/vmenu_demo`) for the remaining
+  in-game side-by-side check against C# vMenu (visuals, sprite metrics, control ids)
 
 See PLAN.md §8 for the full roadmap.
 

@@ -106,6 +106,17 @@ describe('menu framework', function()
             assert.equal(0, selected.index)
         end)
 
+        it('toggles checkboxes on right-press too (MenuAPI quirk)', function()
+            local menu = Menu.new('t', 's')
+            local checkbox = Items.MenuCheckboxItem.new('Seatbelt', nil, false)
+            menu:AddMenuItem(checkbox)
+            Controller.AddMenu(menu)
+            menu:OpenMenu()
+
+            menu:GoRight()
+            assert.is_true(checkbox.Checked)
+        end)
+
         it('toggles checkboxes and fires OnCheckboxChange instead', function()
             local menu = Menu.new('t', 's')
             local checkbox = Items.MenuCheckboxItem.new('God Mode', nil, false)

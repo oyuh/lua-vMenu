@@ -41,6 +41,17 @@ function Menu.new(title, subtitle)
         ShowWeaponStatsPanel = false,
         ShowVehicleStatsPanel = false,
 
+        -- rendering state (Menu.cs private fields; consumed by menu/render.lua)
+        Position = { x = 0.0, y = 0.0 },
+        MenuItemsYOffset = 0.0,
+        HeaderTexture = nil, -- { dict = ..., name = ... } to override the default banner
+        WeaponStats = { 0.0, 0.0, 0.0, 0.0 },
+        WeaponComponentStats = { 0.0, 0.0, 0.0, 0.0 },
+        VehicleStats = { 0.0, 0.0, 0.0, 0.0 },
+        VehicleUpgradeStats = { 0.0, 0.0, 0.0, 0.0 },
+        -- array of { control = <id>, label = <text> }; nil = default Select/Back
+        InstructionalButtons = nil,
+
         filter_active = false,
 
         -- event callbacks (single handler each)
@@ -377,6 +388,57 @@ function Menu:ResetFilter()
     self:RefreshIndex(0, 0)
     self.filter_active = false
     self.FilterItems = {}
+end
+
+-- ---------------------------------------------------------------------------
+-- Stats panels & instructional buttons (Menu.cs public setters)
+-- ---------------------------------------------------------------------------
+
+local function clamp01(value)
+    return clamp(value, 0.0, 1.0)
+end
+
+function Menu:SetWeaponStats(damage, fire_rate, accuracy, range)
+    self.WeaponStats = { clamp01(damage), clamp01(fire_rate), clamp01(accuracy), clamp01(range) }
+end
+
+function Menu:SetWeaponComponentStats(damage, fire_rate, accuracy, range)
+    self.WeaponComponentStats = {
+        clamp01(self.WeaponStats[1] + damage),
+        clamp01(self.WeaponStats[2] + fire_rate),
+        clamp01(self.WeaponStats[3] + accuracy),
+        clamp01(self.WeaponStats[4] + range),
+    }
+end
+
+function Menu:SetVehicleStats(top_speed, acceleration, braking, traction)
+    self.VehicleStats = { clamp01(top_speed), clamp01(acceleration), clamp01(braking), clamp01(traction) }
+end
+
+function Menu:SetVehicleUpgradeStats(top_speed, acceleration, braking, traction)
+    self.VehicleUpgradeStats = {
+        clamp01(self.VehicleStats[1] + top_speed),
+        clamp01(self.VehicleStats[2] + acceleration),
+        clamp01(self.VehicleStats[3] + braking),
+        clamp01(self.VehicleStats[4] + traction),
+    }
+end
+
+function Menu:AddInstructionalButton(control, label)
+    self.InstructionalButtons = self.InstructionalButtons or {}
+    self.InstructionalButtons[#self.InstructionalButtons + 1] = { control = control, label = label }
+end
+
+function Menu:RemoveInstructionalButton(control)
+    if not self.InstructionalButtons then
+        return
+    end
+    for i, button in ipairs(self.InstructionalButtons) do
+        if button.control == control then
+            table.remove(self.InstructionalButtons, i)
+            return
+        end
+    end
 end
 
 return Menu
