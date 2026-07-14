@@ -14,25 +14,19 @@ url 'https://github.com/tomgrobbe/vMenu'
 client_debug_mode 'false'
 server_debug_mode 'false'
 
+-- Architecture: shared/bootstrap.lua installs a require() shim; everything
+-- else is a plain Lua module listed under files and loaded on demand. Only
+-- entrypoints execute directly.
 files {
     'config/*.json',
-}
-
-shared_scripts {
-    'shared/util.lua',
-    'shared/config.lua',
-    'shared/permissions.lua',
-}
-
-client_scripts {
-    'vendor/json_compat.lua',
+    'shared/*.lua',
     'menu/*.lua',
-    'client/data/*.lua',
     'client/*.lua',
+    'client/data/*.lua',
+    'client/functions_controller/*.lua',
     'client/menus/*.lua',
 }
 
-server_scripts {
-    'vendor/json_compat.lua',
-    'server/*.lua',
-}
+shared_script 'shared/bootstrap.lua'
+client_script 'client/main.lua'
+server_script 'server/main.lua'

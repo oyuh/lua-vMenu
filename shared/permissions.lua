@@ -2,8 +2,8 @@
 -- Contract: docs/contracts/permissions.md — ace names, parent-permission fallback,
 -- and the staff-only / use_permissions gates must match upstream exactly.
 --
--- This module holds the pure/shared parts (list, ace naming, parent resolution).
--- The client cache + server collection/sync flow land with Milestone 2.
+local Config = require('shared.config')
+local Json = require('shared.json_compat')
 
 local Permissions = {}
 
@@ -415,5 +415,144 @@ Permissions.denied_without_permission_system = {
     'OPIdentifiers',
     'OPViewBannedPlayers',
 }
+
+-- ---------------------------------------------------------------------------
+-- Server side: ACE collection (PermissionsManager server region)
+-- ---------------------------------------------------------------------------
+
+function Permissions.is_allowed_server(permission, player_handle)
+    if player_handle == nil or not DoesPlayerExist(tostring(player_handle)) then
+        return false
+    end
+    for _, parent in ipairs(Permissions.parents(permission)) do
+        if IsPlayerAceAllowed(tostring(player_handle), Permissions.ace_name(parent)) then
+            return true
+        end
+    end
+    return false
+end
+
+function Permissions.is_supplementary_allowed_server(permission, player_handle)
+    if player_handle == nil or not DoesPlayerExist(tostring(player_handle)) then
+        return false
+    end
+    for _, parent in ipairs(Permissions.supplementary_parents(permission)) do
+        if IsPlayerAceAllowed(tostring(player_handle), Permissions.supplementary_ace_name(parent)) then
+            return true
+        end
+    end
+    return false
+end
+
+-- Builds the { [name] = bool } table pushed to a client. With the permission
+-- system disabled everyone gets everything, except the denylist entries which
+-- are OMITTED entirely (not false) — upstream skips the dict.Add.
+-- The upstream dev backdoor (vMenu.Dev + hardcoded identifier) is intentionally
+-- not ported; see docs/contracts/permissions.md.
+function Permissions.collect_for_player(player_handle)
+    local perms = {}
+    if not Config.get_bool('vmenu_use_permissions') then
+        local denied = {}
+        for _, name in ipairs(Permissions.denied_without_permission_system) do
+            denied[name] = true
+        end
+        for _, name in ipairs(Permissions.list) do
+            if not denied[name] then
+                perms[name] = true
+            end
+        end
+    else
+        for _, name in ipairs(Permissions.list) do
+            perms[name] = Permissions.is_allowed_server(name, player_handle)
+        end
+    end
+    return perms
+end
+
+function Permissions.collect_supplementary_for_player(player_handle)
+    local perms = {}
+    for _, name in ipairs(Permissions.supplementary_list) do
+        perms[name] = Permissions.is_supplementary_allowed_server(name, player_handle)
+    end
+    return perms
+end
+
+-- ---------------------------------------------------------------------------
+-- Client side: receive + resolve (PermissionsManager client region)
+-- ---------------------------------------------------------------------------
+
+Permissions.are_setup = false
+Permissions.supplementary_are_setup = false
+
+local granted = {}
+local supplementary_granted = {}
+-- Upstream's allowedPerms memo is a static that persists across permission
+-- pushes; only positive entries short-circuit. Quirk preserved.
+local memo = {}
+local supplementary_memo = {}
+
+function Permissions.set_from_json(payload)
+    granted = Json.decode(payload) or {}
+    Permissions.are_setup = true
+end
+
+function Permissions.set_supplementary_from_json(payload)
+    supplementary_granted = Json.decode(payload) or {}
+    Permissions.supplementary_are_setup = true
+end
+
+function Permissions.is_allowed(permission, check_anyway)
+    if Permissions.are_setup or check_anyway then
+        -- Staff-only gate: with vmenu_menu_staff_only, non-staff get nothing.
+        local staff_allowed = granted['Staff'] == true or granted['Everything'] == true
+        if Config.get_bool('vmenu_menu_staff_only') and not staff_allowed then
+            return false
+        end
+
+        if memo[permission] then
+            return true
+        end
+        if memo[permission] == nil then
+            memo[permission] = false
+        end
+
+        for _, parent in ipairs(Permissions.parents(permission)) do
+            if granted[parent] == true then
+                memo[permission] = true
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local SUPPLEMENTARY_FALLBACK = { VW = 'VSAll', PW = 'PAAll', WW = 'WPAll' }
+
+function Permissions.is_supplementary_allowed(permission, check_anyway)
+    if Permissions.supplementary_are_setup or check_anyway then
+        if supplementary_memo[permission] then
+            return true
+        end
+        if supplementary_memo[permission] == nil then
+            supplementary_memo[permission] = false
+        end
+
+        for _, parent in ipairs(Permissions.supplementary_parents(permission)) do
+            if supplementary_granted[parent] == true then
+                supplementary_memo[permission] = true
+                return true
+            end
+        end
+    end
+    -- Upstream fallback (outside the setup gate): whitelist categories defer
+    -- to the matching main-permission All when no supplementary grant exists.
+    local fallback = SUPPLEMENTARY_FALLBACK[permission:sub(1, 2)]
+    if fallback then
+        local allowed = Permissions.is_allowed(fallback)
+        supplementary_memo[permission] = allowed
+        return allowed
+    end
+    return false
+end
 
 return Permissions

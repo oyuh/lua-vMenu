@@ -115,4 +115,37 @@ function Config.get_string(setting, default)
     return value
 end
 
+-- Port of ConfigManager.GetLocations: reads config/locations.json with the
+-- contract's error tolerance — missing/empty/corrupt input degrades to empty
+-- lists plus an error string for the caller to surface (client notifies,
+-- server logs; this shared module does neither).
+function Config.get_locations()
+    local locations = { teleports = {}, blips = {} }
+
+    local raw = LoadResourceFile(GetCurrentResourceName(), 'config/locations.json')
+    if raw == nil or raw == '' then
+        return locations, 'The locations.json file is empty or does not exist.'
+    end
+
+    local Json = require('shared.json_compat')
+    local decoded = Json.decode(raw)
+    if decoded == nil then
+        return locations, 'An error occurred while processing the locations.json file.'
+    end
+
+    locations.teleports = decoded.teleports or {}
+    locations.blips = decoded.blips or {}
+    return locations, nil
+end
+
+function Config.get_teleport_locations()
+    local locations, err = Config.get_locations()
+    return locations.teleports, err
+end
+
+function Config.get_location_blips()
+    local locations, err = Config.get_locations()
+    return locations.blips, err
+end
+
 return Config

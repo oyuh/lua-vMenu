@@ -13,6 +13,8 @@ local INSTALLED_GLOBALS = {
     'GetCurrentResourceName',
     'LoadResourceFile',
     'IsDuplicityVersion',
+    'IsPlayerAceAllowed',
+    'DoesPlayerExist',
     'SetResourceKvp',
     'GetResourceKvpString',
     'DeleteResourceKvp',
@@ -35,6 +37,7 @@ function Cfx.new(opts)
         metadata = {},
         resource_files = {},
         kvp = {},
+        players = {}, -- [handle] = { aces = { [ace] = true } }
         event_handlers = {},
         triggered = {}, -- log of every TriggerEvent/Server/Client call, for assertions
         _find_handles = {},
@@ -55,6 +58,16 @@ end
 
 function Cfx:set_resource_file(path, contents)
     self.resource_files[path] = contents
+end
+
+function Cfx:add_player(handle)
+    self.players[tostring(handle)] = { aces = {} }
+end
+
+function Cfx:grant_ace(handle, ace)
+    local player = self.players[tostring(handle)]
+    assert(player, 'add_player first')
+    player.aces[ace] = true
 end
 
 -- Global installation --------------------------------------------------------
@@ -106,6 +119,15 @@ function Cfx:install()
 
     _G.IsDuplicityVersion = function()
         return mock.is_server
+    end
+
+    _G.DoesPlayerExist = function(handle)
+        return mock.players[tostring(handle)] ~= nil
+    end
+
+    _G.IsPlayerAceAllowed = function(handle, ace)
+        local player = mock.players[tostring(handle)]
+        return player ~= nil and player.aces[ace] == true
     end
 
     -- KVP (with StartFindKvp/FindKvp/EndFindKvp iteration semantics)

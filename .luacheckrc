@@ -25,7 +25,7 @@ read_globals = {
     -- runtime
     'CreateThread', 'Wait', 'SetTimeout', 'IsDuplicityVersion',
     'GetPlayers', 'GetPlayerName', 'GetPlayerPed', 'PlayerId', 'PlayerPedId', 'GetPlayerServerId',
-    'IsPlayerAceAllowed', 'ExecuteCommand',
+    'IsPlayerAceAllowed', 'DoesPlayerExist', 'ExecuteCommand',
     -- cfx lua extensions
     'vector2', 'vector3', 'vector4', 'quat', 'json', 'msgpack',
     'exports', 'Citizen', 'GlobalState', 'LocalPlayer',
@@ -40,6 +40,11 @@ files['fxmanifest.lua'] = {
         'shared_scripts', 'client_scripts', 'server_scripts', 'shared_script', 'client_script', 'server_script',
         'dependency', 'dependencies', 'export', 'exports', 'server_exports', 'ui_page', 'loadscreen',
     },
+}
+
+-- The bootstrap installs a require() shim in the CfxLua runtime by design.
+files['shared/bootstrap.lua'] = {
+    globals = { 'require' },
 }
 
 files['tests/**'] = {
