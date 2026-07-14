@@ -1,0 +1,97 @@
+{
+    "PedHeadBlendData": {
+        "FirstFaceShape": 4,
+        "SecondFaceShape": 21,
+        "ThirdFaceShape": 0,
+        "FirstSkinTone": 4,
+        "SecondSkinTone": 21,
+        "ThirdSkinTone": 0,
+        "ParentFaceShapePercent": 0.5,
+        "ParentSkinTonePercent": 0.5,
+        "ParentThirdUnkPercent": 0.0,
+        "IsParentInheritance": false
+    },
+    "DrawableVariations": {
+        "clothes": {
+            "0": { "Key": 15, "Value": 0 },
+            "3": { "Key": 15, "Value": 0 },
+            "4": { "Key": 21, "Value": 0 },
+            "6": { "Key": 34, "Value": 0 },
+            "8": { "Key": 15, "Value": 0 },
+            "11": { "Key": 15, "Value": 0 }
+        }
+    },
+    "PropVariations": {
+        "props": {
+            "0": { "Key": 8, "Value": 0 }
+        }
+    },
+    "FaceShapeFeatures": {
+        "features": {
+            "0": 0.0,
+            "1": -0.2,
+            "2": 0.1,
+            "19": 0.55
+        }
+    },
+    "PedAppearance": {
+        "hairStyle": 4,
+        "hairColor": 29,
+        "hairHighlightColor": 0,
+        "HairOverlay": { "Key": "mpbeach_overlays", "Value": "FM_Hair_Fuzz" },
+        "blemishesStyle": -1,
+        "blemishesOpacity": 0.0,
+        "beardStyle": 10,
+        "beardColor": 29,
+        "beardOpacity": 1.0,
+        "eyebrowsStyle": 2,
+        "eyebrowsColor": 29,
+        "eyebrowsOpacity": 1.0,
+        "ageingStyle": -1,
+        "ageingOpacity": 0.0,
+        "makeupStyle": -1,
+        "makeupColor": 0,
+        "makeupOpacity": 0.0,
+        "blushStyle": -1,
+        "blushColor": 0,
+        "blushOpacity": 0.0,
+        "complexionStyle": -1,
+        "complexionOpacity": 0.0,
+        "sunDamageStyle": -1,
+        "sunDamageOpacity": 0.0,
+        "lipstickStyle": -1,
+        "lipstickColor": 0,
+        "lipstickOpacity": 0.0,
+        "molesFrecklesStyle": -1,
+        "molesFrecklesOpacity": 0.0,
+        "chestHairStyle": -1,
+        "chestHairColor": 0,
+        "chestHairOpacity": 0.0,
+        "bodyBlemishesStyle": -1,
+        "bodyBlemishesOpacity": 0.0,
+        "eyeColor": 3
+    },
+    "PedTatttoos": {
+        "HairTattoos": [
+            { "Key": "mpbeach_overlays", "Value": "FM_Hair_Fuzz" }
+        ],
+        "TorsoTattoos": [
+            { "Key": "mpchristmas2_overlays", "Value": "MP_Xmas2_M_Tat_016" }
+        ],
+        "HeadTattoos": [],
+        "LeftArmTattoos": [],
+        "RightArmTattoos": [],
+        "LeftLegTattoos": [],
+        "RightLegTattoos": [],
+        "BadgeTattoos": [],
+        "AddonTattoos": []
+    },
+    "PedFacePaints": {},
+    "IsMale": true,
+    "ModelHash": 1885233650,
+    "SaveName": "mp_ped_TestChar",
+    "Version": 1,
+    "WalkingStyle": null,
+    "FacialExpression": null,
+    "Category": "Uncategorized"
+}

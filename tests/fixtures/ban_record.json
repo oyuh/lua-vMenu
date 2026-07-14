@@ -1,0 +1,12 @@
+{
+    "playerName": "SomeCheater",
+    "identifiers": [
+        "license:0123456789abcdef0123456789abcdef01234567",
+        "steam:110000100000001",
+        "discord:123456789012345678"
+    ],
+    "bannedUntil": "3000-01-01T00:00:00",
+    "banReason": "Cheating.\nYour ban id: 6f9619ff-8b86-d011-b42d-00cf4fc964ff",
+    "bannedBy": "ServerAdmin",
+    "uuid": "6f9619ff-8b86-d011-b42d-00cf4fc964ff"
+}

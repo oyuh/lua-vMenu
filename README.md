@@ -22,7 +22,15 @@ this tracks the upstream C# project.
 
 ## Status
 
-🚧 **Milestone 0 — bootstrap.** Not yet usable. See PLAN.md §8 for the roadmap.
+🚧 **Milestone 1 complete — compatibility contracts extracted.** Not yet usable in-game.
+
+- ✅ M0: toolchain, scaffold, CI, first specs
+- ✅ M1: the six [compatibility contracts](docs/contracts/README.md) documented from the C#
+  source — 297 ACE permissions, 47 convars, the full event protocol, KVP save schemas with
+  golden fixtures — plus `shared/config.lua` and `shared/permissions.lua` ports with 41 specs
+- ⏭️ M2: shared core (permission sync flow, JSON compat layer)
+
+See PLAN.md §8 for the full roadmap.
 
 ## Development
 

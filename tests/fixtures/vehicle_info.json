@@ -1,0 +1,41 @@
+{
+    "colors": {
+        "primary": 27,
+        "secondary": 28,
+        "pearlescent": 3,
+        "wheels": 156,
+        "dash": 0,
+        "trim": 0
+    },
+    "customWheels": true,
+    "extras": {
+        "1": true,
+        "2": false
+    },
+    "livery": -1,
+    "model": 3078201489,
+    "mods": {
+        "0": -1,
+        "11": 3,
+        "12": 2,
+        "15": 3,
+        "16": 4
+    },
+    "name": "My Adder",
+    "neonBack": false,
+    "neonFront": false,
+    "neonLeft": true,
+    "neonRight": true,
+    "plateText": "VMENU",
+    "plateStyle": 0,
+    "turbo": true,
+    "tyreSmoke": false,
+    "version": 1,
+    "wheelType": 7,
+    "windowTint": 1,
+    "xenonHeadlights": true,
+    "bulletProofTires": false,
+    "headlightColor": 2,
+    "enveffScale": 0.5,
+    "Category": "Uncategorized"
+}
