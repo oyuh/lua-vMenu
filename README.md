@@ -22,7 +22,8 @@ this tracks the upstream C# project.
 
 ## Status
 
-🚧 **Milestone 4 complete — the server side is fully ported.** Client menus land next.
+🚧 **Milestone 5 complete — the client foundation is in.** The menu opens in-game; the menu
+content itself lands in waves M7-M9.
 
 - ✅ M0: toolchain, scaffold, CI, first specs
 - ✅ M1: the six [compatibility contracts](docs/contracts/README.md) documented from the C#
@@ -41,6 +42,13 @@ this tracks the upstream C# project.
   events, the `vmenuserver` console command (debug/weather/time/ban/unban/migrate), the ban
   system on `vmenu_ban_<uuid>` KVPs (C# ban records keep working), vmenu.log writers,
   teleport-location saving, and the join/quit + permission push flow
+- ✅ M5: client foundation — MainMenu.cs and EventManager.cs ported: key mappings under the
+  compatible `vMenu:{id}:MenuToggle`/`NoClip` names (existing player keybinds survive), KVP
+  cleanup, the `vmenuclient` command, every client event handler, weather/time sync ticks,
+  addon/whitelist/extras/tattoos config parsing, notifications (Notify/Subtitle/HelpMessage),
+  UserDefaults (`settings_` KVPs, C#-compatible True/False strings), the StorageManager
+  save/load layer (C# saves round-trip against golden fixtures), player lists (native +
+  OneSync Infinity), and the permission-gated main menu tree with the staff-only gate
 
 See PLAN.md §8 for the full roadmap.
 

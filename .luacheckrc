@@ -22,6 +22,7 @@ read_globals = {
     -- kvp
     'SetResourceKvp', 'GetResourceKvpString', 'DeleteResourceKvp',
     'StartFindKvp', 'FindKvp', 'EndFindKvp',
+    'SetResourceKvpInt', 'GetResourceKvpInt', 'SetResourceKvpFloat', 'GetResourceKvpFloat',
     -- runtime
     'CreateThread', 'Wait', 'SetTimeout', 'IsDuplicityVersion',
     'GetPlayers', 'GetPlayerName', 'GetPlayerPed', 'PlayerId', 'PlayerPedId', 'GetPlayerServerId',
@@ -33,6 +34,26 @@ read_globals = {
     'NetworkGetEntityFromNetworkId', 'NetworkGetEntityOwner', 'DoesEntityExist',
     'GetEntityCoords', 'SetEntityCoords', 'GetPedInVehicleSeat', 'IsPedAPlayer',
     'TaskLeaveVehicle', 'GetVehiclePedIsIn', 'SetPedIntoVehicle',
+    -- client: notifications / subtitles / help text
+    'SetNotificationTextEntry', 'DrawNotification', 'SetNotificationMessage',
+    'BeginTextCommandPrint', 'EndTextCommandPrint',
+    'BeginTextCommandDisplayHelp', 'EndTextCommandDisplayHelp',
+    'IsHelpMessageBeingDisplayed', 'ClearAllHelpMessages', 'AddTextEntry', 'DisplayHelpTextThisFrame',
+    'ClearBrief', 'SetRichPresence',
+    -- client: stats / pvp / players
+    'StatSetInt', 'StatSetFloat', 'NetworkSetFriendlyFireOption', 'SetCanAttackFriendly',
+    'GetHashKey', 'GetActivePlayers', 'NetworkIsPlayerActive', 'GetPlayerFromServerId',
+    -- client: world / weather / time sync
+    'SetEntityHealth', 'ClearAreaOfEverything', 'ForceSocialClubUpdate',
+    'ClearCloudHat', 'SetCloudHatOpacity', 'SetCloudHatTransition',
+    'ForceSnowPass', 'SetForceVehicleTrails', 'SetForcePedFootstepsTracks',
+    'HasNamedPtfxAssetLoaded', 'RequestNamedPtfxAsset', 'UseParticleFxAssetNextCall', 'RemoveNamedPtfxAsset',
+    'SetArtificialLightsState', 'SetArtificialLightsStateAffectsVehicles',
+    'GetNextWeatherType', 'SetWeatherTypeOvertimePersist', 'NetworkOverrideClockTime',
+    -- client: spawn / screen state / headshots
+    'GetIsLoadingScreenActive',
+    'RegisterPedheadshot', 'IsPedheadshotReady', 'IsPedheadshotValid',
+    'GetPedheadshotTxdString', 'UnregisterPedheadshot',
     -- game state / hud
     'IsPauseMenuActive', 'IsPauseMenuRestarting', 'IsScreenFadedOut', 'IsScreenFadedIn',
     'IsPlayerSwitchInProgress', 'IsEntityDead', 'IsWarningMessageActive', 'UpdateOnscreenKeyboard',

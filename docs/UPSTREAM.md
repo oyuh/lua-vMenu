@@ -20,7 +20,7 @@ diffs, then bump the pin here.
 | `SharedClasses/PermissionsManager.cs` | `shared/permissions.lua` |
 | `SharedClasses/SupplementaryPermissionManager.cs` | `shared/permissions.lua` |
 | `vMenu/MainMenu.cs` | `client/main.lua` |
-| `vMenu/EventManager.cs` | `client/events.lua` |
+| `vMenu/EventManager.cs` | `client/events.lua` (parsed config + cross-module statics live in `client/state.lua`) |
 | `vMenu/CommonFunctions.cs` | `client/common.lua` (split by topic as it grows) |
 | `vMenu/FunctionsController.cs` | `client/functions_controller/*.lua` |
 | `vMenu/StorageManager.cs` | `client/storage.lua` |

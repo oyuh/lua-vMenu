@@ -45,6 +45,87 @@ local INSTALLED_GLOBALS = {
     'GetEntityCoords',
     'DoesEntityExist',
     'vector3',
+    -- typed kvp + keymapping + misc client runtime
+    'SetResourceKvpInt',
+    'GetResourceKvpInt',
+    'SetResourceKvpFloat',
+    'GetResourceKvpFloat',
+    'RegisterKeyMapping',
+    'GetHashKey',
+}
+
+-- Client-side game natives faked as recording no-ops. Each entry is
+-- { name, default } where default may be a plain value or a function of the
+-- call args. Calls are recorded in mock.native_calls for assertions.
+local NATIVE_DEFAULTS = {
+    -- notifications / text
+    { 'SetNotificationTextEntry' },
+    { 'AddTextComponentSubstringPlayerName' },
+    { 'DrawNotification' },
+    { 'SetNotificationMessage' },
+    { 'BeginTextCommandPrint' },
+    { 'EndTextCommandPrint' },
+    { 'BeginTextCommandDisplayHelp' },
+    { 'EndTextCommandDisplayHelp' },
+    { 'IsHelpMessageBeingDisplayed', false },
+    { 'ClearAllHelpMessages' },
+    { 'AddTextEntry' },
+    { 'GetLabelText', 'NULL' },
+    { 'DisplayHelpTextThisFrame' },
+    { 'ClearBrief' },
+    { 'SetRichPresence' },
+    -- stats / pvp
+    { 'StatSetInt' },
+    { 'StatSetFloat' },
+    { 'NetworkSetFriendlyFireOption' },
+    { 'SetCanAttackFriendly' },
+    -- local player / players
+    { 'PlayerId', 0 },
+    { 'PlayerPedId', 900 },
+    { 'IsPedInAnyVehicle', false },
+    { 'GetVehiclePedIsIn', 0 },
+    { 'GetPedInVehicleSeat', 0 },
+    { 'NetworkIsPlayerActive', true },
+    {
+        'GetActivePlayers',
+        function()
+            return {}
+        end,
+    },
+    { 'GetPlayerFromServerId', -1 },
+    { 'GetPlayerServerId', 0 },
+    -- world / entities
+    { 'SetEntityHealth' },
+    { 'ClearAreaOfEverything' },
+    { 'ForceSocialClubUpdate' },
+    -- clouds / snow / lights
+    { 'ClearCloudHat' },
+    { 'SetCloudHatOpacity' },
+    { 'SetCloudHatTransition' },
+    { 'ForceSnowPass' },
+    { 'SetForceVehicleTrails' },
+    { 'SetForcePedFootstepsTracks' },
+    { 'HasNamedPtfxAssetLoaded', true },
+    { 'RequestNamedPtfxAsset' },
+    { 'UseParticleFxAssetNextCall' },
+    { 'RemoveNamedPtfxAsset' },
+    { 'SetArtificialLightsState' },
+    { 'SetArtificialLightsStateAffectsVehicles' },
+    -- weather / time sync
+    { 'GetNextWeatherType', 0 },
+    { 'SetWeatherTypeOvertimePersist' },
+    { 'NetworkOverrideClockTime' },
+    -- spawn / screen state
+    { 'IsScreenFadedIn', true },
+    { 'IsPlayerSwitchInProgress', false },
+    { 'IsPauseMenuActive', false },
+    { 'GetIsLoadingScreenActive', false },
+    -- ped headshots (private messages)
+    { 'RegisterPedheadshot', 1 },
+    { 'IsPedheadshotReady', true },
+    { 'IsPedheadshotValid', true },
+    { 'GetPedheadshotTxdString', 'headshot_txd' },
+    { 'UnregisterPedheadshot' },
 }
 
 function Cfx.new(opts)
@@ -66,6 +147,9 @@ function Cfx.new(opts)
         entity_coords = {}, -- [entity handle] = vector3-like table
         game_timer = 0,
         event_cancelled = false,
+        kvp_typed = {}, -- [key] = { kind = 'int'|'float', value = ... }
+        key_mappings = {}, -- { command, description, mapper, key } per RegisterKeyMapping
+        native_calls = {}, -- [native name] = list of arg packs
         _find_handles = {},
         _next_handle = 1,
         _next_ped = 100,
@@ -228,11 +312,30 @@ function Cfx:install()
         mock.commands[name] = { handler = handler, restricted = restricted }
     end
 
-    _G.GlobalState = {
+    _G.GlobalState = setmetatable({
         set = function(_, key, value, _replicated)
             mock.global_state[key] = value
         end,
-    }
+    }, {
+        __index = function(_, key)
+            return mock.global_state[key]
+        end,
+    })
+
+    _G.RegisterKeyMapping = function(command, description, mapper, key)
+        table.insert(mock.key_mappings, { command = command, description = description, mapper = mapper, key = key })
+    end
+
+    -- Deterministic stand-in for joaat; stable across runs, distinct enough
+    -- for table keys in specs.
+    _G.GetHashKey = function(input)
+        local text = tostring(input)
+        local hash = 0
+        for i = 1, #text do
+            hash = (hash * 31 + text:byte(i)) % 4294967296
+        end
+        return hash
+    end
 
     _G.GetPlayerPed = function(handle)
         local player = mock.players[tostring(handle)]
@@ -268,11 +371,36 @@ function Cfx:install()
 
     _G.DeleteResourceKvp = function(key)
         mock.kvp[key] = nil
+        mock.kvp_typed[key] = nil
+    end
+
+    -- Typed KVPs share the key namespace with string KVPs (find iterates all).
+    _G.SetResourceKvpInt = function(key, value)
+        mock.kvp_typed[key] = { kind = 'int', value = math.tointeger(value) or 0 }
+    end
+
+    _G.GetResourceKvpInt = function(key)
+        local entry = mock.kvp_typed[key]
+        return (entry and entry.kind == 'int') and entry.value or 0
+    end
+
+    _G.SetResourceKvpFloat = function(key, value)
+        mock.kvp_typed[key] = { kind = 'float', value = value + 0.0 }
+    end
+
+    _G.GetResourceKvpFloat = function(key)
+        local entry = mock.kvp_typed[key]
+        return (entry and entry.kind == 'float') and entry.value or 0.0
     end
 
     _G.StartFindKvp = function(prefix)
         local keys = {}
         for key in pairs(mock.kvp) do
+            if key:sub(1, #prefix) == prefix then
+                keys[#keys + 1] = key
+            end
+        end
+        for key in pairs(mock.kvp_typed) do
             if key:sub(1, #prefix) == prefix then
                 keys[#keys + 1] = key
             end
@@ -326,6 +454,22 @@ function Cfx:install()
         mock:_dispatch('client', name, ...)
     end
 
+    -- Recording no-op natives with canned defaults.
+    for _, spec in ipairs(NATIVE_DEFAULTS) do
+        local name, default = spec[1], spec[2]
+        if mock._saved_globals[name] == nil then
+            mock._saved_globals[name] = _G[name]
+        end
+        _G[name] = function(...)
+            mock.native_calls[name] = mock.native_calls[name] or {}
+            table.insert(mock.native_calls[name], table.pack(...))
+            if type(default) == 'function' then
+                return default(...)
+            end
+            return default
+        end
+    end
+
     return self
 end
 
@@ -333,6 +477,14 @@ function Cfx:uninstall()
     for _, name in ipairs(INSTALLED_GLOBALS) do
         _G[name] = self._saved_globals[name]
     end
+    for _, spec in ipairs(NATIVE_DEFAULTS) do
+        _G[spec[1]] = self._saved_globals[spec[1]]
+    end
+end
+
+-- All recorded calls to a faked native (empty list when never called).
+function Cfx:calls(native_name)
+    return self.native_calls[native_name] or {}
 end
 
 -- Triggers a server event as if a client sent it: the `source` global is set

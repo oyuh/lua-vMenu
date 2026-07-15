@@ -507,6 +507,12 @@ function Permissions.set_from_json(payload)
     Permissions.are_setup = true
 end
 
+-- The raw grants map as received from the server (used by the `vmenuclient
+-- dump` diagnostics command).
+function Permissions.raw_grants()
+    return granted
+end
+
 function Permissions.set_supplementary_from_json(payload)
     supplementary_granted = Json.decode(payload) or {}
     Permissions.supplementary_are_setup = true
