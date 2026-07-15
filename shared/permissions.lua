@@ -312,6 +312,17 @@ Permissions.list = {
 -- Supplementary (model-whitelist) permissions, checked separately upstream.
 Permissions.supplementary_list = { 'VWAll', 'PWAll', 'WWAll' }
 
+-- Server startup (MainServer.SetupAddonPerms) extends the list with one
+-- permission per whitelisted model from config/model-whitelists.json.
+function Permissions.register_supplementary(name)
+    for _, existing in ipairs(Permissions.supplementary_list) do
+        if existing == name then
+            return
+        end
+    end
+    Permissions.supplementary_list[#Permissions.supplementary_list + 1] = name
+end
+
 -- Category expansion used by GetAceName.
 local CATEGORY_PREFIXES = {
     OP = 'OnlinePlayers',

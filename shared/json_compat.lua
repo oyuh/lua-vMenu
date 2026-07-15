@@ -21,6 +21,16 @@ function Json.encode(value)
     return dkjson.encode(value)
 end
 
+-- Newtonsoft Formatting.Indented equivalent, for files meant to be
+-- hand-edited (locations.json). Both backends are dkjson-derived and accept
+-- the same options table.
+function Json.encode_indented(value)
+    if backend then
+        return backend.encode(value, { indent = true })
+    end
+    return dkjson.encode(value, { indent = true })
+end
+
 -- Returns the decoded value, or nil if the input is nil, empty, or invalid.
 function Json.decode(text)
     if type(text) ~= 'string' or text == '' then

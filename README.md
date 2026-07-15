@@ -22,7 +22,7 @@ this tracks the upstream C# project.
 
 ## Status
 
-🚧 **Milestone 1 complete — compatibility contracts extracted.** Not yet usable in-game.
+🚧 **Milestone 4 complete — the server side is fully ported.** Client menus land next.
 
 - ✅ M0: toolchain, scaffold, CI, first specs
 - ✅ M1: the six [compatibility contracts](docs/contracts/README.md) documented from the C#
@@ -36,6 +36,11 @@ this tracks the upstream C# project.
   client/server entrypoints with the permission push wired up. A demo menu covering every item
   type ships behind `experimental_features_enabled '1'` (`/vmenu_demo`) for the remaining
   in-game side-by-side check against C# vMenu (visuals, sprite metrics, control ids)
+- ✅ M4: server port — MainServer.cs and BanManager.cs in full: weather/time sync loops over
+  replicated convars, every server event handler with ACE re-checks + auto-ban on fake
+  events, the `vmenuserver` console command (debug/weather/time/ban/unban/migrate), the ban
+  system on `vmenu_ban_<uuid>` KVPs (C# ban records keep working), vmenu.log writers,
+  teleport-location saving, and the join/quit + permission push flow
 
 See PLAN.md §8 for the full roadmap.
 

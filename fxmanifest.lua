@@ -25,6 +25,7 @@ files {
     'client/data/*.lua',
     'client/functions_controller/*.lua',
     'client/menus/*.lua',
+    'server/*.lua',
 }
 
 shared_script 'shared/bootstrap.lua'

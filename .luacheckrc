@@ -26,6 +26,13 @@ read_globals = {
     'CreateThread', 'Wait', 'SetTimeout', 'IsDuplicityVersion',
     'GetPlayers', 'GetPlayerName', 'GetPlayerPed', 'PlayerId', 'PlayerPedId', 'GetPlayerServerId',
     'IsPlayerAceAllowed', 'DoesPlayerExist', 'ExecuteCommand',
+    -- server runtime
+    'SetConvarReplicated', 'DropPlayer', 'CancelEvent', 'Player',
+    'GetNumPlayerIdentifiers', 'GetPlayerIdentifier',
+    -- entities (server-side natives)
+    'NetworkGetEntityFromNetworkId', 'NetworkGetEntityOwner', 'DoesEntityExist',
+    'GetEntityCoords', 'SetEntityCoords', 'GetPedInVehicleSeat', 'IsPedAPlayer',
+    'TaskLeaveVehicle', 'GetVehiclePedIsIn', 'SetPedIntoVehicle',
     -- game state / hud
     'IsPauseMenuActive', 'IsPauseMenuRestarting', 'IsScreenFadedOut', 'IsScreenFadedIn',
     'IsPlayerSwitchInProgress', 'IsEntityDead', 'IsWarningMessageActive', 'UpdateOnscreenKeyboard',

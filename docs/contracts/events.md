@@ -34,7 +34,7 @@ Types are the msgpack types on the wire: `int`, `float`, `bool`, `string`, `vect
 | `vMenu:GetPlayerCoords` | `long rpcId, int playerId, funcref callback` | calls back with coords; falls back to `vMenu:GetPlayerCoords:reply` event |
 | `vMenu:GetPlayerIdentifiers` | `int target, funcref callback` | callback receives identifier list |
 | `vMenu:GetOutOfCar` | `int vehicleNetId` | personal-vehicle passenger kick; targets get `vMenu:Notify` |
-| `vMenu:ClearArea` | *(none — uses source position)* | perm-gated; broadcasts `vMenu:ClearArea` with source `vector3` to all clients |
+| `vMenu:ClearArea` | *(none — uses source position)* | **no server-side perm check upstream** (quirk preserved); broadcasts `vMenu:ClearArea` with source `vector3` to all clients |
 
 ## Server → Client
 

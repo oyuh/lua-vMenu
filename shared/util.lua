@@ -23,4 +23,15 @@ function Util.debug_log(message)
     end
 end
 
+-- Server only: every identifier for a player (license/steam/discord/ip/...),
+-- equivalent to CitizenFX's Player.Identifiers collection.
+function Util.player_identifiers(player_handle)
+    local handle = tostring(player_handle)
+    local identifiers = {}
+    for i = 0, GetNumPlayerIdentifiers(handle) - 1 do
+        identifiers[#identifiers + 1] = GetPlayerIdentifier(handle, i)
+    end
+    return identifiers
+end
+
 return Util
