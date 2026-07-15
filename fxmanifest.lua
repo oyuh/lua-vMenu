@@ -23,6 +23,7 @@ files {
     'menu/*.lua',
     'client/*.lua',
     'client/data/*.lua',
+    'client/data/overlays.json',
     'client/functions_controller/*.lua',
     'client/menus/*.lua',
     'server/*.lua',

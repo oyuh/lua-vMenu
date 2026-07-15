@@ -54,6 +54,9 @@ read_globals = {
     'GetIsLoadingScreenActive',
     'RegisterPedheadshot', 'IsPedheadshotReady', 'IsPedheadshotValid',
     'GetPedheadshotTxdString', 'UnregisterPedheadshot',
+    -- client: weapons / model checks (data layer)
+    'DoesWeaponTakeWeaponComponent', 'GetMaxAmmo', 'GetEntityModel',
+    'IsThisModelABike', 'IsThisModelABoat', 'IsThisModelAHeli', 'IsThisModelAPlane',
     -- game state / hud
     'IsPauseMenuActive', 'IsPauseMenuRestarting', 'IsScreenFadedOut', 'IsScreenFadedIn',
     'IsPlayerSwitchInProgress', 'IsEntityDead', 'IsWarningMessageActive', 'UpdateOnscreenKeyboard',

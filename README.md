@@ -22,8 +22,7 @@ this tracks the upstream C# project.
 
 ## Status
 
-🚧 **Milestone 5 complete — the client foundation is in.** The menu opens in-game; the menu
-content itself lands in waves M7-M9.
+🚧 **Milestone 6 complete — all data tables generated.** The menu content lands in waves M7-M9.
 
 - ✅ M0: toolchain, scaffold, CI, first specs
 - ✅ M1: the six [compatibility contracts](docs/contracts/README.md) documented from the C#
@@ -49,6 +48,13 @@ content itself lands in waves M7-M9.
   UserDefaults (`settings_` KVPs, C#-compatible True/False strings), the StorageManager
   save/load layer (C# saves round-trip against golden fixtures), player lists (native +
   OneSync Infinity), and the permission-gated main menu tree with the staff-only gate
+- ✅ M6: data codegen — `scripts/gen-data.ps1` mechanically extracts `vMenu/data/*.cs` into
+  `client/data/*.lua` (deterministic; regen after upstream bumps): 23 vehicle class lists,
+  vehicle/neon colors with label fixups, ~120 weapons with descriptions + per-weapon ACE
+  permissions + 780 component names + tints, animal peds, scenarios, timecycles, vehicle
+  blip sprites, plus `overlays.json` (3429 tattoo records) shipped verbatim. Runtime
+  consumers: `client/weapons.lua` (valid/addon weapon list building) and
+  `client/tattoos.lua` (gendered per-zone tattoo collections)
 
 See PLAN.md §8 for the full roadmap.
 

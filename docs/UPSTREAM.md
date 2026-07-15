@@ -31,7 +31,7 @@ diffs, then bump the pin here.
 | `vMenu/MpPedDataManager.cs` | `client/mp_ped_data.lua` |
 | `vMenu/EntitySpawner.cs` | `client/entity_spawner.lua` |
 | `vMenu/menus/<Name>.cs` | `client/menus/<name>.lua` (one file per upstream menu) |
-| `vMenu/data/*.cs`, `vMenu/data/overlays.json` | `client/data/*.lua` — **generated** by `scripts/gen-data`, do not hand-edit |
+| `vMenu/data/*.cs`, `vMenu/data/overlays.json` | `client/data/*.lua` — **generated** by `scripts/gen-data.ps1`, do not hand-edit. Runtime halves (ValidWeapons list building, TattoosData sorting) live in `client/weapons.lua` / `client/tattoos.lua` |
 | `vMenuServer/MainServer.cs` | `server/main.lua` (DebugLog class → `server/log.lua`) |
 | `vMenuServer/BanManager.cs` | `server/bans.lua` (+ `server/datetime.lua` for the C# DateTime semantics) |
 | `MenuAPI.dll` (TomGrobbe/MenuAPI) | `menu/*.lua` (full reimplementation, 1:1 API) |

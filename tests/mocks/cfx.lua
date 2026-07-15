@@ -70,7 +70,14 @@ local NATIVE_DEFAULTS = {
     { 'IsHelpMessageBeingDisplayed', false },
     { 'ClearAllHelpMessages' },
     { 'AddTextEntry' },
-    { 'GetLabelText', 'NULL' },
+    -- identity instead of 'NULL' so label-keyed dicts (VehicleClasses) keep
+    -- distinct keys in specs
+    {
+        'GetLabelText',
+        function(label)
+            return label
+        end,
+    },
     { 'DisplayHelpTextThisFrame' },
     { 'ClearBrief' },
     { 'SetRichPresence' },
@@ -126,6 +133,19 @@ local NATIVE_DEFAULTS = {
     { 'IsPedheadshotValid', true },
     { 'GetPedheadshotTxdString', 'headshot_txd' },
     { 'UnregisterPedheadshot' },
+    -- weapons / models (data layer)
+    { 'DoesWeaponTakeWeaponComponent', false },
+    {
+        'GetMaxAmmo',
+        function()
+            return true, 250
+        end,
+    },
+    { 'GetEntityModel', 0 },
+    { 'IsThisModelABike', false },
+    { 'IsThisModelABoat', false },
+    { 'IsThisModelAHeli', false },
+    { 'IsThisModelAPlane', false },
 }
 
 function Cfx.new(opts)
@@ -480,11 +500,25 @@ function Cfx:uninstall()
     for _, spec in ipairs(NATIVE_DEFAULTS) do
         _G[spec[1]] = self._saved_globals[spec[1]]
     end
+    for _, name in ipairs(self._extra_stubs or {}) do
+        _G[name] = self._saved_globals[name]
+    end
 end
 
 -- All recorded calls to a faked native (empty list when never called).
 function Cfx:calls(native_name)
     return self.native_calls[native_name] or {}
+end
+
+-- Replaces one native with a custom function for this test (restored on
+-- uninstall like everything else).
+function Cfx:stub_native(name, fn)
+    if self._saved_globals[name] == nil then
+        self._saved_globals[name] = _G[name]
+    end
+    self._extra_stubs = self._extra_stubs or {}
+    table.insert(self._extra_stubs, name)
+    _G[name] = fn
 end
 
 -- Triggers a server event as if a client sent it: the `source` global is set
