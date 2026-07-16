@@ -255,6 +255,28 @@ local function process_main_buttons()
         return
     end
 
+    -- Custom per-menu button handlers (Menu.ButtonPressHandlers).
+    if menu.ButtonPressHandlers ~= nil then
+        for _, entry in ipairs(menu.ButtonPressHandlers) do
+            if entry.disable_control then
+                DisableControlAction(0, entry.control, true)
+            end
+            local fired = false
+            if entry.check_type == 'JUST_RELEASED' then
+                fired = IsControlJustReleased(0, entry.control) or IsDisabledControlJustReleased(0, entry.control)
+            elseif entry.check_type == 'JUST_PRESSED' then
+                fired = IsControlJustPressed(0, entry.control) or IsDisabledControlJustPressed(0, entry.control)
+            elseif entry.check_type == 'RELEASED' then
+                fired = not IsControlPressed(0, entry.control) and not IsDisabledControlPressed(0, entry.control)
+            elseif entry.check_type == 'PRESSED' then
+                fired = IsControlPressed(0, entry.control) or IsDisabledControlPressed(0, entry.control)
+            end
+            if fired then
+                entry.handler(menu, entry.control)
+            end
+        end
+    end
+
     if just_released(Controls.FrontendAccept) or just_released(Controls.VehicleMouseControlOverride) then
         if menu:Size() > 0 then
             menu:SelectItem(menu.CurrentIndex)

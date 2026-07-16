@@ -53,6 +53,7 @@ local INSTALLED_GLOBALS = {
     'RegisterKeyMapping',
     'GetHashKey',
     'LocalPlayer',
+    'Entity',
 }
 
 -- Client-side game natives faked as recording no-ops. Each entry is
@@ -310,6 +311,170 @@ local NATIVE_DEFAULTS = {
     { 'GetRadioStationName', '' },
     { 'SetHeliBladesFullSpeed' },
     { 'GetPlayersLastVehicle', 0 },
+    -- vehicle mods / colors (VehicleInfo capture + application)
+    { 'GetNumVehicleMods', 0 },
+    { 'GetVehicleMod', -1 },
+    { 'SetVehicleModKit' },
+    { 'ToggleVehicleMod' },
+    { 'SetVehicleWheelType' },
+    { 'GetVehicleWheelType', 0 },
+    { 'SetVehicleMod' },
+    { 'GetVehicleModVariation', false },
+    { 'IsToggleModOn', false },
+    { 'SetVehicleTyreSmokeColor' },
+    {
+        'GetVehicleTyreSmokeColor',
+        function()
+            return 0, 0, 0
+        end,
+    },
+    { 'SetVehicleLivery' },
+    { 'GetVehicleLivery', -1 },
+    {
+        'GetVehicleColours',
+        function()
+            return 0, 0
+        end,
+    },
+    { 'SetVehicleColours' },
+    {
+        'GetVehicleExtraColours',
+        function()
+            return 0, 0
+        end,
+    },
+    { 'SetVehicleExtraColours' },
+    { 'SetVehicleCustomPrimaryColour' },
+    { 'SetVehicleCustomSecondaryColour' },
+    { 'GetIsVehiclePrimaryColourCustom', false },
+    { 'GetIsVehicleSecondaryColourCustom', false },
+    {
+        'GetVehicleCustomPrimaryColour',
+        function()
+            return 0, 0, 0
+        end,
+    },
+    {
+        'GetVehicleCustomSecondaryColour',
+        function()
+            return 0, 0, 0
+        end,
+    },
+    { 'SetVehicleModColor_1' },
+    { 'SetVehicleModColor_2' },
+    { 'SetVehicleInteriorColour' },
+    { 'GetVehicleInteriorColour', 0 },
+    { 'SetVehicleDashboardColour' },
+    { 'GetVehicleDashboardColour', 0 },
+    { 'SetVehicleNumberPlateText' },
+    { 'GetVehicleNumberPlateText', '' },
+    { 'SetVehicleNumberPlateTextIndex' },
+    { 'GetVehicleNumberPlateTextIndex', 0 },
+    { 'SetVehicleWindowTint' },
+    { 'GetVehicleWindowTint', 0 },
+    { 'SetVehicleTyresCanBurst' },
+    { 'GetVehicleTyresCanBurst', true },
+    { 'SetVehicleEnveffScale' },
+    { 'GetVehicleEnveffScale', 0.0 },
+    { 'SetVehicleHeadlightsColour' },
+    { 'GetVehicleHeadlightsColour', -1 },
+    { 'SetVehicleXenonLightsCustomColor' },
+    { 'ClearVehicleXenonLightsCustomColor' },
+    {
+        'GetVehicleXenonLightsCustomColor',
+        function()
+            return false, 0, 0, 0
+        end,
+    },
+    { 'SetVehicleNeonLightsColour' },
+    {
+        'GetVehicleNeonLightsColour',
+        function()
+            return 255, 255, 255
+        end,
+    },
+    { 'SetVehicleNeonLightEnabled' },
+    { 'IsVehicleNeonLightEnabled', false },
+    { 'DoesExtraExist', false },
+    { 'IsVehicleExtraTurnedOn', false },
+    { 'SetVehicleExtra' },
+    -- weapon loadouts / weapon options
+    { 'GetPedWeaponTintIndex', 0 },
+    { 'SetPedWeaponTintIndex' },
+    { 'GetAmmoInPedWeapon', 0 },
+    { 'HasPedGotWeaponComponent', false },
+    { 'GiveWeaponComponentToPed' },
+    { 'RemoveWeaponComponentFromPed' },
+    { 'RemoveAllPedWeapons' },
+    { 'RemoveWeaponFromPed' },
+    { 'IsWeaponValid', true },
+    { 'GetMaxAmmoInClip', 30 },
+    { 'SetAmmoInClip' },
+    { 'SetPedAmmo' },
+    { 'AddAmmoToPed' },
+    { 'GetSelectedPedWeapon', 0 },
+    { 'SetPedInfiniteAmmoClip' },
+    { 'SetPedCanSwitchWeapon' },
+    { 'GetWeapontypeGroup', 0 },
+    { 'SetPlayerHasReserveParachute' },
+    { 'SetPlayerCanLeaveParachuteSmokeTrail' },
+    { 'SetPlayerParachuteSmokeTrailColor' },
+    { 'SetPlayerParachuteTintIndex' },
+    { 'SetPlayerReserveParachuteTintIndex' },
+    -- spectate / cameras / player blips (online players)
+    { 'NetworkSetInSpectatorMode' },
+    { 'IsScreenFadingOut', false },
+    { 'CreateCam', 1 },
+    { 'SetCamCoord' },
+    { 'PointCamAtCoord' },
+    { 'SetCamActive' },
+    { 'RenderScriptCams' },
+    { 'DestroyCam' },
+    { 'GetVehicleModelNumberOfSeats', 4 },
+    { 'IsAnyVehicleSeatEmpty', true },
+    { 'TaskWarpPedIntoVehicle' },
+    { 'AddBlipForEntity', 1 },
+    { 'GetBlipFromEntity', 0 },
+    { 'SetBlipRoute' },
+    { 'SetBlipRouteColour' },
+    -- personal vehicle / key fob / doors / alarm
+    { 'NetworkHasControlOfEntity', true },
+    { 'NetworkGetNetworkIdFromEntity', 0 },
+    { 'SetVehicleLights' },
+    { 'SetReduceDriftVehicleSuspension' },
+    { 'SetVehicleExclusiveDriver' },
+    { 'SetVehicleExclusiveDriver_2' },
+    { 'GetIsVehicleEngineRunning', false },
+    { 'SetVehicleDoorBroken' },
+    { 'GetVehicleDoorAngleRatio', 0.0 },
+    { 'SetVehicleDoorShut' },
+    { 'SetVehicleDoorOpen' },
+    { 'AreBombBayDoorsOpen', false },
+    { 'OpenBombBayDoors' },
+    { 'CloseBombBayDoors' },
+    { 'CreateObject', 3000 },
+    { 'AttachEntityToEntity' },
+    { 'DetachEntity' },
+    { 'DeleteObject' },
+    { 'GetPedBoneIndex', 0 },
+    { 'TaskTurnPedToFaceEntity' },
+    { 'PlaySoundFromEntity' },
+    { 'SoundVehicleHornThisFrame' },
+    { 'SetVehicleDoorsLockedForAllPlayers' },
+    { 'IsVehicleAlarmActivated', false },
+    { 'SetVehicleAlarm' },
+    { 'SetVehicleAlarmTimeLeft' },
+    { 'StartVehicleAlarm' },
+    -- raycasts (delete vehicle)
+    { 'StartShapeTestCapsule', 1 },
+    {
+        'GetShapeTestResult',
+        function()
+            return 0, false, { x = 0.0, y = 0.0, z = 0.0 }, { x = 0.0, y = 0.0, z = 0.0 }, 0
+        end,
+    },
+    { 'IsEntityAVehicle', false },
+    { 'NetworkRequestControlOfEntity' },
     -- safe teleport
     { 'RequestCollisionAtCoord' },
     { 'SetFocusPosAndVel' },
@@ -364,6 +529,7 @@ function Cfx.new(opts)
         key_mappings = {}, -- { command, description, mapper, key } per RegisterKeyMapping
         native_calls = {}, -- [native name] = list of arg packs
         local_player_state = {}, -- LocalPlayer.state statebag
+        entity_state = {}, -- [entity handle] = statebag table (Entity(h).state)
         _find_handles = {},
         _next_handle = 1,
         _next_ped = 100,
@@ -538,6 +704,23 @@ function Cfx:install()
 
     _G.RegisterKeyMapping = function(command, description, mapper, key)
         table.insert(mock.key_mappings, { command = command, description = description, mapper = mapper, key = key })
+    end
+
+    -- Entity statebags: Entity(handle).state.key / :set().
+    _G.Entity = function(handle)
+        mock.entity_state[handle] = mock.entity_state[handle] or {}
+        local bag = mock.entity_state[handle]
+        return {
+            state = setmetatable({
+                set = function(_, key, value, _replicated)
+                    bag[key] = value
+                end,
+            }, {
+                __index = function(_, key)
+                    return bag[key]
+                end,
+            }),
+        }
     end
 
     -- Local player statebag: LocalPlayer.state.key / LocalPlayer.state:set().

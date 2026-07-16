@@ -51,6 +51,10 @@ function Menu.new(title, subtitle)
         VehicleUpgradeStats = { 0.0, 0.0, 0.0, 0.0 },
         -- array of { control = <id>, label = <text> }; nil = default Select/Back
         InstructionalButtons = nil,
+        -- Menu.ButtonPressHandler list: { control, check_type
+        -- ('JUST_RELEASED'|'JUST_PRESSED'|'RELEASED'|'PRESSED'), handler,
+        -- disable_control }; consumed by the in-game input tick.
+        ButtonPressHandlers = nil,
 
         filter_active = false,
 
@@ -427,6 +431,18 @@ end
 function Menu:AddInstructionalButton(control, label)
     self.InstructionalButtons = self.InstructionalButtons or {}
     self.InstructionalButtons[#self.InstructionalButtons + 1] = { control = control, label = label }
+end
+
+-- Menu.ButtonPressHandlers.Add: fire handler(menu, control) when the given
+-- control matches the check type while this menu is open.
+function Menu:AddButtonPressHandler(control, check_type, handler, disable_control)
+    self.ButtonPressHandlers = self.ButtonPressHandlers or {}
+    self.ButtonPressHandlers[#self.ButtonPressHandlers + 1] = {
+        control = control,
+        check_type = check_type,
+        handler = handler,
+        disable_control = disable_control ~= false,
+    }
 end
 
 function Menu:RemoveInstructionalButton(control)

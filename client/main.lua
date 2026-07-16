@@ -114,6 +114,8 @@ local function register_rpc_handlers()
 end
 
 -- RequestPlayerCoordinates: blocks (yielding) until the server replies.
+-- Registered into State so require-cycle-free modules (client/common.lua)
+-- can locate OneSync-remote players.
 function Main.request_player_coordinates(server_id)
     local rpc_id = rpc_id_counter
     rpc_id_counter = rpc_id_counter + 1
@@ -770,6 +772,7 @@ cleanup_old_kvps()
 register_keymappings()
 register_vmenuclient_command()
 register_rpc_handlers()
+State.request_player_coordinates = Main.request_player_coordinates
 
 Events.register({
     set_permissions = Main.set_permissions,

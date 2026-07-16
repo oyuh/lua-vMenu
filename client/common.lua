@@ -694,6 +694,253 @@ function Common.commit_suicide()
 end
 
 -- ---------------------------------------------------------------------------
+-- Player actions (Online Players menu backend)
+-- ---------------------------------------------------------------------------
+
+-- KillPlayer: the server does the killing (with the staff log).
+function Common.kill_player(player)
+    TriggerServerEvent('vMenu:KillPlayer', player.server_id)
+end
+
+-- SummonPlayer: seat count travels along so the server can warp the target
+-- into our vehicle when there's room.
+function Common.summon_player(player)
+    local current_vehicle = Common.get_vehicle()
+    local number_of_seats = 0
+    if current_vehicle ~= 0 then
+        number_of_seats = GetVehicleModelNumberOfSeats(GetEntityModel(current_vehicle))
+    end
+    TriggerServerEvent('vMenu:SummonPlayer', player.server_id, number_of_seats)
+end
+
+-- KickPlayer: optionally asks for a reason (appended to the default).
+function Common.kick_player(player, ask_user_for_reason, provided_reason)
+    if player == nil then
+        Notification.Notify.error('The selected player is somehow invalid, action aborted.')
+        return
+    end
+    local default_reason = 'You have been kicked.'
+    provided_reason = provided_reason or default_reason
+    if ask_user_for_reason and provided_reason == default_reason then
+        local user_input = Common.get_user_input('Enter Kick Message', nil, 100)
+        if user_input ~= nil and user_input ~= '' then
+            default_reason = default_reason .. (' Reason: %s'):format(user_input)
+        else
+            Notification.Notify.error('An invalid kick reason was provided. Action cancelled.')
+            return
+        end
+    end
+    TriggerServerEvent('vMenu:KickPlayer', player.server_id, default_reason)
+    Util.debug_log(('Attempting to kick player %s (server id: %d).'):format(tostring(player.name), player.server_id))
+end
+
+-- BanPlayer: reason prompt, then perm ban or duration prompt + temp ban.
+function Common.ban_player(player, forever)
+    local ban_reason = Common.get_user_input('Enter Ban Reason', 'Banned by staff.', 200)
+    if ban_reason == nil or #ban_reason <= 1 then
+        Notification.Notify.error(Notification.error_message('InvalidInput'))
+        TriggerEvent('chatMessage', '[vMenu] The input is invalid or you cancelled the action, please try again.')
+        return
+    end
+    if forever then
+        TriggerServerEvent('vMenu:PermBanPlayer', player.server_id, ban_reason)
+        return
+    end
+    local duration_input = Common.get_user_input('Ban Duration (in hours) - Max: 720 (1 month)', '1.5', 10)
+    if duration_input == nil or duration_input == '' then
+        Notification.Notify.error(Notification.error_message('InvalidInput'))
+        TriggerEvent('chatMessage', '[vMenu] The input is invalid or you cancelled the action, please try again.')
+        return
+    end
+    local ban_hours = tonumber(duration_input)
+    if ban_hours == nil then
+        Notification.Notify.error(Notification.error_message('InvalidInput'))
+        TriggerEvent('chatMessage', '[vMenu] The input is invalid or you cancelled the action, please try again.')
+        return
+    end
+    if ban_hours > 0.0 then
+        TriggerServerEvent('vMenu:TempBanPlayer', player.server_id, ban_hours + 0.0, ban_reason)
+    else
+        Notification.Notify.error('You need to enter a ban duration, enter a value ~h~between~h~ 1 and 720!')
+    end
+end
+
+-- TeleportToPlayer: teleports to a player (optionally into their vehicle);
+-- OneSync-remote players get located via the coords RPC first.
+function Common.teleport_to_player(player, in_vehicle)
+    if not (player.is_active or player.handle == -1) then
+        Notification.Notify.error(Notification.error_message('PlayerNotFound', 'So the teleport has been cancelled.'))
+        return
+    end
+
+    local player_pos
+    local was_active = true
+    if player.is_active and player.ped ~= nil then
+        if player.ped == PlayerPedId() then
+            Notification.Notify.error('Sorry, you can ~r~~h~not~h~ ~s~teleport to yourself!')
+            return
+        end
+        player_pos = GetEntityCoords(player.ped, true)
+    else
+        local request = State.request_player_coordinates
+        player_pos = request ~= nil and request(player.server_id) or nil
+        if player_pos == nil or (player_pos.x == 0.0 and player_pos.y == 0.0 and player_pos.z == 0.0) then
+            Notification.Notify.error('Could not retrieve the coordinates of the specified player. Teleport cancelled.')
+            return
+        end
+        was_active = false
+    end
+
+    Common.teleport_to_coords(player_pos)
+
+    local player_id = player.handle >= 0 and player.handle or GetPlayerFromServerId(player.server_id)
+    local player_ped = GetPlayerPed(player_id)
+
+    if in_vehicle then
+        -- Wait for the target's vehicle to stream in when they were remote.
+        if not was_active then
+            local start_wait = GetGameTimer()
+            while not IsPedInAnyVehicle(player_ped, false) do
+                Wait(0)
+                if GetGameTimer() - start_wait > 1500 then
+                    break
+                end
+            end
+        end
+
+        if IsPedInAnyVehicle(player_ped, false) then
+            local vehicle = GetVehiclePedIsIn(player_ped, false)
+            if vehicle ~= 0 then
+                local total_seats = GetVehicleModelNumberOfSeats(GetEntityModel(vehicle))
+                if DoesEntityExist(vehicle) and not IsEntityDead(vehicle) and IsAnyVehicleSeatEmpty(vehicle) then
+                    TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, -2) -- VehicleSeat.Any
+                    Notification.Notify.success(
+                        ("Teleported into ~g~<C>%s</C>'s ~s~vehicle."):format(GetPlayerName(player_id))
+                    )
+                elseif total_seats == 1 then
+                    Notification.Notify.error('This vehicle only has room for 1 player!')
+                else
+                    Notification.Notify.error('Not enough empty vehicle seats remaining!')
+                end
+            end
+        end
+    else
+        Notification.Notify.success(('Teleported to ~y~<C>%s</C>~s~.'):format(GetPlayerName(player_id)))
+    end
+end
+
+-- SpectatePlayer: toggles spectator mode; press again to stop. Remote
+-- (OneSync) players get a temporary camera pointed at their coords so the
+-- area streams in first.
+local currently_spectating_player = -1
+
+function Common.spectate_player(player, force_disable)
+    if force_disable then
+        NetworkSetInSpectatorMode(false, 0)
+        return
+    end
+
+    local camera = nil
+    if not player.is_active then
+        local request = State.request_player_coordinates
+        local player_pos = request ~= nil and request(player.server_id) or { x = 0.0, y = 0.0, z = 0.0 }
+
+        DoScreenFadeOut(500)
+        while IsScreenFadingOut() do
+            Wait(0)
+        end
+
+        camera = CreateCam('DEFAULT_SCRIPTED_CAMERA', false)
+        SetCamCoord(camera, player_pos.x, player_pos.y - 5.0, player_pos.z)
+        PointCamAtCoord(camera, player_pos.x, player_pos.y, player_pos.z)
+        SetCamActive(camera, true)
+        RenderScriptCams(true, false, 3000, true, false)
+
+        local timeout = GetGameTimer() + 1000
+        while (not player.is_active or player.ped == nil) and GetGameTimer() <= timeout do
+            Wait(0)
+        end
+
+        if not player.is_active then
+            DoScreenFadeIn(500)
+        end
+    end
+
+    local ped = player.ped or GetPlayerPed(GetPlayerFromServerId(player.server_id))
+
+    if player.is_local or player.server_id == GetPlayerServerId(PlayerId()) then
+        if NetworkIsInSpectatorMode() then
+            DoScreenFadeOut(500)
+            while IsScreenFadingOut() do
+                Wait(0)
+            end
+            NetworkSetInSpectatorMode(false, 0)
+            DoScreenFadeIn(500)
+            Notification.Notify.success('Stopped spectating.', false, true)
+            currently_spectating_player = -1
+        else
+            Notification.Notify.error("You can't spectate yourself.", false, true)
+        end
+    elseif NetworkIsInSpectatorMode() then
+        if currently_spectating_player ~= player.handle and ped ~= nil and ped ~= 0 then
+            DoScreenFadeOut(500)
+            while IsScreenFadingOut() do
+                Wait(0)
+            end
+            NetworkSetInSpectatorMode(false, 0)
+            NetworkSetInSpectatorMode(true, ped)
+            DoScreenFadeIn(500)
+            Notification.Notify.success(
+                ('You are now spectating ~g~<C>%s</C>~s~.'):format(Common.get_safe_player_name(player.name)),
+                false,
+                true
+            )
+            currently_spectating_player = player.handle
+        else
+            DoScreenFadeOut(500)
+            while IsScreenFadingOut() do
+                Wait(0)
+            end
+            NetworkSetInSpectatorMode(false, 0)
+            DoScreenFadeIn(500)
+            Notification.Notify.success('Stopped spectating.', false, true)
+            currently_spectating_player = -1
+        end
+    elseif ped ~= nil and ped ~= 0 then
+        DoScreenFadeOut(500)
+        while IsScreenFadingOut() do
+            Wait(0)
+        end
+        NetworkSetInSpectatorMode(false, 0)
+        NetworkSetInSpectatorMode(true, ped)
+        DoScreenFadeIn(500)
+        Notification.Notify.success(
+            ('You are now spectating ~g~<C>%s</C>~s~.'):format(Common.get_safe_player_name(player.name)),
+            false,
+            true
+        )
+        currently_spectating_player = player.handle
+    end
+
+    if camera ~= nil then
+        DestroyCam(camera, false)
+        RenderScriptCams(false, false, 3000, true, false)
+    end
+end
+
+-- GetSpacerMenuItem: a disabled item with the title padded toward the
+-- center of the menu (80-char field), used as a section divider.
+function Common.get_spacer_menu_item(title, description)
+    local length = #title
+    local total_size = 80 - length
+    local padding = string.rep(' ', math.max(0, math.floor(total_size / 2) - math.floor(length / 2)))
+    local Items = require('menu.items')
+    local item = Items.MenuItem.new('~h~' .. padding .. title, description or '')
+    item.Enabled = false
+    return item
+end
+
+-- ---------------------------------------------------------------------------
 -- User input (onscreen keyboard)
 -- ---------------------------------------------------------------------------
 

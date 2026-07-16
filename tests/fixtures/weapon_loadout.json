@@ -6,7 +6,7 @@
             "Default Clip": 4275109233,
             "Flashlight": 899381934
         },
-        "Perm": 224,
+        "Perm": 213,
         "SpawnName": "weapon_pistol",
         "GetMaxAmmo": 9999,
         "CurrentAmmo": 80,
@@ -22,7 +22,7 @@
         "Components": {
             "Default Clip": 3283798360
         },
-        "Perm": 178,
+        "Perm": 166,
         "SpawnName": "weapon_carbinerifle",
         "GetMaxAmmo": 9999,
         "CurrentAmmo": 250,
