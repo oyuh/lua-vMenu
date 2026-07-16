@@ -21,7 +21,8 @@ diffs, then bump the pin here.
 | `SharedClasses/SupplementaryPermissionManager.cs` | `shared/permissions.lua` |
 | `vMenu/MainMenu.cs` | `client/main.lua` |
 | `vMenu/EventManager.cs` | `client/events.lua` (parsed config + cross-module statics live in `client/state.lua`) |
-| `vMenu/CommonFunctions.cs` | `client/common.lua` (split by topic as it grows) |
+| `vMenu/CommonFunctions.cs` | `client/common.lua` (vehicle save/apply half in `client/vehicle_common.lua`) |
+| CitizenFX.Core `VehicleMod` (localized mod names the Mod Menu relies on) | `client/vehicle_mod_names.lua` |
 | `vMenu/FunctionsController.cs` | `client/functions_controller/*.lua` |
 | `vMenu/StorageManager.cs` | `client/storage.lua` |
 | `vMenu/UserDefaults.cs` | `client/user_defaults.lua` |

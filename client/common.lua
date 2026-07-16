@@ -1027,4 +1027,91 @@ function Common.private_message(source, message, sent)
     UnregisterPedheadshot(headshot)
 end
 
+-- ToProperString: "PascalCaseString" → "Pascal Case String".
+function Common.to_proper_string(input_string)
+    local output = ''
+    local prev_upper = true
+    for character in tostring(input_string or ''):gmatch('.') do
+        if character:match('%a') and character ~= ' ' and character == character:upper() then
+            if prev_upper then
+                output = output .. character
+            else
+                output = output .. ' ' .. character
+            end
+            prev_upper = true
+        else
+            prev_upper = false
+            output = output .. character
+        end
+    end
+    while output:find('  ', 1, true) do
+        output = output:gsub('  ', ' ')
+    end
+    return output
+end
+
+-- CycleThroughSeats: warp to the next free seat in the current vehicle.
+function Common.cycle_through_seats()
+    local vehicle = Common.get_vehicle()
+    local ped = PlayerPedId()
+
+    if AreAnyVehicleSeatsFree(vehicle) then
+        local max_seats = GetVehicleModelNumberOfSeats(GetEntityModel(vehicle))
+
+        -- In the "last" seat: wrap around and take the first free seat.
+        if GetPedInVehicleSeat(vehicle, max_seats - 2) == ped then
+            for seat = -1, max_seats - 3 do
+                if IsVehicleSeatFree(vehicle, seat) then
+                    TaskWarpPedIntoVehicle(ped, vehicle, seat)
+                    break
+                end
+            end
+        else
+            -- Take the first free seat *after* the current one; if there is
+            -- none, wrap around to the first free seat overall.
+            local switched_place = false
+            local passed_current_seat = false
+            for seat = -1, max_seats - 2 do
+                if not passed_current_seat and GetPedInVehicleSeat(vehicle, seat) == ped then
+                    passed_current_seat = true
+                end
+                if passed_current_seat and IsVehicleSeatFree(vehicle, seat) then
+                    switched_place = true
+                    TaskWarpPedIntoVehicle(ped, vehicle, seat)
+                    break
+                end
+            end
+            if not switched_place then
+                for seat = -1, max_seats - 2 do
+                    if IsVehicleSeatFree(vehicle, seat) then
+                        TaskWarpPedIntoVehicle(ped, vehicle, seat)
+                        break
+                    end
+                end
+            end
+        end
+    else
+        Notification.Notify.alert('There are no more available seats to cycle through.')
+    end
+end
+
+-- SetLicensePlateCustomText: asks the driver for a new plate text.
+function Common.set_license_plate_custom_text()
+    local vehicle = Common.get_vehicle()
+    if vehicle ~= 0 and DoesEntityExist(vehicle) then
+        if GetPedInVehicleSeat(vehicle, -1) == PlayerPedId() then
+            local text = Common.get_user_input('Enter License Plate', GetVehicleNumberPlateText(vehicle) or '', 8)
+            if text ~= nil and text ~= '' then
+                SetVehicleNumberPlateText(vehicle, text)
+            else
+                Notification.Notify.error(Notification.error_message('InvalidInput'))
+            end
+        else
+            Notification.Notify.error(Notification.error_message('NeedToBeTheDriver'))
+        end
+    else
+        Notification.Notify.error(Notification.error_message('NoVehicle'))
+    end
+end
+
 return Common

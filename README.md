@@ -22,8 +22,9 @@ this tracks the upstream C# project.
 
 ## Status
 
-🚧 **Milestone 7 complete — menus wave 1 is in.** Eight working menus; waves 2-3 (M8-M9) land
-the stateful and appearance menus.
+🚧 **Milestone 8 complete — menus wave 2 is in.** Fifteen working menus including the
+drop-in flagship (C#-era saved vehicles spawn identically); wave 3 (M9) lands the appearance
+menus and the FunctionsController ticks.
 
 - ✅ M0: toolchain, scaffold, CI, first specs
 - ✅ M1: the six [compatibility contracts](docs/contracts/README.md) documented from the C#
@@ -64,6 +65,16 @@ the stateful and appearance menus.
   location blips, and Save Personal Settings). Backed by the CommonFunctions ports: safe
   teleporting, vehicle spawning with previous-vehicle replacement, scenarios, suicide,
   driving tasks, and onscreen-keyboard input
+- ✅ M8: menus wave 2 — the stateful menus. Saved Vehicles (the drop-in flagship: C#-era
+  saves load, spawn, and re-save byte-compatibly, backed by the VehicleInfo capture/apply
+  engine in `client/vehicle_common.lua`), Vehicle Options (the 2.6k-line C# menu in full:
+  god-mode submenu, repair/wash, the dynamic per-vehicle Mod Menu with localized mod names,
+  colors with paint-finish statebags + custom RGB submenus, neon underglow, doors/windows/
+  extras/liveries, plates, speed limiter, torque/power multipliers, and the C#-compatible
+  default-radio KVP), Personal Vehicle (key-fob remote actions), Online Players (spectate,
+  teleport, kick/ban, private messages), Banned Players (record view, filter, unban),
+  Weapon Options and Weapon Loadouts (PascalCase ValidWeapon saves with enum-ordinal
+  permissions round-trip against C# fixtures)
 
 See PLAN.md §8 for the full roadmap.
 
