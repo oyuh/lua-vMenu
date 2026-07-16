@@ -441,6 +441,36 @@ local NATIVE_DEFAULTS = {
     { 'GetNumberOfVehicleColours', 0 },
     { 'GetVehicleColourCombination', -1 },
     { 'SetVehicleColourCombination' },
+    -- noclip / entity spawner
+    { 'IsModelValid', true },
+    { 'IsModelAPed', false },
+    { 'CreatePed', 1500 },
+    { 'DeleteEntity' },
+    { 'PlaceObjectOnGroundProperly' },
+    { 'ResetEntityAlpha' },
+    { 'SetEntityAlpha' },
+    { 'SetEntityCollision' },
+    { 'SetEntityInvincible' },
+    { 'GetFrameTime', 0.016 },
+    { 'IsHudHidden', false },
+    { 'SetEntityVelocity' },
+    { 'SetEntityRotation' },
+    { 'SetEntityCoordsNoOffset' },
+    { 'GetGameplayCamRelativeHeading', 0.0 },
+    { 'SetLocalPlayerVisibleLocally' },
+    {
+        'GetGameplayCamRot',
+        function()
+            return vector3(0.0, 0.0, 0.0)
+        end,
+    },
+    {
+        'GetGameplayCamCoord',
+        function()
+            return vector3(0.0, 0.0, 0.0)
+        end,
+    },
+    { 'StartExpensiveSynchronousShapeTestLosProbe', 1 },
     -- localized mod names (CitizenFX VehicleMod port)
     { 'HasThisAdditionalTextLoaded', true },
     { 'ClearAdditionalText' },
