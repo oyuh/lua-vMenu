@@ -22,6 +22,17 @@ local Controller = {
     MenuToggleKey = -1,
 }
 
+-- MenuAPI's MenuAlignment setter refuses right-alignment on ultra-wide
+-- aspect ratios (> 17:9). Returns the effective alignment.
+function Controller.SetMenuAlignment(alignment)
+    if alignment == 'Right' and GetAspectRatio(false) > 1.888888888888889 then
+        Controller.MenuAlignment = 'Left'
+    else
+        Controller.MenuAlignment = alignment
+    end
+    return Controller.MenuAlignment
+end
+
 function Controller.AddMenu(menu)
     for _, existing in ipairs(Controller.Menus) do
         if existing == menu then

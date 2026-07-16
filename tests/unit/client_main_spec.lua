@@ -20,6 +20,16 @@ describe('client main', function()
             'client.noclip',
             'client.storage',
             'client.user_defaults',
+            'client.weapons',
+            'client.tattoos',
+            'client.menus.about',
+            'client.menus.recording',
+            'client.menus.time_options',
+            'client.menus.weather_options',
+            'client.menus.voice_chat',
+            'client.menus.player_options',
+            'client.menus.vehicle_spawner',
+            'client.menus.misc_settings',
             'client.main',
             'menu.controller',
             'menu.menu',
@@ -128,6 +138,14 @@ describe('client main', function()
             assert.equal(23, count)
         end)
 
+        local function menu_texts()
+            local texts = {}
+            for _, item in ipairs(State.menu:GetMenuItems()) do
+                texts[item.Text] = true
+            end
+            return texts
+        end
+
         it('builds the menu tree gated by permissions', function()
             fresh_modules()
             push({ NoClip = true })
@@ -135,10 +153,17 @@ describe('client main', function()
 
             assert.is_truthy(State.menu)
             assert.equal(State.menu, Controller.MainMenu)
-            -- Only the player category stays (NoClip toggle lives there);
-            -- vehicle/world category buttons are removed while empty.
-            assert.equal(1, State.menu:Size())
-            assert.equal('Player Related Options', State.menu:GetCurrentMenuItem().Text)
+            -- The player category stays (NoClip toggle lives there) plus the
+            -- three upstream-ungated menus; the empty vehicle/world category
+            -- buttons are removed.
+            local texts = menu_texts()
+            assert.is_true(texts['Player Related Options'])
+            assert.is_true(texts['Recording Options'])
+            assert.is_true(texts['Misc Settings'])
+            assert.is_true(texts['About vMenu'])
+            assert.is_nil(texts['Vehicle Related Options'])
+            assert.is_nil(texts['World Related Options'])
+            assert.equal(4, State.menu:Size())
             assert.equal(1, State.player_submenu:Size())
             assert.equal('Toggle NoClip', State.player_submenu:GetMenuItems()[1].Text)
 
@@ -146,11 +171,36 @@ describe('client main', function()
             assert.is_table(cfx.commands['vMenu:Default:MenuToggle'])
         end)
 
+        it('adds permission-gated menus when granted', function()
+            cfx:set_convar('vmenu_enable_time_sync', 'true')
+            cfx:set_convar('vmenu_enable_weather_sync', 'true')
+            fresh_modules()
+            push({ POMenu = true, VSMenu = true, TOMenu = true, WOMenu = true, VCMenu = true })
+            Main._post_permissions_setup()
+
+            local texts = menu_texts()
+            assert.is_true(texts['Player Related Options'])
+            assert.is_true(texts['Vehicle Related Options'])
+            assert.is_true(texts['World Related Options'])
+            assert.is_true(texts['Voice Chat Settings'])
+
+            local player_texts = {}
+            for _, item in ipairs(State.player_submenu:GetMenuItems()) do
+                player_texts[item.Text] = true
+            end
+            assert.is_true(player_texts['Player Options'])
+        end)
+
         it('removes every category button without any grants', function()
             fresh_modules()
             push({})
             Main._post_permissions_setup()
-            assert.equal(0, State.menu:Size())
+            -- only the three ungated menus remain
+            assert.equal(3, State.menu:Size())
+            local texts = menu_texts()
+            assert.is_nil(texts['Player Related Options'])
+            assert.is_nil(texts['Vehicle Related Options'])
+            assert.is_nil(texts['World Related Options'])
         end)
 
         it('enforces the staff-only gate', function()

@@ -22,7 +22,8 @@ this tracks the upstream C# project.
 
 ## Status
 
-🚧 **Milestone 6 complete — all data tables generated.** The menu content lands in waves M7-M9.
+🚧 **Milestone 7 complete — menus wave 1 is in.** Eight working menus; waves 2-3 (M8-M9) land
+the stateful and appearance menus.
 
 - ✅ M0: toolchain, scaffold, CI, first specs
 - ✅ M1: the six [compatibility contracts](docs/contracts/README.md) documented from the C#
@@ -55,6 +56,14 @@ this tracks the upstream C# project.
   blip sprites, plus `overlays.json` (3429 tattoo records) shipped verbatim. Runtime
   consumers: `client/weapons.lua` (valid/addon weapon list building) and
   `client/tattoos.lua` (gendered per-zone tattoo collections)
+- ✅ M7: menus wave 1 — About, Recording, Time Options, Weather Options, Voice Chat,
+  Player Options (with the auto-pilot + custom driving style submenus and scenarios),
+  Vehicle Spawner (spawn by name, addon vehicles, all 23 class submenus with stats panels,
+  whitelist locks, spawn rate limiting), and Misc Settings (teleport options + server
+  locations, keybind toggles, developer tools with timecycle modifiers, connection options,
+  location blips, and Save Personal Settings). Backed by the CommonFunctions ports: safe
+  teleporting, vehicle spawning with previous-vehicle replacement, scenarios, suicide,
+  driving tasks, and onscreen-keyboard input
 
 See PLAN.md §8 for the full roadmap.
 

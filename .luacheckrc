@@ -9,64 +9,29 @@ exclude_files = {
     '.upstream/**',
 }
 
--- CitizenFX (CfxLua) runtime globals. Extend as modules get ported.
+-- CitizenFX (CfxLua) runtime globals.
+-- Every native the test mock fakes is automatically a known global — the
+-- mock (tests/mocks/cfx.lua) is the single source of truth for the native
+-- surface the ported code uses. Natives used only by the in-game rendering
+-- layer (never faked in specs) are listed manually below.
+local mock_natives = dofile('tests/mocks/cfx.lua').NATIVE_NAMES
+
 read_globals = {
-    -- convars / resource metadata
-    'GetConvar', 'GetConvarInt', 'GetResourceMetadata', 'GetCurrentResourceName',
-    'LoadResourceFile', 'SaveResourceFile',
-    -- commands / keymapping
-    'RegisterCommand', 'RegisterKeyMapping',
-    -- events
-    'RegisterNetEvent', 'AddEventHandler', 'RemoveEventHandler',
-    'TriggerEvent', 'TriggerServerEvent', 'TriggerClientEvent',
-    -- kvp
-    'SetResourceKvp', 'GetResourceKvpString', 'DeleteResourceKvp',
-    'StartFindKvp', 'FindKvp', 'EndFindKvp',
-    'SetResourceKvpInt', 'GetResourceKvpInt', 'SetResourceKvpFloat', 'GetResourceKvpFloat',
-    -- runtime
-    'CreateThread', 'Wait', 'SetTimeout', 'IsDuplicityVersion',
-    'GetPlayers', 'GetPlayerName', 'GetPlayerPed', 'PlayerId', 'PlayerPedId', 'GetPlayerServerId',
-    'IsPlayerAceAllowed', 'DoesPlayerExist', 'ExecuteCommand',
-    -- server runtime
-    'SetConvarReplicated', 'DropPlayer', 'CancelEvent', 'Player',
-    'GetNumPlayerIdentifiers', 'GetPlayerIdentifier',
-    -- entities (server-side natives)
-    'NetworkGetEntityFromNetworkId', 'NetworkGetEntityOwner', 'DoesEntityExist',
-    'GetEntityCoords', 'SetEntityCoords', 'GetPedInVehicleSeat', 'IsPedAPlayer',
-    'TaskLeaveVehicle', 'GetVehiclePedIsIn', 'SetPedIntoVehicle',
-    -- client: notifications / subtitles / help text
-    'SetNotificationTextEntry', 'DrawNotification', 'SetNotificationMessage',
-    'BeginTextCommandPrint', 'EndTextCommandPrint',
-    'BeginTextCommandDisplayHelp', 'EndTextCommandDisplayHelp',
-    'IsHelpMessageBeingDisplayed', 'ClearAllHelpMessages', 'AddTextEntry', 'DisplayHelpTextThisFrame',
-    'ClearBrief', 'SetRichPresence',
-    -- client: stats / pvp / players
-    'StatSetInt', 'StatSetFloat', 'NetworkSetFriendlyFireOption', 'SetCanAttackFriendly',
-    'GetHashKey', 'GetActivePlayers', 'NetworkIsPlayerActive', 'GetPlayerFromServerId',
-    -- client: world / weather / time sync
-    'SetEntityHealth', 'ClearAreaOfEverything', 'ForceSocialClubUpdate',
-    'ClearCloudHat', 'SetCloudHatOpacity', 'SetCloudHatTransition',
-    'ForceSnowPass', 'SetForceVehicleTrails', 'SetForcePedFootstepsTracks',
-    'HasNamedPtfxAssetLoaded', 'RequestNamedPtfxAsset', 'UseParticleFxAssetNextCall', 'RemoveNamedPtfxAsset',
-    'SetArtificialLightsState', 'SetArtificialLightsStateAffectsVehicles',
-    'GetNextWeatherType', 'SetWeatherTypeOvertimePersist', 'NetworkOverrideClockTime',
-    -- client: spawn / screen state / headshots
-    'GetIsLoadingScreenActive',
-    'RegisterPedheadshot', 'IsPedheadshotReady', 'IsPedheadshotValid',
-    'GetPedheadshotTxdString', 'UnregisterPedheadshot',
-    -- client: weapons / model checks (data layer)
-    'DoesWeaponTakeWeaponComponent', 'GetMaxAmmo', 'GetEntityModel',
-    'IsThisModelABike', 'IsThisModelABoat', 'IsThisModelAHeli', 'IsThisModelAPlane',
-    -- game state / hud
-    'IsPauseMenuActive', 'IsPauseMenuRestarting', 'IsScreenFadedOut', 'IsScreenFadedIn',
-    'IsPlayerSwitchInProgress', 'IsEntityDead', 'IsWarningMessageActive', 'UpdateOnscreenKeyboard',
-    'PlaySoundFrontend', 'GetGameTimer', 'IsPedInAnyVehicle', 'GetLabelText',
+    -- events / runtime not covered by the mock's native list
+    'RemoveEventHandler', 'SetTimeout',
+    -- server-side natives without mock entries yet
+    'NetworkGetEntityFromNetworkId', 'NetworkGetEntityOwner', 'IsPedAPlayer',
+    'TaskLeaveVehicle', 'SetEntityCoords',
+    -- game state / hud (rendering layer)
+    'IsPauseMenuActive', 'IsPauseMenuRestarting', 'IsScreenFadedIn',
+    'IsPlayerSwitchInProgress', 'IsEntityDead', 'IsWarningMessageActive',
+    'PlaySoundFrontend',
     -- controls
     'IsControlPressed', 'IsDisabledControlPressed', 'IsControlJustPressed',
     'IsDisabledControlJustPressed', 'IsControlJustReleased', 'IsDisabledControlJustReleased',
     'DisableControlAction', 'IsInputDisabled', 'GetControlInstructionalButton',
     -- drawing / text
-    'GetAspectRatio', 'GetSafeZoneSize', 'SetScriptGfxAlign', 'SetScriptGfxAlignParams',
+    'GetSafeZoneSize', 'SetScriptGfxAlign', 'SetScriptGfxAlignParams',
     'ResetScriptGfxAlign', 'SetScriptGfxDrawOrder', 'DrawRect', 'DrawSprite',
     'HasStreamedTextureDictLoaded', 'RequestStreamedTextureDict', 'SetStreamedTextureDictAsNoLongerNeeded',
     'BeginTextCommandDisplayText', 'EndTextCommandDisplayText', 'AddTextComponentSubstringPlayerName',
@@ -80,9 +45,12 @@ read_globals = {
     'DrawScaleformMovie', 'DrawScaleformMovieFullscreen', 'GetHairRgbColor', 'GetMakeupRgbColor',
     -- cfx lua extensions
     'vector2', 'vector3', 'vector4', 'quat', 'json', 'msgpack',
-    'exports', 'Citizen', 'GlobalState', 'LocalPlayer',
+    'exports', 'Citizen',
     'source', -- implicit event source (server-side handlers)
 }
+for _, name in ipairs(mock_natives) do
+    read_globals[#read_globals + 1] = name
+end
 
 -- fxmanifest.lua is a DSL, not a script: every directive is a "global" call.
 files['fxmanifest.lua'] = {

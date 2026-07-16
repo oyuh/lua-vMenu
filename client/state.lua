@@ -36,4 +36,7 @@ return {
     -- MainMenu.SetPermissions: VehicleSpawner.allowedCategories (23 bools, in
     -- upstream's fixed category order).
     allowed_vehicle_categories = {},
+
+    -- FunctionsController.entityRange (dev tools dimensions radius, M9 tick).
+    entity_range = 2000.0,
 }

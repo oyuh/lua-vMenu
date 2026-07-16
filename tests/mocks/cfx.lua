@@ -52,6 +52,7 @@ local INSTALLED_GLOBALS = {
     'GetResourceKvpFloat',
     'RegisterKeyMapping',
     'GetHashKey',
+    'LocalPlayer',
 }
 
 -- Client-side game natives faked as recording no-ops. Each entry is
@@ -133,6 +134,8 @@ local NATIVE_DEFAULTS = {
     { 'IsPedheadshotValid', true },
     { 'GetPedheadshotTxdString', 'headshot_txd' },
     { 'UnregisterPedheadshot' },
+    -- drawing / alignment
+    { 'GetAspectRatio', 1.7777778 },
     -- weapons / models (data layer)
     { 'DoesWeaponTakeWeaponComponent', false },
     {
@@ -146,7 +149,197 @@ local NATIVE_DEFAULTS = {
     { 'IsThisModelABoat', false },
     { 'IsThisModelAHeli', false },
     { 'IsThisModelAPlane', false },
+    -- onscreen keyboard (default: "cancelled" so get_user_input returns nil
+    -- instead of spinning forever in specs)
+    { 'DisplayOnscreenKeyboard' },
+    { 'UpdateOnscreenKeyboard', 2 },
+    { 'GetOnscreenKeyboardResult', '' },
+    -- recording / editor
+    { 'IsRecording', false },
+    { 'StartRecording' },
+    { 'StopRecordingAndSaveClip' },
+    { 'ActivateFrontendMenu' },
+    { 'BeginTakeHighQualityPhoto' },
+    { 'SaveHighQualityPhoto' },
+    { 'FreeMemoryForHighQualityPhoto' },
+    { 'ActivateRockstarEditor' },
+    { 'AddTextEntryByHash' },
+    { 'DoScreenFadeIn' },
+    { 'DoScreenFadeOut' },
+    { 'IsScreenFadedOut', true },
+    -- session / connection
+    { 'NetworkSessionEnd' },
+    { 'NetworkSessionHost' },
+    { 'NetworkIsSessionActive', false },
+    { 'NetworkIsHost', false },
+    { 'ExecuteCommand' },
+    -- hud / vision / timecycle
+    { 'DisplayHud' },
+    { 'DisplayRadar' },
+    { 'SetNightvision' },
+    { 'SetSeethrough' },
+    { 'SetTimecycleModifier' },
+    { 'SetTimecycleModifierStrength' },
+    { 'ClearTimecycleModifier' },
+    -- blips
+    { 'AddBlipForCoord', 1 },
+    { 'SetBlipSprite' },
+    { 'BeginTextCommandSetBlipName' },
+    { 'EndTextCommandSetBlipName' },
+    { 'SetBlipColour' },
+    { 'SetBlipAsShortRange' },
+    { 'DoesBlipExist', false },
+    { 'RemoveBlip' },
+    { 'IsWaypointActive', false },
+    { 'GetFirstBlipInfoId', 0 },
+    {
+        'GetBlipInfoIdCoord',
+        function()
+            return { x = 0.0, y = 0.0, z = 0.0 }
+        end,
+    },
+    -- player state / stats (player options)
+    { 'GetPlayerWantedLevel', 0 },
+    { 'SetPlayerWantedLevel' },
+    { 'SetPlayerWantedLevelNow' },
+    { 'SetMaxWantedLevel' },
+    { 'SetRunSprintMultiplierForPlayer' },
+    { 'SetSwimMultiplierForPlayer' },
+    { 'SetEveryoneIgnorePlayer' },
+    { 'SetPoliceIgnorePlayer' },
+    { 'SetPlayerCanBeHassledByGangs' },
+    { 'SetEntityVisible' },
+    { 'IsEntityVisible', true },
+    { 'FreezeEntityPosition' },
+    { 'ApplyPedDamagePack' },
+    { 'SetPedArmour' },
+    { 'ClearPedBloodDamage' },
+    { 'ResetPedVisibleDamage' },
+    { 'ClearPedDamageDecalByZone' },
+    { 'GetEntityMaxHealth', 200 },
+    { 'SetPedWetnessHeight' },
+    -- scenarios / tasks
+    { 'IsPedRunning', false },
+    { 'IsEntityDead', false },
+    { 'IsPlayerInCutscene', false },
+    { 'IsPedFalling', false },
+    { 'IsPedRagdoll', false },
+    { 'IsPedOnFoot', true },
+    { 'NetworkIsInSpectatorMode', false },
+    { 'GetEntitySpeed', 0.0 },
+    {
+        'GetOffsetFromEntityInWorldCoords',
+        function()
+            return { x = 0.0, y = 0.0, z = 0.0 }
+        end,
+    },
+    { 'GetEntityHeading', 0.0 },
+    { 'TaskStartScenarioAtPosition' },
+    { 'TaskStartScenarioInPlace' },
+    { 'ClearPedTasks' },
+    { 'ClearPedSecondaryTask' },
+    { 'ClearPedTasksImmediately' },
+    { 'SetDriveTaskDrivingStyle' },
+    { 'SetDriverAbility' },
+    { 'SetDriverAggressiveness' },
+    { 'TaskVehicleDriveToCoordLongrange' },
+    { 'TaskVehicleDriveWander' },
+    { 'TaskVehiclePark' },
+    { 'SetVehicleHalt' },
+    {
+        'GetNthClosestVehicleNode',
+        function()
+            return false, { x = 0.0, y = 0.0, z = 0.0 }
+        end,
+    },
+    -- suicide anims
+    { 'RequestAnimDict' },
+    { 'HasAnimDictLoaded', true },
+    { 'RemoveAnimDict' },
+    { 'HasPedGotWeapon', false },
+    { 'SetCurrentPedWeapon' },
+    { 'SetPedDropsWeaponsWhenDead' },
+    { 'GiveWeaponToPed' },
+    { 'TaskPlayAnim' },
+    { 'GetEntityAnimCurrentTime', 1.0 },
+    { 'HasAnimEventFired', false },
+    { 'ClearEntityLastDamageEntity' },
+    { 'SetPedShootsAtCoord' },
+    -- vehicle spawning
+    { 'GetVehicleClassFromName', 0 },
+    { 'IsModelInCdimage', true },
+    { 'DoesModelExist', true },
+    { 'IsModelAVehicle', true },
+    { 'RequestModel' },
+    { 'HasModelLoaded', true },
+    { 'SetModelAsNoLongerNeeded' },
+    { 'GetDisplayNameFromVehicleModel', 'NULL' },
+    { 'GetVehicleModelEstimatedMaxSpeed', 0.0 },
+    { 'GetVehicleModelAcceleration', 0.0 },
+    { 'GetVehicleModelMaxBraking', 0.0 },
+    { 'GetVehicleModelMaxTraction', 0.0 },
+    { 'GetVehicleModelMaxSpeed', 0.0 },
+    { 'CreateVehicle', 2000 },
+    { 'DeleteVehicle' },
+    { 'SetEntityAsMissionEntity' },
+    { 'SetVehicleNeedsToBeHotwired' },
+    { 'SetVehicleHasBeenOwnedByPlayer' },
+    { 'SetVehicleIsStolen' },
+    { 'SetVehicleIsWanted' },
+    { 'SetVehicleEngineOn' },
+    { 'SetPedIntoVehicle' },
+    { 'GetVehicleClass', 0 },
+    { 'GetEntityHeightAboveGround', 0.0 },
+    { 'SetVehicleOnGroundProperly' },
+    { 'IsThisModelATrain', false },
+    { 'SetVehicleForwardSpeed' },
+    { 'GetVehicleCurrentRpm', 0.0 },
+    { 'SetVehicleCurrentRpm' },
+    {
+        'GetEntitySpeedVector',
+        function()
+            return { x = 0.0, y = 0.0, z = 0.0 }
+        end,
+    },
+    { 'GetVehicleNumberOfPassengers', 0 },
+    { 'IsVehicleSeatFree', true },
+    { 'IsVehicleDriveable', true },
+    { 'DoesPlayerVehHaveRadio', false },
+    { 'IsRadioRetuning', false },
+    { 'SetVehRadioStation' },
+    { 'GetRadioStationName', '' },
+    { 'SetHeliBladesFullSpeed' },
+    { 'GetPlayersLastVehicle', 0 },
+    -- safe teleport
+    { 'RequestCollisionAtCoord' },
+    { 'SetFocusPosAndVel' },
+    { 'NewLoadSceneStart' },
+    { 'IsNewLoadSceneLoaded', true },
+    { 'ClearFocus' },
+    { 'NewLoadSceneStop' },
+    { 'HasCollisionLoadedAroundEntity', true },
+    {
+        'GetGroundZFor_3dCoord',
+        function()
+            return true, 30.0
+        end,
+    },
+    { 'NetworkFadeOutEntity' },
+    { 'NetworkFadeInEntity' },
+    { 'SetGameplayCamRelativePitch' },
+    { 'SetGameplayCamRelativeHeading' },
+    { 'SetEntityHeading' },
 }
+
+-- Exported so .luacheckrc can declare every faked native as a known global
+-- (one source of truth for the native surface used by the ported code).
+Cfx.NATIVE_NAMES = {}
+for _, spec in ipairs(NATIVE_DEFAULTS) do
+    Cfx.NATIVE_NAMES[#Cfx.NATIVE_NAMES + 1] = spec[1]
+end
+for _, name in ipairs(INSTALLED_GLOBALS) do
+    Cfx.NATIVE_NAMES[#Cfx.NATIVE_NAMES + 1] = name
+end
 
 function Cfx.new(opts)
     opts = opts or {}
@@ -170,6 +363,7 @@ function Cfx.new(opts)
         kvp_typed = {}, -- [key] = { kind = 'int'|'float', value = ... }
         key_mappings = {}, -- { command, description, mapper, key } per RegisterKeyMapping
         native_calls = {}, -- [native name] = list of arg packs
+        local_player_state = {}, -- LocalPlayer.state statebag
         _find_handles = {},
         _next_handle = 1,
         _next_ped = 100,
@@ -345,6 +539,19 @@ function Cfx:install()
     _G.RegisterKeyMapping = function(command, description, mapper, key)
         table.insert(mock.key_mappings, { command = command, description = description, mapper = mapper, key = key })
     end
+
+    -- Local player statebag: LocalPlayer.state.key / LocalPlayer.state:set().
+    _G.LocalPlayer = {
+        state = setmetatable({
+            set = function(_, key, value, _replicated)
+                mock.local_player_state[key] = value
+            end,
+        }, {
+            __index = function(_, key)
+                return mock.local_player_state[key]
+            end,
+        }),
+    }
 
     -- Deterministic stand-in for joaat; stable across runs, distinct enough
     -- for table keys in specs.
