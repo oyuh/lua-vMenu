@@ -1,0 +1,70 @@
+name: Release
+
+# Every v* tag builds a drop-in resource zip and attaches it to a GitHub
+# Release: server owners unzip it straight into resources/ — no picking
+# files out of the repo. The zip contains a single top-level vMenu/ folder
+# (the folder name matters: client KVP saves are keyed by resource name).
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The suite gates the artifact — a tag never ships broken code.
+      - uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: '5.4'
+
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Install test tooling
+        run: |
+          luarocks install busted
+          luarocks install luacheck
+
+      - name: Lint
+        run: luacheck .
+
+      - name: Unit tests
+        run: busted --output=utfTerminal
+
+      - name: Assemble drop-in resource folder
+        run: |
+          mkdir -p dist/vMenu/docs
+          cp fxmanifest.lua LICENSE.md README.md dist/vMenu/
+          cp -r shared menu client server config dist/vMenu/
+          cp docs/MIGRATION.md docs/VERIFY.md dist/vMenu/docs/
+
+      - name: Build zip
+        run: |
+          cd dist
+          zip -r "vMenu-${GITHUB_REF_NAME}.zip" vMenu
+          echo "Contents:"
+          unzip -l "vMenu-${GITHUB_REF_NAME}.zip" | head -30
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: lua-vmenu ${{ github.ref_name }}
+          files: dist/vMenu-*.zip
+          generate_release_notes: true
+          body: |
+            **Drop-in Lua rewrite of [vMenu](https://github.com/tomgrobbe/vMenu) — ready to deploy.**
+
+            ## Install
+
+            1. Download `vMenu-${{ github.ref_name }}.zip` below.
+            2. Unzip it into your server's `resources/` folder — it extracts as a single
+               `vMenu` folder. **Keep that folder name** (player saves are keyed to it).
+            3. Migrating from C# vMenu? Copy your old `config/*.json` files in and follow
+               [docs/MIGRATION.md](https://github.com/oyuh/lua-vMenu/blob/main/docs/MIGRATION.md) —
+               your `permissions.cfg`, player saves, and keybinds all carry over unchanged.
+            4. `ensure vMenu` in your server.cfg (as usual).
