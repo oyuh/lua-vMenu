@@ -581,7 +581,7 @@ function MpPedCustomization.create()
     menu:RefreshIndex()
 
     -- camera control hints (the camera itself runs in FunctionsController)
-    local MOVE_LR, PHONE_EXTRA, PARACHUTE_BRAKE_LEFT, PARACHUTE_BRAKE_RIGHT = 30, 244, 152, 153
+    local MOVE_LR, PHONE_EXTRA, PARACHUTE_BRAKE_LEFT, PARACHUTE_BRAKE_RIGHT = 30, 179, 152, 153
     for _, editor_menu in ipairs({
         create_character_menu,
         inheritance_menu,

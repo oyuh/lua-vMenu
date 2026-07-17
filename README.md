@@ -22,9 +22,9 @@ this tracks the upstream C# project.
 
 ## Status
 
-🚧 **Milestone 8 complete — menus wave 2 is in.** Fifteen working menus including the
-drop-in flagship (C#-era saved vehicles spawn identically); wave 3 (M9) lands the appearance
-menus and the FunctionsController ticks.
+🚧 **Milestone 9 complete — all menus and tick features are in.** Seventeen working menus
+including the appearance/MP-character editors, plus noclip, the entity spawner, and the
+full FunctionsController tick engine. M10 (parity audit + release) is what remains.
 
 - ✅ M0: toolchain, scaffold, CI, first specs
 - ✅ M1: the six [compatibility contracts](docs/contracts/README.md) documented from the C#
@@ -75,6 +75,18 @@ menus and the FunctionsController ticks.
   teleport, kick/ban, private messages), Banned Players (record view, filter, unban),
   Weapon Options and Weapon Loadouts (PascalCase ValidWeapon saves with enum-ordinal
   permissions round-trip against C# fixtures)
+- ✅ M9: menus wave 3 + runtime features — NoClip (camera-relative movement, speed
+  cycling, instructional buttons), the Entity Spawner (raycast placement), Player
+  Appearance (spawn lists from generated data, drawable/prop customization, gen9 ped
+  collections, saved peds with the PedInfo KVP round-trip), MP Ped Customization (the
+  full character creator/editor: inheritance, appearance overlays, face shape, tattoos,
+  clothing, props, categories, and the pixel-identical mp_ped_<name> spawn path), and
+  the FunctionsController tick engine (`client/functions_controller/`): god modes,
+  vehicle god/freeze/torque/power/no-helmet/infinite-fuel, never wanted, speedometers &
+  location & time display, player blips & overhead names, death + join/quit
+  notifications, voice chat, restore appearance/weapons on respawn, keybinds (waypoint
+  tp, drift mode, finger pointing, recording, bigmap), the MP creator camera, spectate
+  recovery, snowball pickups, and helmet visor toggles
 
 See PLAN.md §8 for the full roadmap.
 

@@ -1027,6 +1027,91 @@ function Common.private_message(source, message, sent)
     UnregisterPedheadshot(headshot)
 end
 
+-- Alignment enum (CitizenFX.Core.UI): Center = 0, Left = 1, Right = 2.
+Common.ALIGN_CENTER = 0
+Common.ALIGN_LEFT = 1
+Common.ALIGN_RIGHT = 2
+
+-- DrawTextOnScreen(text, x, y, size?, justification?, font?, disable_outline?).
+function Common.draw_text_on_screen(text, x_position, y_position, size, justification, font, disable_text_outline)
+    size = size or 0.48
+    justification = justification or Common.ALIGN_LEFT
+    font = font or 6
+    local misc = State.menus.misc_settings
+    if
+        IsHudPreferenceSwitchedOn()
+        and not IsHudHidden()
+        and (misc == nil or not misc.HideHud)
+        and not IsPlayerSwitchInProgress()
+        and IsScreenFadedIn()
+        and not IsPauseMenuActive()
+        and not IsFrontendFading()
+        and not IsPauseMenuRestarting()
+    then
+        SetTextFont(font)
+        SetTextScale(1.0, size)
+        if justification == Common.ALIGN_RIGHT then
+            SetTextWrap(0.0, x_position)
+        end
+        SetTextJustification(justification)
+        if not disable_text_outline then
+            SetTextOutline()
+        end
+        BeginTextCommandDisplayText('STRING')
+        AddTextComponentSubstringPlayerName(text)
+        EndTextCommandDisplayText(x_position, y_position)
+    end
+end
+
+-- Finger pointing camera helpers (used by the keybind tick).
+function Common.get_pointing_pitch()
+    local pitch = GetGameplayCamRelativePitch()
+    if pitch < -70.0 then
+        pitch = -70.0
+    end
+    if pitch > 42.0 then
+        pitch = 42.0
+    end
+    return (pitch + 70.0) / 112.0
+end
+
+function Common.get_pointing_heading()
+    local heading = GetGameplayCamRelativeHeading()
+    if heading < -180.0 then
+        heading = -180.0
+    end
+    if heading > 180.0 then
+        heading = 180.0
+    end
+    heading = (heading + 180.0) / 360.0
+    return (heading * -1.0) + 1.0
+end
+
+function Common.get_pointing_is_blocked()
+    local raw_heading = GetGameplayCamRelativeHeading() / 90.0
+    local heading = raw_heading
+    if heading < -180.0 then
+        heading = -180.0
+    elseif heading > 180.0 then
+        heading = 180.0
+    end
+    heading = (heading + 180.0) / 360.0
+    local v1 = ((0.7 - 0.3) * heading) + 0.3
+    local x, y, z = -0.2, v1, 0.6
+    local rot_z = raw_heading
+
+    -- rotate around z (x/y rotations are zero upstream)
+    local f0 = math.cos(rot_z)
+    local f1 = math.sin(rot_z)
+    x, y = (f0 * x) - (f1 * y), (f1 * x) + (f0 * y)
+
+    local ped = PlayerPedId()
+    local pos = GetOffsetFromEntityInWorldCoords(ped, x, y, z)
+    local handle = StartShapeTestCapsule(pos.x, pos.y, pos.z - 0.2, pos.x, pos.y, pos.z + 0.2, 0.4, 95, ped, 7)
+    local _, hit = GetShapeTestResult(handle)
+    return hit == true or hit == 1
+end
+
 -- ToProperString: "PascalCaseString" → "Pascal Case String".
 function Common.to_proper_string(input_string)
     local output = ''

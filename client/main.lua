@@ -497,6 +497,7 @@ local function post_permissions_setup()
 
     local player_name = GetPlayerName(PlayerId())
     local menu = Menu.new(player_name, 'Main Menu')
+    State.menus.main = menu
     local player_submenu = Menu.new(player_name, 'Player Related Options')
     local vehicle_submenu = Menu.new(player_name, 'Vehicle Related Options')
     local world_submenu = Menu.new(player_name, 'World Options')
@@ -542,6 +543,9 @@ local function post_permissions_setup()
             end
         end
     end, false)
+
+    -- FunctionsController registers its vMenu:SetupTickFunctions handler on load.
+    try_require('client.functions_controller.main')
 
     TriggerEvent('vMenu:SetupTickFunctions')
 end
