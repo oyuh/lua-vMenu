@@ -38,10 +38,9 @@ jobs:
 
       - name: Assemble drop-in resource folder
         run: |
-          mkdir -p dist/vMenu/docs
-          cp fxmanifest.lua LICENSE.md README.md dist/vMenu/
+          mkdir -p dist/vMenu
+          cp fxmanifest.lua LICENSE.md dist/vMenu/
           cp -r shared menu client server config dist/vMenu/
-          cp docs/MIGRATION.md docs/VERIFY.md dist/vMenu/docs/
 
       - name: Build zip
         run: |
