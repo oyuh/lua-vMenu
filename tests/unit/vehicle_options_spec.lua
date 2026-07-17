@@ -383,3 +383,37 @@ describe('vehicle options menu', function()
         assert.same({ 900, 500, 1 }, last_call('TaskWarpPedIntoVehicle'))
     end)
 end)
+
+describe('vehicle mod names', function()
+    local cfx, ModNames
+
+    before_each(function()
+        cfx = CfxMock.new():install()
+        package.loaded['client.vehicle_mod_names'] = nil
+        ModNames = require('client.vehicle_mod_names')
+    end)
+
+    after_each(function()
+        cfx:uninstall()
+    end)
+
+    -- In-game GetLabelText/GetModSlotName return nil for unknown mod types (the
+    -- identity mock never does), which used to make localized_mod_type_name
+    -- return nil and blow up the callers that concatenate it.
+    it('returns a string when the game yields no label (never nil)', function()
+        cfx:stub_native('GetLabelText', function()
+            return nil
+        end)
+        cfx:stub_native('GetModSlotName', function()
+            return nil
+        end)
+        cfx:stub_native('DoesTextLabelExist', function()
+            return false
+        end)
+
+        local name = ModNames.localized_mod_type_name(500, 9999)
+        assert.is_string(name)
+        -- and the concatenation the callers do must not error
+        assert.is_string(name .. ' ' .. tostring(1))
+    end)
+end)

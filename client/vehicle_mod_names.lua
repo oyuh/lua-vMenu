@@ -227,7 +227,10 @@ function ModNames.localized_mod_type_name(vehicle, mod_type)
             cur = GetLabelText(cur)
         end
     end
-    if cur == '' then
+    -- Some GetLabelText / GetModSlotName paths return nil in-game (unknown mod
+    -- types), not just an empty string. Fall back to a name either way so
+    -- callers that concatenate the result never hit a nil.
+    if cur == nil or cur == '' then
         cur = MOD_TYPE_NAMES[mod_type] or tostring(mod_type)
     end
     return cur
