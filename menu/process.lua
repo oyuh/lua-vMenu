@@ -53,6 +53,11 @@ local Controls = {
     RadioWheelLeftRight = 85,
     RadioWheelUpDown = 86,
     VehicleRadioWheel = 85,
+    -- Dedicated mouse-cursor buttons: left/right mouse only, never bound to
+    -- keyboard letters (unlike Attack/Aim/VehicleMouseControlOverride), so they
+    -- can't make a letter key act as select/back.
+    CursorAccept = 237,
+    CursorCancel = 238,
 }
 Process.Controls = Controls
 
@@ -299,16 +304,15 @@ local function process_main_buttons()
     --   keyboard/mouse -> Enter or left-click select; Backspace/Escape or
     --                     right-click back
     --   controller     -> FrontendAccept select; PhoneCancel back
-    -- Left/right mouse buttons (Attack/Aim) are disabled while a menu is open,
-    -- so they're read through the disabled-control natives.
+    -- Mouse uses the dedicated cursor buttons (CursorAccept/CursorCancel), which
+    -- are the physical left/right mouse buttons and are never bound to keyboard
+    -- letters -- so no letter key (e.g. A) can register as select/back.
     local select_pressed, back_pressed
     if using_keyboard() then
-        select_pressed = IsRawKeyReleased(Keys.Enter)
-            or IsDisabledControlJustReleased(0, Controls.VehicleMouseControlOverride)
-            or IsDisabledControlJustReleased(0, Controls.Attack)
+        select_pressed = IsRawKeyReleased(Keys.Enter) or IsDisabledControlJustReleased(0, Controls.CursorAccept)
         back_pressed = IsRawKeyReleased(Keys.Backspace)
             or IsRawKeyReleased(Keys.Escape)
-            or IsDisabledControlJustReleased(0, Controls.Aim)
+            or IsDisabledControlJustReleased(0, Controls.CursorCancel)
     else
         select_pressed = just_released(Controls.FrontendAccept)
         back_pressed = IsDisabledControlJustReleased(0, Controls.PhoneCancel)
