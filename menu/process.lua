@@ -56,6 +56,24 @@ local Controls = {
 }
 Process.Controls = Controls
 
+-- Windows virtual-key codes. On keyboard the menu is driven by a fixed key set
+-- (arrows to move, Enter to select, Backspace/Escape to go back) read through
+-- the raw-key natives. This is deliberately NOT done with GTA control ids:
+-- the game binds its frontend/phone nav controls (FrontendUp/Down, PhoneLeft/
+-- Right, ...) to WASD as well as the arrow keys, so a control-id check would
+-- let WASD navigate the menu. Reading physical keys keeps WASD free for player
+-- movement. Mouse (wheel + clicks) and controller still go through control ids.
+local Keys = {
+    Backspace = 8,
+    Enter = 13,
+    Escape = 27,
+    Left = 37,
+    Up = 38,
+    Right = 39,
+    Down = 40,
+}
+Process.Keys = Keys
+
 local MENU_TEXTURE_ASSETS = { 'commonmenu', 'mpleaderboard' }
 
 local function pressed(control)
@@ -247,10 +265,10 @@ local function process_main_buttons()
         return
     end
     DisableControlAction(0, Controls.MultiplayerInfo, true)
-    if Controller.PreventExitingMenu then
-        DisableControlAction(0, Controls.FrontendPause, true)
-        DisableControlAction(0, Controls.FrontendPauseAlternate, true)
-    end
+    -- Escape doubles as "go back" (below), so keep it from also opening the
+    -- pause menu while a vMenu menu is open. Raw-key reads still see Escape.
+    DisableControlAction(0, Controls.FrontendPause, true)
+    DisableControlAction(0, Controls.FrontendPauseAlternate, true)
     if not menu.Visible or not Controller.AreMenuButtonsEnabled() then
         return
     end
@@ -277,23 +295,36 @@ local function process_main_buttons()
         end
     end
 
-    if just_released(Controls.FrontendAccept) or just_released(Controls.VehicleMouseControlOverride) then
+    -- Select / back, split by input device:
+    --   keyboard/mouse -> Enter or left-click select; Backspace/Escape or
+    --                     right-click back
+    --   controller     -> FrontendAccept select; PhoneCancel back
+    -- Left/right mouse buttons (Attack/Aim) are disabled while a menu is open,
+    -- so they're read through the disabled-control natives.
+    local select_pressed, back_pressed
+    if using_keyboard() then
+        select_pressed = IsRawKeyReleased(Keys.Enter)
+            or IsDisabledControlJustReleased(0, Controls.VehicleMouseControlOverride)
+            or IsDisabledControlJustReleased(0, Controls.Attack)
+        back_pressed = IsRawKeyReleased(Keys.Backspace)
+            or IsRawKeyReleased(Keys.Escape)
+            or IsDisabledControlJustReleased(0, Controls.Aim)
+    else
+        select_pressed = just_released(Controls.FrontendAccept)
+        back_pressed = IsDisabledControlJustReleased(0, Controls.PhoneCancel)
+    end
+
+    if select_pressed then
         if menu:Size() > 0 then
             menu:SelectItem(menu.CurrentIndex)
         end
-    elseif not Controller.DisableBackButton and IsDisabledControlJustReleased(0, Controls.PhoneCancel) then
+    elseif back_pressed and not Controller.DisableBackButton then
         -- wait a frame so the cinematic-camera control isn't re-enabled early
         Wait(0)
-        menu:GoBack()
-    elseif
-        Controller.PreventExitingMenu
-        and not Controller.DisableBackButton
-        and IsDisabledControlJustReleased(0, Controls.PhoneCancel)
-    then
-        if menu.ParentMenu ~= nil then
+        -- With PreventExitingMenu set, only step into a parent; never close root.
+        if not Controller.PreventExitingMenu or menu.ParentMenu ~= nil then
             menu:GoBack()
         end
-        Wait(0)
     end
 end
 
@@ -312,18 +343,56 @@ local function weapon_wheel_conflict()
     return false
 end
 
+-- Directional predicates. On keyboard/mouse: arrow keys (raw) + mouse wheel.
+-- On controller: the frontend nav controls. `using_keyboard()` is true for the
+-- keyboard/mouse bucket, so gating the control-id checks on the controller
+-- branch keeps WASD (which shares those control ids) out of the menu.
 local function is_up_pressed()
     if not Controller.AreMenuButtonsEnabled() or weapon_wheel_conflict() then
         return false
     end
-    return pressed(Controls.FrontendUp) or pressed(Controls.PhoneScrollBackward)
+    if using_keyboard() then
+        return IsRawKeyDown(Keys.Up) or pressed(Controls.PhoneScrollBackward)
+    end
+    return pressed(Controls.FrontendUp)
 end
 
 local function is_down_pressed()
     if not Controller.AreMenuButtonsEnabled() or weapon_wheel_conflict() then
         return false
     end
-    return pressed(Controls.FrontendDown) or pressed(Controls.PhoneScrollForward)
+    if using_keyboard() then
+        return IsRawKeyDown(Keys.Down) or pressed(Controls.PhoneScrollForward)
+    end
+    return pressed(Controls.FrontendDown)
+end
+
+local function is_left_just_pressed()
+    if using_keyboard() then
+        return IsRawKeyPressed(Keys.Left)
+    end
+    return just_pressed(Controls.PhoneLeft)
+end
+
+local function is_left_held()
+    if using_keyboard() then
+        return IsRawKeyDown(Keys.Left)
+    end
+    return pressed(Controls.PhoneLeft)
+end
+
+local function is_right_just_pressed()
+    if using_keyboard() then
+        return IsRawKeyPressed(Keys.Right)
+    end
+    return just_pressed(Controls.PhoneRight)
+end
+
+local function is_right_held()
+    if using_keyboard() then
+        return IsRawKeyDown(Keys.Right)
+    end
+    return pressed(Controls.PhoneRight)
 end
 
 -- Hold-to-scroll: 200ms between steps, accelerating to 150/100/50/25ms after
@@ -375,7 +444,7 @@ local function process_directional_buttons()
                 current:GoDown()
             end
         end, is_down_pressed)
-    elseif just_pressed(Controls.PhoneLeft) then
+    elseif is_left_just_pressed() then
         local item = menu:GetCurrentMenuItem()
         if item ~= nil and item.Enabled then
             hold_repeat(function()
@@ -384,10 +453,10 @@ local function process_directional_buttons()
                     current:GoLeft()
                 end
             end, function()
-                return Controller.AreMenuButtonsEnabled() and pressed(Controls.PhoneLeft)
+                return Controller.AreMenuButtonsEnabled() and is_left_held()
             end)
         end
-    elseif just_pressed(Controls.PhoneRight) then
+    elseif is_right_just_pressed() then
         local item = menu:GetCurrentMenuItem()
         if item ~= nil and item.Enabled then
             hold_repeat(function()
@@ -396,7 +465,7 @@ local function process_directional_buttons()
                     current:GoRight()
                 end
             end, function()
-                return Controller.AreMenuButtonsEnabled() and pressed(Controls.PhoneRight)
+                return Controller.AreMenuButtonsEnabled() and is_right_held()
             end)
         end
     end

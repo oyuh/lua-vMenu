@@ -46,6 +46,11 @@ Nothing else changes — not your config, not your permissions, not your players
   marked with comments in the source (e.g. the Ped Collections menu that could never populate).
   Load-bearing quirks (serialization typos, swapped assignments that affect saved data) are
   all preserved.
+- **Menu input is arrow-keys-only on keyboard.** Upstream (via MenuAPI) also lets WASD drive the
+  menu because the game binds its nav controls to WASD as well as the arrow keys. This resource
+  reads the physical arrow keys directly, so WASD stays free for movement. The full keyboard/mouse
+  scheme is: arrows to move, Enter to select, Backspace/Escape to go back, left-click to select,
+  right-click to go back, scroll wheel to move up/down. Controller navigation is unchanged.
 
 ## Downgrading back to C# vMenu
 

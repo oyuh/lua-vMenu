@@ -655,6 +655,10 @@ local NATIVE_DEFAULTS = {
     { 'IsDisabledControlJustPressed', false },
     { 'IsControlJustReleased', false },
     { 'IsDisabledControlJustReleased', false },
+    -- raw physical-key state (keyboard menu nav; bypasses GTA control bindings)
+    { 'IsRawKeyDown', false },
+    { 'IsRawKeyPressed', false },
+    { 'IsRawKeyReleased', false },
     -- mp ped customization (head blends, overlays, tattoos, preview clone)
     { 'GetNumHairColors', 64 },
     { 'GetNumHeadOverlayValues', 0 },
