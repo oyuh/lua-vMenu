@@ -14,6 +14,55 @@ if backend == nil then
     dkjson = require('dkjson')
 end
 
+-- Newtonsoft (what upstream vMenu decodes with) silently ignores `//` line
+-- and `/* */` block comments, and the shipped config/*.json files use them.
+-- CfxLua's built-in json.decode is strict JSON and rejects comments outright,
+-- which broke config loads in-game ("model-whitelists.json ... invalid JSON").
+-- Strip comments before decoding, string-aware so a `//` or `/*` sitting
+-- inside a JSON string value (e.g. a URL) is left untouched.
+local function strip_comments(text)
+    if not text:find('/', 1, true) then
+        return text
+    end
+    local out = {}
+    local i, n = 1, #text
+    local in_string = false
+    while i <= n do
+        local c = text:sub(i, i)
+        if in_string then
+            if c == '\\' then
+                out[#out + 1] = text:sub(i, i + 1)
+                i = i + 2
+            else
+                out[#out + 1] = c
+                if c == '"' then
+                    in_string = false
+                end
+                i = i + 1
+            end
+        elseif c == '/' and text:sub(i + 1, i + 1) == '/' then
+            local nl = text:find('\n', i + 2, true)
+            if not nl then
+                break
+            end
+            i = nl -- keep the newline so line numbers/whitespace survive
+        elseif c == '/' and text:sub(i + 1, i + 1) == '*' then
+            local close = text:find('*/', i + 2, true)
+            if not close then
+                break
+            end
+            i = close + 2
+        else
+            out[#out + 1] = c
+            if c == '"' then
+                in_string = true
+            end
+            i = i + 1
+        end
+    end
+    return table.concat(out)
+end
+
 function Json.encode(value)
     if backend then
         return backend.encode(value)
@@ -36,6 +85,7 @@ function Json.decode(text)
     if type(text) ~= 'string' or text == '' then
         return nil
     end
+    text = strip_comments(text)
     if backend then
         local ok, result = pcall(backend.decode, text)
         if ok then

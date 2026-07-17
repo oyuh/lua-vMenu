@@ -269,7 +269,6 @@ local NATIVE_DEFAULTS = {
     -- vehicle spawning
     { 'GetVehicleClassFromName', 0 },
     { 'IsModelInCdimage', true },
-    { 'DoesModelExist', true },
     { 'IsModelAVehicle', true },
     { 'RequestModel' },
     { 'HasModelLoaded', true },

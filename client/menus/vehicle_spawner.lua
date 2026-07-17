@@ -225,7 +225,7 @@ function VehicleSpawner.create()
                 end
             end
 
-            if DoesModelExist(veh) then
+            if IsModelInCdimage(model) then
                 local veh_btn = Items.MenuItem.new(veh_name)
                 veh_btn.Label = ('(%s)'):format(veh:lower())
                 veh_btn.ItemData = { stats = { top_speed, acceleration, max_braking, max_traction } }
