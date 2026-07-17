@@ -7,6 +7,11 @@ exclude_files = {
     'vendor/**',
     'client/data/**', -- generated tables
     '.upstream/**',
+    -- CI installs the Lua toolchain into the workspace (leafo/gh-actions-*)
+    '.lua/**',
+    '.luarocks/**',
+    '.install/**',
+    '.source/**',
 }
 
 -- CitizenFX (CfxLua) runtime globals.

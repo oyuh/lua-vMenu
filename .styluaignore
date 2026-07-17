@@ -2,3 +2,7 @@ fxmanifest.lua
 client/data/
 vendor/
 .upstream/
+.lua/
+.luarocks/
+.install/
+.source/
