@@ -507,6 +507,37 @@ local NATIVE_DEFAULTS = {
     { 'IsHelpMessageBeingDisplayed', false },
     { 'BeginTextCommandDisplayHelp' },
     { 'EndTextCommandDisplayHelp' },
+    -- control state (menus poll these; process.lua uses them via luacheckrc)
+    { 'IsControlPressed', false },
+    { 'IsDisabledControlPressed', false },
+    { 'IsControlJustPressed', false },
+    { 'IsDisabledControlJustPressed', false },
+    { 'IsControlJustReleased', false },
+    { 'IsDisabledControlJustReleased', false },
+    -- mp ped customization (head blends, overlays, tattoos, preview clone)
+    { 'GetNumHairColors', 64 },
+    { 'GetNumHeadOverlayValues', 0 },
+    { 'GetPedHeadOverlayValue', 255 },
+    { 'SetPedHeadOverlay' },
+    { 'SetPedHeadOverlayColor' },
+    { 'SetPedEyeColor' },
+    { 'SetPedHairColor' },
+    { 'SetPedFaceFeature' },
+    { 'SetFacialIdleAnimOverride' },
+    { 'AddPedDecorationFromHashes' },
+    { 'SetPedFacialDecoration' },
+    { 'GetNumParentPedsOfType', 0 },
+    {
+        'GetWorldCoordFromScreenCoord',
+        function()
+            return vector3(0.0, 0.0, 0.0), vector3(0.0, 1.0, 0.0)
+        end,
+    },
+    { 'SetEntityCanBeDamaged' },
+    { 'SetPedAoBlobRendering' },
+    { 'SetBlockingOfNonTemporaryEvents' },
+    { 'SetWarningMessage' },
+    { 'ClampGameplayCamPitch' },
     -- ped collections (gen9-era collection-indexed variations)
     { 'GetPedCollectionsCount', 0 },
     { 'GetPedCollectionName', '' },
