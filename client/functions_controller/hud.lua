@@ -185,7 +185,7 @@ end
 
 local function toggle_pointing()
     local ped = PlayerPedId()
-    if IsPedPointing(ped) then
+    if IsTaskMoveNetworkActive(ped) then
         ClearPedSecondaryTask(ped)
     else
         if not HasAnimDictLoaded('anim@mp_point') then
@@ -288,7 +288,7 @@ function Hud.misc_settings_tick()
             end
         end
 
-        if IsPedPointing(ped) then
+        if IsTaskMoveNetworkActive(ped) then
             if IsPedInAnyVehicle(ped, false) then
                 ClearPedSecondaryTask(ped)
             else

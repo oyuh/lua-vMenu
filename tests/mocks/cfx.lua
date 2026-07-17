@@ -541,7 +541,7 @@ local NATIVE_DEFAULTS = {
     { 'SetGameplayCamRelativePitch' },
     { 'SetGameplayCamRelativeHeading' },
     { 'GetGameplayCamRelativePitch', 0.0 },
-    { 'IsPedPointing', false },
+    { 'IsTaskMoveNetworkActive', false },
     { 'TaskMoveNetworkByName' },
     { 'SetTaskMoveNetworkSignalFloat' },
     { 'SetTaskMoveNetworkSignalBool' },

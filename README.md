@@ -22,9 +22,12 @@ this tracks the upstream C# project.
 
 ## Status
 
-🚧 **Milestone 9 complete — all menus and tick features are in.** Seventeen working menus
-including the appearance/MP-character editors, plus noclip, the entity spawner, and the
-full FunctionsController tick engine. M10 (parity audit + release) is what remains.
+✅ **v1.0.0 — code complete.** All 17 menus, noclip, the entity spawner, and the full
+FunctionsController tick engine are ported; the parity audit against the pinned upstream
+(`49e53065`) found every file, event, command, and public function accounted for. See
+[docs/MIGRATION.md](docs/MIGRATION.md) to migrate a server, and
+[docs/VERIFY.md](docs/VERIFY.md) for the remaining in-game verification checklist (things
+only a live FiveM server can confirm: visuals, native-name risks, multi-client sync).
 
 - ✅ M0: toolchain, scaffold, CI, first specs
 - ✅ M1: the six [compatibility contracts](docs/contracts/README.md) documented from the C#
@@ -87,6 +90,13 @@ full FunctionsController tick engine. M10 (parity audit + release) is what remai
   notifications, voice chat, restore appearance/weapons on respawn, keybinds (waypoint
   tp, drift mode, finger pointing, recording, bigmap), the MP creator camera, spectate
   recovery, snowball pickups, and helmet visor toggles
+
+- ✅ M10: parity audit & release — full sweep vs pinned upstream (all 42 .cs files mapped,
+  18 client + 23 server event handlers, commands, and every CommonFunctions public method
+  accounted for; one real bug found and fixed: `IsPedPointing` is an upstream helper over
+  `IsTaskMoveNetworkActive`, not a native), perf review (menu ticks early-out closed;
+  noclip/spawner threads only exist while active), `docs/MIGRATION.md`, `docs/VERIFY.md`,
+  and the v1.0.0 tag
 
 See PLAN.md §8 for the full roadmap.
 
