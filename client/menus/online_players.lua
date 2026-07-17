@@ -247,7 +247,10 @@ function OnlinePlayers.create()
 
     -- Selecting a player in the list opens their action menu.
     menu.OnItemSelect = function(_, item, _index)
-        local base_id = tonumber((item.Label or ''):gsub(' →→→', ''):gsub('Server #', ''))
+        -- gsub returns (string, count); bind to a local so the count doesn't
+        -- reach tonumber as a numeric base ("base out of range").
+        local label = (item.Label or ''):gsub(' →→→', ''):gsub('Server #', '')
+        local base_id = tonumber(label)
         local found = nil
         for _, player in ipairs(PlayerLists.players()) do
             if player.server_id == base_id then

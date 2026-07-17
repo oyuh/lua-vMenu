@@ -24,6 +24,8 @@ local Controls = {
     SelectWeapon = 37,
     SelectNextWeapon = 14,
     SelectPrevWeapon = 15,
+    CycleNextWeapon = 16,
+    CyclePrevWeapon = 17,
     InteractionMenu = 244,
     MultiplayerInfo = 337, -- verify
     VehicleMouseControlOverride = 338, -- verify
@@ -195,10 +197,15 @@ local function disable_controls()
         end
     else
         DisableControlAction(0, Controls.FrontendPauseAlternate, true)
-        if not IsControlPressed(0, Controls.SelectWeapon) then
-            DisableControlAction(24, Controls.SelectNextWeapon, true)
-            DisableControlAction(24, Controls.SelectPrevWeapon, true)
-        end
+        -- The menu scrolls up/down with the mouse wheel, which the game also
+        -- binds to the weapon wheel / weapon cycling. Disable those (group 0 --
+        -- the previous group 24 was invalid and did nothing) so scrolling the
+        -- menu never opens the weapon wheel or swaps weapons.
+        DisableControlAction(0, Controls.SelectWeapon, true) -- opens the weapon wheel
+        DisableControlAction(0, Controls.SelectNextWeapon, true)
+        DisableControlAction(0, Controls.SelectPrevWeapon, true)
+        DisableControlAction(0, Controls.CycleNextWeapon, true)
+        DisableControlAction(0, Controls.CyclePrevWeapon, true)
     end
 
     local current = menu:GetCurrentMenuItem()

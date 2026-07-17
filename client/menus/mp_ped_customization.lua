@@ -2235,20 +2235,39 @@ function MpPedCustomization.create()
         clone = 0
     end
 
+    -- Park a preview ped in front of the gameplay camera (screen ~0.6/0.8).
+    local function place_clone_at_camera(handle)
+        local world_coord, normal = GetWorldCoordFromScreenCoord(0.6, 0.8)
+        local camera_rotation = GetGameplayCamRot(2)
+        SetEntityCoords(
+            handle,
+            world_coord.x + (normal.x * 3.5),
+            world_coord.y + (normal.y * 3.5),
+            world_coord.z + (normal.z * 3.5),
+            false,
+            false,
+            false,
+            true
+        )
+        SetEntityRotation(handle, camera_rotation.x * -1, 0.0, camera_rotation.z + 180, 2, true)
+        SetEntityHeading(handle, camera_rotation.z + 180)
+    end
+
     saved_characters_category_menu.OnIndexChange = function(_, _old_item, new_item, _old_index, _new_index)
         local misc = State.menus.misc_settings
         if not Config.get_bool('vmenu_mp_ped_preview') or misc == nil or not misc.MPPedPreviews then
             return
         end
 
-        delete_clone()
-
         -- only ped items carry a boolean ItemData
         if type(new_item.ItemData) ~= 'boolean' then
+            delete_clone()
             return
         end
 
         local character = Storage.get_saved_mp_character_data(new_item.Text)
+        -- Keep the current preview ped on screen while the next model streams
+        -- in -- otherwise the camera preview blanks out on every switch.
         if not HasModelLoaded(character.ModelHash) then
             RequestModel(character.ModelHash)
             while not HasModelLoaded(character.ModelHash) do
@@ -2259,7 +2278,7 @@ function MpPedCustomization.create()
         -- Credit to whbl for the inspiration for this feature.
         local player_ped = PlayerPedId()
         local position = GetEntityCoords(player_ped)
-        clone = CreatePed(
+        local new_clone = CreatePed(
             26,
             character.ModelHash,
             position.x,
@@ -2269,35 +2288,29 @@ function MpPedCustomization.create()
             false,
             false
         )
-        SetEntityCollision(clone, false, false)
-        SetEntityInvincible(clone, true)
-        SetBlockingOfNonTemporaryEvents(clone, true)
-        FreezeEntityPosition(clone, true)
+        SetEntityCollision(new_clone, false, false)
+        SetEntityInvincible(new_clone, true)
+        SetBlockingOfNonTemporaryEvents(new_clone, true)
+        FreezeEntityPosition(new_clone, true)
+        -- Build the new ped hidden and off-camera: applying appearance takes a
+        -- few frames (head-blend wait), and the old preview stays visible
+        -- meanwhile so there's no blank frame.
+        SetEntityVisible(new_clone, false, false)
+        apply_saved_data_to_ped(character, new_clone)
 
-        local clone_handle = clone
-        apply_saved_data_to_ped(character, clone_handle)
+        SetEntityCanBeDamaged(new_clone, false)
+        SetPedAoBlobRendering(new_clone, false)
 
-        SetEntityCanBeDamaged(clone_handle, false)
-        SetPedAoBlobRendering(clone_handle, false)
+        -- New ped is ready: place it in front of the camera, reveal it, then
+        -- drop the old one in the same frame -- a clean swap, no flicker.
+        place_clone_at_camera(new_clone)
+        SetEntityVisible(new_clone, true, false)
+        delete_clone()
+        clone = new_clone
 
         CreateThread(function()
-            while clone == clone_handle and DoesEntityExist(clone_handle) do
-                local world_coord, normal = GetWorldCoordFromScreenCoord(0.6, 0.8)
-                local camera_rotation = GetGameplayCamRot(2)
-
-                SetEntityCoords(
-                    clone_handle,
-                    world_coord.x + (normal.x * 3.5),
-                    world_coord.y + (normal.y * 3.5),
-                    world_coord.z + (normal.z * 3.5),
-                    false,
-                    false,
-                    false,
-                    true
-                )
-                SetEntityRotation(clone_handle, camera_rotation.x * -1, 0.0, camera_rotation.z + 180, 2, true)
-                SetEntityHeading(clone_handle, camera_rotation.z + 180)
-
+            while clone == new_clone and DoesEntityExist(new_clone) do
+                place_clone_at_camera(new_clone)
                 ClampGameplayCamPitch(0.0, 0.0)
                 Wait(0)
             end
