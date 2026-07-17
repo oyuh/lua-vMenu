@@ -1,12 +1,18 @@
--- Runtime module loader. CfxLua has no `require`, so this shim provides one
--- with the same semantics busted uses in tests: dot-separated module names,
--- one execution per module, cached return value.
+-- Runtime module loader providing a require() with the same semantics busted
+-- uses in tests: dot-separated module names, one execution per module, cached
+-- return value.
 --
 -- Must be the FIRST script in shared_scripts. Every other file in this
 -- resource is a plain module (`local M = {} ... return M`) reached via
 -- require(); only entrypoints are listed as client/server scripts.
-
-if require == nil then
+--
+-- We install unconditionally rather than guarding on `require == nil`: newer
+-- FiveM artifacts ship a built-in require() whose module resolution does not
+-- understand our dot-pathed modules (it raises "module 'shared.util' not
+-- found"), so we must override it with our LoadResourceFile-based loader. This
+-- file only ever runs inside the CfxLua runtime; the busted suite loads
+-- modules with Lua's native require and never executes bootstrap.lua.
+do
     local loaded = {}
 
     function require(name)
