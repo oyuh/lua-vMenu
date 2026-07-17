@@ -6,8 +6,8 @@ lua54 'yes'
 -- keybinds, and permissions.cfg keep working (see docs/contracts/).
 name 'vMenu'
 description 'Server sided trainer for FiveM, rewritten in Lua. Drop-in replacement for the original C# vMenu by Tom Grobbe.'
-version '1.0.4'
-author 'Tom Grobbe (original vMenu), Lawson (Lua rewrite)'
+version '1.0.5'
+author 'Tom Grobbe (original vMenu), Lawson / oyuh (Lua rewrite)'
 url 'https://github.com/tomgrobbe/vMenu'
 
 -- Adds additional logging, useful when debugging issues.

@@ -19,6 +19,12 @@ function About.create()
         'vMenu is made by ~b~Vespura~s~. For more info, checkout ~b~www.vespura.com/vmenu~s~. '
             .. 'Thank you to: Deltanic, Brigliar, IllusiveTea, Shayan Doust, zr0iq and Golden for your contributions!'
     )
+    local rewrite = Items.MenuItem.new(
+        'Lua Rewrite',
+        'This build is a ground-up ~b~Lua rewrite~s~ of vMenu by ~b~Lawson (oyuh)~s~ — a drop-in '
+            .. 'replacement for the original C# resource. Source: ~b~github.com/oyuh/lua-vMenu~s~.'
+    )
+    rewrite.Label = '~b~Lua~s~'
 
     local server_info_message = Config.get_string('vmenu_server_info_message')
     if server_info_message ~= nil and server_info_message ~= '' then
@@ -31,6 +37,7 @@ function About.create()
     end
     menu:AddMenuItem(version)
     menu:AddMenuItem(credits)
+    menu:AddMenuItem(rewrite)
 
     self.menu = menu
     return self

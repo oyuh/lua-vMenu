@@ -8,9 +8,8 @@ Sources: `vMenu/StorageManager.cs`, `vMenu/CommonFunctions.cs` (VehicleInfo/PedI
 the Lua rewrite reads the same physical store the C# version wrote. Everything below is about
 keeping the *values* byte-compatible with Newtonsoft.Json output.
 
-Golden fixtures live in `tests/fixtures/`. They are **derived from the struct definitions**;
-each must be re-validated against a real C# vMenu save before the corresponding milestone
-(M8 vehicles/weapons, M9 peds) is called done — tracked as checkboxes below.
+Golden fixtures live in `tests/fixtures/`. They are **derived from the struct definitions** and
+should be re-validated against a real C# vMenu save whenever the save schemas are touched.
 
 ## Newtonsoft encoding rules we must reproduce
 

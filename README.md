@@ -1,113 +1,100 @@
-# lua-vmenu
+# lua-vMenu
 
-A ground-up rewrite of **[vMenu](https://github.com/tomgrobbe/vMenu)** by Tom Grobbe in pure Lua
-(CfxLua 5.4), designed as a **drop-in replacement** for the original C# resource.
+A ground-up rewrite of **[vMenu](https://github.com/tomgrobbe/vMenu)** in pure **CfxLua (Lua 5.4)**,
+built as a **drop-in replacement** for the original C# resource. Same resource name, same config,
+same permissions, same player saves — no .NET runtime required.
 
-> Original vMenu © Tom Grobbe — https://www.vespura.com/ — https://github.com/tomgrobbe/vMenu
-> This project is a derivative rewrite released with credit per the original license. Not for sale.
+## Credits
+
+- **Original vMenu** by **Tom Grobbe (Vespura)** — <https://www.vespura.com/vmenu> —
+  <https://github.com/tomgrobbe/vMenu>, with contributions from Deltanic, Brigliar, IllusiveTea,
+  Shayan Doust, zr0iq, and Golden.
+- **Lua rewrite** by **Lawson ([oyuh](https://github.com/oyuh))** — <https://github.com/oyuh/lua-vMenu>.
+
+This project is a derivative rewrite released with credit per the original license. It is not for
+sale. All original vMenu functionality and the `vMenu` name belong to Tom Grobbe; this repository
+only reimplements the resource in Lua.
 
 ## Drop-in means drop-in
 
-Deploy this folder as `vMenu` (same resource name) and:
+Deploy this folder as `vMenu` (keep the folder name) and everything a server already relies on
+keeps working:
 
-- your existing `permissions.cfg` (all `vmenu_*` convars and `vMenu.*` ace permissions) works unchanged
-- your `config/*.json` (addons, extras, locations, model whitelists, tattoos) works unchanged
-- players keep their saved vehicles, peds, MP characters, and weapon loadouts (client KVP is keyed
-  by resource name, and this rewrite preserves the exact save schemas)
-- players keep their menu/noclip keybinds (identical key-mapping registration)
-- third-party resources using `vMenu:*` events keep working (identical event protocol)
+- your existing `permissions.cfg` — every `vmenu_*` convar and `vMenu.*` ace permission — is read
+  unchanged
+- your `config/*.json` (addons, extras, locations, model whitelists, tattoos) loads from the same
+  paths with the same schemas
+- players keep their saved vehicles, peds, MP characters, and weapon loadouts — client KVP is keyed
+  by resource name and the save formats are byte-compatible with the C# version (Newtonsoft JSON,
+  quirks and all)
+- players keep their menu / noclip keybinds (identical key-mapping registration)
+- third-party resources built on the `vMenu:*` event protocol keep working unchanged
 
-See [PLAN.md](PLAN.md) for the full rewrite plan and [docs/UPSTREAM.md](docs/UPSTREAM.md) for how
-this tracks the upstream C# project.
+Migrating an existing server is: stop it, swap the folder, start it. See
+[docs/MIGRATION.md](docs/MIGRATION.md) for the full walkthrough and the "what carries over"
+table.
 
-## Status
+## Why a Lua rewrite
 
-✅ **v1.0.0 — code complete.** All 17 menus, noclip, the entity spawner, and the full
-FunctionsController tick engine are ported; the parity audit against the pinned upstream
-(`49e53065`) found every file, event, command, and public function accounted for. See
-[docs/MIGRATION.md](docs/MIGRATION.md) to migrate a server, and
-[docs/VERIFY.md](docs/VERIFY.md) for the remaining in-game verification checklist (things
-only a live FiveM server can confirm: visuals, native-name risks, multi-client sync).
+The original vMenu ships as a compiled .NET assembly and runs on the server's mono/.NET runtime.
+This rewrite is plain CfxLua, which means:
 
-- ✅ M0: toolchain, scaffold, CI, first specs
-- ✅ M1: the six [compatibility contracts](docs/contracts/README.md) documented from the C#
-  source — 297 ACE permissions, 47 convars, the full event protocol, KVP save schemas with
-  golden fixtures — plus `shared/config.lua` and `shared/permissions.lua` ports with 41 specs
-- ✅ M2: shared core — require() bootstrap for CfxLua, JSON compat layer, full permission
-  sync flow (server ACE collection → client resolution with staff gate), locations loader
-- ✅ M3: menu framework (MenuAPI port) — **code complete**: items + navigation core, full
-  rendering pipeline (header/subtitle/gradient/items/overflow/description/stats/color panels),
-  input ticks with hold-to-scroll acceleration, instructional buttons, control disabling, and
-  client/server entrypoints with the permission push wired up. A demo menu covering every item
-  type ships behind `experimental_features_enabled '1'` (`/vmenu_demo`) for the remaining
-  in-game side-by-side check against C# vMenu (visuals, sprite metrics, control ids)
-- ✅ M4: server port — MainServer.cs and BanManager.cs in full: weather/time sync loops over
-  replicated convars, every server event handler with ACE re-checks + auto-ban on fake
-  events, the `vmenuserver` console command (debug/weather/time/ban/unban/migrate), the ban
-  system on `vmenu_ban_<uuid>` KVPs (C# ban records keep working), vmenu.log writers,
-  teleport-location saving, and the join/quit + permission push flow
-- ✅ M5: client foundation — MainMenu.cs and EventManager.cs ported: key mappings under the
-  compatible `vMenu:{id}:MenuToggle`/`NoClip` names (existing player keybinds survive), KVP
-  cleanup, the `vmenuclient` command, every client event handler, weather/time sync ticks,
-  addon/whitelist/extras/tattoos config parsing, notifications (Notify/Subtitle/HelpMessage),
-  UserDefaults (`settings_` KVPs, C#-compatible True/False strings), the StorageManager
-  save/load layer (C# saves round-trip against golden fixtures), player lists (native +
-  OneSync Infinity), and the permission-gated main menu tree with the staff-only gate
-- ✅ M6: data codegen — `scripts/gen-data.ps1` mechanically extracts `vMenu/data/*.cs` into
-  `client/data/*.lua` (deterministic; regen after upstream bumps): 23 vehicle class lists,
-  vehicle/neon colors with label fixups, ~120 weapons with descriptions + per-weapon ACE
-  permissions + 780 component names + tints, animal peds, scenarios, timecycles, vehicle
-  blip sprites, plus `overlays.json` (3429 tattoo records) shipped verbatim. Runtime
-  consumers: `client/weapons.lua` (valid/addon weapon list building) and
-  `client/tattoos.lua` (gendered per-zone tattoo collections)
-- ✅ M7: menus wave 1 — About, Recording, Time Options, Weather Options, Voice Chat,
-  Player Options (with the auto-pilot + custom driving style submenus and scenarios),
-  Vehicle Spawner (spawn by name, addon vehicles, all 23 class submenus with stats panels,
-  whitelist locks, spawn rate limiting), and Misc Settings (teleport options + server
-  locations, keybind toggles, developer tools with timecycle modifiers, connection options,
-  location blips, and Save Personal Settings). Backed by the CommonFunctions ports: safe
-  teleporting, vehicle spawning with previous-vehicle replacement, scenarios, suicide,
-  driving tasks, and onscreen-keyboard input
-- ✅ M8: menus wave 2 — the stateful menus. Saved Vehicles (the drop-in flagship: C#-era
-  saves load, spawn, and re-save byte-compatibly, backed by the VehicleInfo capture/apply
-  engine in `client/vehicle_common.lua`), Vehicle Options (the 2.6k-line C# menu in full:
-  god-mode submenu, repair/wash, the dynamic per-vehicle Mod Menu with localized mod names,
-  colors with paint-finish statebags + custom RGB submenus, neon underglow, doors/windows/
-  extras/liveries, plates, speed limiter, torque/power multipliers, and the C#-compatible
-  default-radio KVP), Personal Vehicle (key-fob remote actions), Online Players (spectate,
-  teleport, kick/ban, private messages), Banned Players (record view, filter, unban),
-  Weapon Options and Weapon Loadouts (PascalCase ValidWeapon saves with enum-ordinal
-  permissions round-trip against C# fixtures)
-- ✅ M9: menus wave 3 + runtime features — NoClip (camera-relative movement, speed
-  cycling, instructional buttons), the Entity Spawner (raycast placement), Player
-  Appearance (spawn lists from generated data, drawable/prop customization, gen9 ped
-  collections, saved peds with the PedInfo KVP round-trip), MP Ped Customization (the
-  full character creator/editor: inheritance, appearance overlays, face shape, tattoos,
-  clothing, props, categories, and the pixel-identical mp_ped_<name> spawn path), and
-  the FunctionsController tick engine (`client/functions_controller/`): god modes,
-  vehicle god/freeze/torque/power/no-helmet/infinite-fuel, never wanted, speedometers &
-  location & time display, player blips & overhead names, death + join/quit
-  notifications, voice chat, restore appearance/weapons on respawn, keybinds (waypoint
-  tp, drift mode, finger pointing, recording, bigmap), the MP creator camera, spectate
-  recovery, snowball pickups, and helmet visor toggles
+- **No .NET / mono dependency** — no `vMenu.net.dll`, nothing to compile, no runtime to keep in
+  sync with your FiveM artifacts. Unzip and `ensure vMenu`.
+- **Readable, hackable source** — every menu and feature is plain Lua you can open and edit in
+  place, rather than a DLL you'd have to fork and rebuild.
+- **Faithful behavior** — load-bearing quirks (serialization typos, save-schema details) are
+  preserved on purpose so saves and integrations behave exactly like upstream. The handful of
+  places where upstream code plainly contradicted its own intent are fixed and marked with a
+  comment in the source.
 
-- ✅ M10: parity audit & release — full sweep vs pinned upstream (all 42 .cs files mapped,
-  18 client + 23 server event handlers, commands, and every CommonFunctions public method
-  accounted for; one real bug found and fixed: `IsPedPointing` is an upstream helper over
-  `IsTaskMoveNetworkActive`, not a native), perf review (menu ticks early-out closed;
-  noclip/spawner threads only exist while active), `docs/MIGRATION.md`, `docs/VERIFY.md`,
-  and the v1.0.0 tag
+## Performance
 
-See PLAN.md §8 for the full roadmap.
+The resource is built to stay out of the way when nobody is using it:
+
+- **Menu ticks early-out** every frame while the menu is closed, so the idle cost is designed to
+  sit at ~`0.00ms` on resmon (matching upstream's idle profile).
+- **On-demand threads** — noclip and the entity spawner only spin up a thread while they're
+  actually active, and tear it down afterward.
+- **No per-frame work on the server** beyond the same weather/time sync loops upstream runs.
+
+Exact idle/active resmon numbers depend on your server and are part of the live-deployment
+checklist in [docs/VERIFY.md](docs/VERIFY.md).
+
+## Features
+
+Full parity with upstream vMenu: the player / vehicle / world menu trees, the vehicle spawner
+(all classes, addon vehicles, whitelist locks, stats panels), saved vehicles with the C#-compatible
+capture/apply engine, vehicle options (dynamic mod menu, colors, neon, plates, extras, liveries),
+weapon options and loadouts, player appearance and the full MP character creator/editor, online /
+banned player management (spectate, teleport, kick, ban/tempban, unban), noclip, the entity
+spawner, time / weather / voice-chat options, misc settings and developer tools, and the
+FunctionsController tick engine (god modes, speedometers, blips and overhead names, notifications,
+restore-on-respawn, keybinds, the MP creator camera, and more).
+
+## Installation
+
+1. Download the latest `vMenu-vX.Y.Z.zip` from the
+   [Releases](https://github.com/oyuh/lua-vMenu/releases) page.
+2. Unzip it into your server's `resources/` folder — it extracts as a single `vMenu` folder.
+   **Keep that folder name** (player saves are keyed to it).
+3. Migrating from C# vMenu? Copy your existing `config/*.json` across and follow
+   [docs/MIGRATION.md](docs/MIGRATION.md).
+4. `ensure vMenu` in your `server.cfg`.
 
 ## Development
 
 Toolchain: Lua 5.4, [busted](https://lunarmodules.github.io/busted/) (tests),
 [luacheck](https://github.com/lunarmodules/luacheck) (lint),
-[StyLua](https://github.com/JohnnyMorganz/StyLua) (format).
+[StyLua](https://github.com/JohnnyMorganz/StyLua) (format). The unit suite runs in pure Lua with
+the FiveM natives mocked — no game server needed.
 
 ```sh
-busted            # run unit tests (pure Lua, no FiveM needed — natives are mocked)
+busted            # run unit tests
 luacheck .        # lint
 stylua --check .  # format check
 ```
+
+The compatibility contracts (permissions, convars, events, KVP save schemas) are documented under
+[docs/contracts/](docs/contracts/README.md), and [docs/UPSTREAM.md](docs/UPSTREAM.md) covers how
+this tracks the upstream C# project when it changes.
