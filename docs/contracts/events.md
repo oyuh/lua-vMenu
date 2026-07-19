@@ -21,7 +21,7 @@ Types are the msgpack types on the wire: `int`, `float`, `bool`, `string`, `vect
 | `vMenu:TempBanPlayer` | `int target, double banDurationHours, string banReason` | perm `OPTempBan`/`OPAll`/`Everything`; duration capped at 720h; `DontBanMe` exempts |
 | `vMenu:PermBanPlayer` | `int target, string banReason` | ban-until = 3000-01-01; same perms as temp ban |
 | `vMenu:RequestPlayerUnban` | `string banUuid` | perm `OPUnban`/`OPAll`/`Everything`; unauthorized ⇒ BanCheater |
-| `vMenu:RequestBanList` | *(none)* | replies to source with `vMenu:SetBanList` |
+| `vMenu:RequestBanList` | *(none)* | **hardening deviation:** perm `OPViewBannedPlayers`/`OPUnban`/`OPAll`/`Everything`; unauthorized ⇒ BanCheater (upstream sends to any caller). Replies to source with `vMenu:SetBanList` |
 | `vMenu:SendMessageToPlayer` | `int target, string message` | PM system; staff with `OPSeePrivateMessages` get a copy |
 | `vMenu:UpdateServerWeather` | `string weather, bool dynamicEnabled, bool snowEnabled` | perm `WOSetWeather`-family |
 | `vMenu:UpdateServerBlackout` | `bool enabled` | |
@@ -30,11 +30,11 @@ Types are the msgpack types on the wire: `int`, `float`, `bool`, `string`, `vect
 | `vMenu:UpdateServerTime` | `int hour, int minute, bool freezeTime` | |
 | `vMenu:FreezeServerTime` | `bool freezeTime` | |
 | `vMenu:SaveTeleportLocation` | `string locationJson` | appends TeleportLocation to locations.json + broadcasts `vMenu:UpdateTeleportLocations` |
-| `vMenu:RequestPlayerList` | *(none)* | replies with `vMenu:ReceivePlayerList` |
-| `vMenu:GetPlayerCoords` | `long rpcId, int playerId, funcref callback` | calls back with coords; falls back to `vMenu:GetPlayerCoords:reply` event |
-| `vMenu:GetPlayerIdentifiers` | `int target, funcref callback` | callback receives identifier list |
+| `vMenu:RequestPlayerList` | *(none)* | **hardening deviation:** perm `OPMenu`/`OPAll`/`Everything`; unauthorized callers get an empty list (read-only path, no ban). Replies with `vMenu:ReceivePlayerList` |
+| `vMenu:GetPlayerCoords` | `long rpcId, int playerId, funcref callback` | perm `OPTeleport` (else replies `0,0,0`); calls back with coords; falls back to `vMenu:GetPlayerCoords:reply` event |
+| `vMenu:GetPlayerIdentifiers` | `int target, funcref callback` | **hardening deviation:** perm `OPIdentifiers`/`OPAll`/`Everything`; unauthorized callers get an empty list (read-only path, no ban). `ip:` identifiers are always stripped. Callback receives identifier list |
 | `vMenu:GetOutOfCar` | `int vehicleNetId` | personal-vehicle passenger kick; targets get `vMenu:Notify` |
-| `vMenu:ClearArea` | *(none; uses source position)* | **no server-side perm check upstream** (quirk preserved); broadcasts `vMenu:ClearArea` with source `vector3` to all clients |
+| `vMenu:ClearArea` | *(none; uses source position)* | **hardening deviation:** perm `MSClearArea`; unauthorized ⇒ BanCheater (upstream has **no** server-side check). Broadcasts `vMenu:ClearArea` with source `vector3` to all clients |
 
 ## Server → Client
 
@@ -85,3 +85,25 @@ Types are the msgpack types on the wire: `int`, `float`, `bool`, `string`, `vect
 Server handlers re-check ACE permissions on every call and treat an unauthorized trigger as a
 cheating attempt: `BanCheater(source)` auto-bans when `vmenu_auto_ban_cheaters` is enabled.
 The Lua server must never trust a client-supplied permission claim.
+
+### Intentional hardening deviations from upstream
+
+Upstream leaves a handful of server handlers ungated, relying on the stock client to only send
+them when authorized. A modded client bypasses that, so the Lua rewrite adds server-side checks.
+These are deliberate behavioral differences (like the removed dev backdoor in
+[permissions.md](permissions.md)); the stock client is unaffected because it already only sends
+these when the player holds the permission.
+
+- **`vMenu:RequestBanList`** now requires `OPViewBannedPlayers`/`OPUnban`/`OPAll`/`Everything`.
+  Upstream replied to any caller, leaking every banned player's full identifier set (including
+  `ip:`), ban reasons, and staff names. Unauthorized ⇒ BanCheater.
+- **`vMenu:GetPlayerIdentifiers`** now requires `OPIdentifiers`. Read-only, so unauthorized
+  callers get `[]` (no auto-ban), matching the `GetPlayerCoords` pattern. `ip:` stays stripped.
+- **`vMenu:RequestPlayerList`** now requires `OPMenu` (the only place the client sends it).
+  Read-only: unauthorized callers still get a reply (empty list) so the client's request wait
+  resolves.
+- **`vMenu:ClearArea`** now requires `MSClearArea`. Upstream had no check, letting any client
+  broadcast an area wipe of other players' nearby entities. Unauthorized ⇒ BanCheater.
+- **`vMenu:UpdateServerTime`** clamps the client-supplied `hour`/`minute` to `0-23`/`0-59`
+  integers before the smooth-transition loop. Out-of-range or non-integer values would otherwise
+  never match the clamped current hour and spin the loop forever, hanging the thread (DoS).

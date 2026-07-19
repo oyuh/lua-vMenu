@@ -294,8 +294,9 @@ describe('ban manager', function()
             assert.equal(2, #Bans.get_ban_list())
         end)
 
-        it('sends the ban list as a JSON array', function()
+        it('sends the ban list as a JSON array to authorized staff', function()
             cfx:add_player('1')
+            cfx:grant_ace('1', 'vMenu.OnlinePlayers.ViewBannedPlayers')
             cfx:trigger_from('1', 'vMenu:RequestBanList')
             assert.equal('[]', last_trigger('vMenu:SetBanList').args[1])
 
@@ -304,6 +305,18 @@ describe('ban manager', function()
             local payload = Json.decode(last_trigger('vMenu:SetBanList').args[1])
             assert.equal(1, #payload)
             assert.equal('Old', payload[1].playerName)
+        end)
+
+        it('does not leak the ban list to unauthorized callers', function()
+            cfx:set_convar('vmenu_auto_ban_cheaters', 'true')
+            Bans.add_ban(Bans.new_record('Old', { 'license:b' }, DateTime.PERM_BAN_ISO, 'r', 'Admin', 'u6'))
+            cfx:add_player('1', { identifiers = { 'license:s' } })
+
+            cfx:trigger_from('1', 'vMenu:RequestBanList')
+
+            -- no ban list pushed, and the unauthorized trigger is auto-banned
+            assert.is_nil(last_trigger('vMenu:SetBanList'))
+            assert.is_truthy(last_trigger('vMenu:GoodBye'))
         end)
     end)
 end)

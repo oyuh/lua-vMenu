@@ -220,6 +220,14 @@ describe('server main', function()
             assert.equal('30', GetConvar('vmenu_current_minute', ''))
         end)
 
+        it('clamps out-of-range time values supplied by the client', function()
+            cfx:add_player('1')
+            cfx:grant_ace('1', 'vMenu.TimeOptions.SetTime')
+            cfx:trigger_from('1', 'vMenu:UpdateServerTime', 99, -5, false)
+            assert.equal('23', GetConvar('vmenu_current_hour', ''))
+            assert.equal('0', GetConvar('vmenu_current_minute', ''))
+        end)
+
         it('walks the clock forward under smooth transitions', function()
             cfx:set_convar('vmenu_smooth_time_transitions', 'true')
             cfx:set_convar('vmenu_current_hour', '10')
@@ -380,6 +388,7 @@ describe('server main', function()
         it('answers vMenu:RequestPlayerList with {n, s} entries', function()
             cfx:add_player('1', { name = 'Alice' })
             cfx:add_player('2', { name = 'Bob' })
+            cfx:grant_ace('1', 'vMenu.OnlinePlayers.Menu')
 
             cfx:trigger_from('1', 'vMenu:RequestPlayerList')
 
@@ -387,6 +396,16 @@ describe('server main', function()
             assert.equal(2, #list)
             assert.equal('Alice', list[1].n)
             assert.equal(1, list[1].s)
+        end)
+
+        it('replies with an empty player list when OPMenu is not allowed', function()
+            cfx:add_player('1', { name = 'Alice' })
+            cfx:add_player('2', { name = 'Bob' })
+
+            cfx:trigger_from('1', 'vMenu:RequestPlayerList')
+
+            local list = last_trigger('vMenu:ReceivePlayerList').args[1]
+            assert.equal(0, #list)
         end)
 
         it('replies with target coords only when OPTeleport is allowed', function()
@@ -402,6 +421,28 @@ describe('server main', function()
             cfx:trigger_from('1', 'vMenu:GetPlayerCoords', 78, 2, function() end)
             local allowed = last_trigger('vMenu:GetPlayerCoords:reply')
             assert.equal(10.0, allowed.args[2].x)
+        end)
+
+        it('returns identifiers only when OPIdentifiers is allowed', function()
+            cfx:add_player('1')
+            cfx:add_player('2', { identifiers = { 'license:abc', 'ip:1.2.3.4', 'discord:9' } })
+
+            local denied
+            cfx:trigger_from('1', 'vMenu:GetPlayerIdentifiers', 2, function(data)
+                denied = data
+            end)
+            assert.equal('[]', denied)
+
+            cfx:grant_ace('1', 'vMenu.OnlinePlayers.Identifiers')
+            local allowed
+            cfx:trigger_from('1', 'vMenu:GetPlayerIdentifiers', 2, function(data)
+                allowed = data
+            end)
+            local ids = Json.decode(allowed)
+            -- ip identifiers stay stripped
+            assert.equal(2, #ids)
+            assert.equal('license:abc', ids[1])
+            assert.equal('discord:9', ids[2])
         end)
     end)
 
@@ -446,11 +487,31 @@ describe('server main', function()
     end)
 
     describe('clear area', function()
-        it('broadcasts the source position to everyone', function()
+        it('broadcasts the source position to everyone when allowed', function()
             cfx:add_player('1', { coords = { x = 7.0, y = 8.0, z = 9.0 } })
+            cfx:grant_ace('1', 'vMenu.MiscSettings.ClearArea')
             cfx:trigger_from('1', 'vMenu:ClearArea')
             local broadcast = last_trigger('vMenu:ClearArea')
             assert.equal(7.0, broadcast.args[1].x)
+        end)
+
+        it('treats an unauthorized clear-area request as cheating', function()
+            cfx:set_convar('vmenu_auto_ban_cheaters', 'true')
+            cfx:add_player('1', { identifiers = { 'license:s' }, coords = { x = 7.0, y = 8.0, z = 9.0 } })
+
+            cfx:trigger_from('1', 'vMenu:ClearArea')
+
+            -- no area-wipe broadcast went out to clients, and the unauthorized
+            -- trigger is auto-banned
+            local broadcasts = 0
+            for _, entry in ipairs(triggers('vMenu:ClearArea')) do
+                if entry.direction == 'to_client' then
+                    broadcasts = broadcasts + 1
+                end
+            end
+            assert.equal(0, broadcasts)
+            assert.equal(1, #Bans.get_ban_list())
+            assert.is_truthy(last_trigger('vMenu:GoodBye'))
         end)
     end)
 

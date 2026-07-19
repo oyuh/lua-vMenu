@@ -363,7 +363,22 @@ local function remove_ban_record(source_handle, uuid)
 end
 
 -- SendBanList (vMenu:RequestBanList).
+-- Hardening (deviation from upstream): upstream replies to any client that
+-- fires this event, exposing every banned player's full identifier set
+-- (including ip), ban reasons, and staff names. Gate it on the same aces the
+-- client checks before opening the Banned Players menu, and treat an
+-- unauthorized trigger as cheating like the sibling unban handler does.
 local function send_ban_list(source_handle)
+    local src = tostring(source_handle)
+    if
+        not IsPlayerAceAllowed(src, 'vMenu.OnlinePlayers.ViewBannedPlayers')
+        and not IsPlayerAceAllowed(src, 'vMenu.OnlinePlayers.Unban')
+        and not IsPlayerAceAllowed(src, 'vMenu.OnlinePlayers.All')
+        and not IsPlayerAceAllowed(src, 'vMenu.Everything')
+    then
+        Bans.ban_cheater(source_handle)
+        return
+    end
     Log.log('Updating player with new banlist.\n')
     local records = Bans.get_ban_list()
     local payload = #records == 0 and '[]' or Json.encode(records)

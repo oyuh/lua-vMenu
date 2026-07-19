@@ -540,7 +540,17 @@ end
 
 local function register_event_handlers()
     -- Identifier lookup RPC (ip identifiers are never exposed).
+    -- Hardening (deviation from upstream): upstream returns identifiers to any
+    -- caller. Gate on OPIdentifiers, matching the client, so a modded client
+    -- can't harvest every player's identifiers. Read-only path, so an
+    -- unauthorized caller just gets an empty list (no auto-ban, like
+    -- GetPlayerCoords) rather than being treated as a cheater.
     RegisterNetEvent('vMenu:GetPlayerIdentifiers', function(target_player, callback)
+        local src = source
+        if not Permissions.is_allowed_server('OPIdentifiers', src) then
+            callback('[]')
+            return
+        end
         local data = {}
         for _, id in ipairs(Util.player_identifiers(target_player)) do
             if not id:find('ip:', 1, true) then
@@ -574,8 +584,16 @@ local function register_event_handlers()
     end)
 
     -- Clear the area around the source player, for all clients.
+    -- Hardening (deviation from upstream): upstream performs no server-side
+    -- permission check here, so any client can broadcast an area wipe and
+    -- delete other players' nearby entities. Gate on MSClearArea and treat an
+    -- unauthorized trigger as cheating, like every other state-changing event.
     RegisterNetEvent('vMenu:ClearArea', function()
         local src = source
+        if not Permissions.is_allowed_server('MSClearArea', src) then
+            Bans.ban_cheater(src)
+            return
+        end
         local position = GetEntityCoords(GetPlayerPed(tostring(src)))
         TriggerClientEvent('vMenu:ClearArea', -1, position)
     end)
@@ -645,6 +663,14 @@ local function register_event_handlers()
             Bans.ban_cheater(src)
             return
         end
+        -- Hardening (deviation from upstream): new_hours/new_minutes come
+        -- straight from the client. The smooth-transition loop below compares
+        -- new_hours against the 0-23 clamped current hour, so an out-of-range
+        -- or non-integer value would never match and would spin forever
+        -- (Wait(0)), hanging the thread. Coerce to a valid integer up front;
+        -- the setters clamp anyway, so in-range values are unaffected.
+        new_hours = clamp(math.tointeger(tonumber(new_hours)) or 0, 0, 23)
+        new_minutes = clamp(math.tointeger(tonumber(new_minutes)) or 0, 0, 59)
         if Config.get_bool('vmenu_smooth_time_transitions') then
             set_current_hours(get_current_hours())
             set_current_minutes(get_current_minutes())
@@ -864,8 +890,17 @@ local function register_event_handlers()
     end)
 
     -- Infinity bits.
+    -- Hardening (deviation from upstream): the client only requests this from
+    -- the Online Players menu (OPMenu-gated), so match that server-side rather
+    -- than letting any client enumerate every player's name + server id. This
+    -- is a read-only path where the client yields until a reply arrives, so an
+    -- unauthorized caller still gets a reply (an empty list), not an auto-ban.
     RegisterNetEvent('vMenu:RequestPlayerList', function()
         local src = source
+        if not Permissions.is_allowed_server('OPMenu', src) then
+            TriggerClientEvent('vMenu:ReceivePlayerList', src, {})
+            return
+        end
         local list = {}
         for _, handle in ipairs(GetPlayers()) do
             list[#list + 1] = { n = GetPlayerName(tostring(handle)), s = math.tointeger(tonumber(handle)) }
