@@ -57,7 +57,7 @@ end
 local is_data_setup = false
 
 -- GenerateTattoosData: idempotent, called before the MpPedCustomization
--- tattoo menus are built (M9).
+-- tattoo menus are built.
 function Tattoos.generate()
     if is_data_setup then
         return

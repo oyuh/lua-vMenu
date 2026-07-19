@@ -4,7 +4,7 @@
 --
 -- PedInfo JSON shape (docs/contracts/kvp-saves.md): version, model (uint),
 -- isMpPed, plus 21-entry int dicts props/propTextures/drawableVariations/
--- drawableVariationTextures — string-keyed after a JSON round-trip.
+-- drawableVariationTextures, string-keyed after a JSON round-trip.
 
 local Permissions = require('shared.permissions')
 local Common = require('client.common')

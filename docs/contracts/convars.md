@@ -9,10 +9,10 @@ server config must behave identically, so the coercion rules are part of the con
 
 | Accessor | Rule (must match C# exactly) |
 |---|---|
-| bool | `GetConvar(name, "false") == "true"` — only the lowercase literal `true` counts |
-| int | `GetConvarInt(name, default)`; if that returns the default, re-read as string and parse with `int.TryParse` semantics (optional sign, digits only, surrounding whitespace OK, **no fractions/hex**); parse failure ⇒ keep `GetConvarInt`'s answer. Default `-1` unless a call site passes one |
-| float | parse `GetConvar(name, tostring(default))`; failure ⇒ default. Default `-1.0` |
-| string | `GetConvar(name, default or "")`; empty or unset ⇒ **nil** (C# returns null) |
+| bool | `GetConvar(name, "false") == "true"`, so only the lowercase literal `true` counts |
+| int | `GetConvarInt(name, default)`; if that returns the default, re-read as string and parse with `int.TryParse` semantics (optional sign, digits only, surrounding whitespace OK, **no fractions/hex**); on parse failure keep `GetConvarInt`'s answer. Default `-1` unless a call site passes one |
+| float | parse `GetConvar(name, tostring(default))`; on failure use the default. Default `-1.0` |
+| string | `GetConvar(name, default or "")`; empty or unset means **nil** (C# returns null) |
 
 Debug modes are **not** convars: `client_debug_mode` / `server_debug_mode` are fxmanifest
 metadata read via `GetResourceMetadata("vMenu", key, 0) == "true"` (case-insensitive compare).
@@ -20,7 +20,7 @@ metadata read via `GetResourceMetadata("vMenu", key, 0) == "true"` (case-insensi
 ## Settings and template defaults
 
 Types are how the code reads them; "template default" is the value in the shipped
-`permissions.cfg` (absent = not in template, code default applies).
+`permissions.cfg`. Where it says "(not in template)" the code default applies.
 
 | Convar | Type | Template default |
 |---|---|---|
@@ -44,7 +44,7 @@ Types are how the code reads them; "template default" is the value in the shippe
 | `vmenu_disable_entity_outlines_tool` | bool | `false` |
 | `vmenu_disable_player_stats_setup` | bool | `false` |
 | `vmenu_using_chameleon_colours` | bool | `false` |
-| `vmenu_vehicle_spawn_delay` | int (seconds, default 5) | — |
+| `vmenu_vehicle_spawn_delay` | int (seconds, default 5) | (not in template) |
 | `vmenu_delete_vehicle_distance` | float | `5.0` |
 | `vmenu_prevent_extras_when_damaged` | bool | `false` |
 | `vmenu_allowed_engine_damage_for_extra_change` | int | `800` |
@@ -60,7 +60,7 @@ Types are how the code reads them; "template default" is the value in the shippe
 | `vmenu_dynamic_weather_timer` | int (minutes) | `15` |
 | `vmenu_current_weather` | string | `"clear"` |
 | `vmenu_blackout_enabled` | bool | `false` |
-| `vmenu_vehicle_blackout_enabled` | bool | — |
+| `vmenu_vehicle_blackout_enabled` | bool | (not in template) |
 | `vmenu_weather_change_duration` | int (seconds) | `30` |
 | `vmenu_enable_snow` | bool | `false` |
 | `vmenu_smooth_time_transitions` | bool | `true` |

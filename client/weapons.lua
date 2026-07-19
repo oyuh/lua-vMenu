@@ -132,9 +132,9 @@ function Weapons.get_max_ammo(weapon_hash)
 end
 
 -- ValidWeapon.Accuracy/Damage/Range/Speed come from GetWeaponHudStats, a
--- struct-pointer native CfxLua can't marshal directly. Wired up during the
--- M8 in-game pass (Citizen.InvokeNative + DataView buffer); until then the
--- weapon stat panels draw zeroed bars.
+-- struct-pointer native CfxLua can't marshal directly. Until the struct read
+-- is wired up (Citizen.InvokeNative + DataView buffer), the weapon stat
+-- panels draw zeroed bars.
 function Weapons.get_hud_stats(_weapon_hash)
     return { accuracy = 0.0, damage = 0.0, range = 0.0, speed = 0.0 }
 end
@@ -275,7 +275,7 @@ function Weapons.spawn_weapon_loadout(save_name, append_weapons, ignore_settings
             kvp = GetResourceKvpString('vmenu_temp_weapons_loadout_before_respawn')
             -- Upstream empties the loadout here when normal weapon
             -- restoring is also off, but the kvp branch below overwrites it
-            -- unconditionally anyway — dead store dropped, behavior kept.
+            -- unconditionally anyway; dead store dropped, behavior kept.
         end
 
         if kvp == nil or kvp == '' then

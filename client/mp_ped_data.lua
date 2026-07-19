@@ -1,7 +1,7 @@
 -- Port of vMenu/MpPedDataManager.cs: the MultiplayerPedData record shape.
 -- C# defines these as structs; here they're constructors that produce tables
 -- with the exact Newtonsoft field names from docs/contracts/kvp-saves.md
--- (golden fixture: tests/fixtures/mp_ped_data.json). MpPedCustomization (M9)
+-- (golden fixture: tests/fixtures/mp_ped_data.json). MpPedCustomization
 -- fills these in before saving under the mp_ped_<name> KVP.
 --
 -- The PedTatttoos triple-t typo is load-bearing: upstream marks the field

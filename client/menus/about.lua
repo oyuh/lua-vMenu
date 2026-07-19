@@ -21,7 +21,7 @@ function About.create()
     )
     local rewrite = Items.MenuItem.new(
         'Lua Rewrite',
-        'This build is a ground-up ~b~Lua rewrite~s~ of vMenu by ~b~Lawson (oyuh)~s~ — a drop-in '
+        'This build is a ground-up ~b~Lua rewrite~s~ of vMenu by ~b~Lawson (oyuh)~s~, a drop-in '
             .. 'replacement for the original C# resource. Source: ~b~github.com/oyuh/lua-vMenu~s~.'
     )
     rewrite.Label = '~b~Lua~s~'

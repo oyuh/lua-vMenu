@@ -1,7 +1,7 @@
 -- JSON layer with Newtonsoft-compatible behavior guarantees.
 -- In-game this wraps CfxLua's built-in `json`; under busted it falls back to
 -- dkjson. Contract notes (docs/contracts/kvp-saves.md):
---   * loads never throw — corrupt input returns nil (upstream catches and
+--   * loads never throw; corrupt input returns nil (upstream catches and
 --     degrades, so must we)
 --   * C# Dictionary<int,...> arrives as string-keyed objects; callers keep
 --     them string-keyed rather than converting, so re-encoding round-trips

@@ -982,7 +982,7 @@ function PlayerAppearance.create()
     end
 
     -- Upstream checks `ItemData is Tuple<int,int,string>` here, but the
-    -- collection buttons carry a plain string — so the handler never fires
+    -- collection buttons carry a plain string, so the handler never fires
     -- and the submenu stays empty. Ported to the obvious intent instead.
     ped_collections_menu.OnItemSelect = function(_, item, _index)
         if type(item.ItemData) == 'string' then

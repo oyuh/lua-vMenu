@@ -4,7 +4,7 @@
 -- makes C#-era saved vehicles spawn identically.
 --
 -- JSON shape notes: colors is a string-keyed object; extras and mods are C#
--- Dictionary<int,...> — string-keyed in JSON, kept string-keyed here so
+-- Dictionary<int,...>, string-keyed in JSON and kept string-keyed here so
 -- records round-trip byte-compatible (json_compat contract).
 
 local Config = require('shared.config')

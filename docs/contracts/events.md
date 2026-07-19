@@ -4,8 +4,8 @@ Source: `vMenuServer/MainServer.cs`, `vMenuServer/BanManager.cs`, `vMenu/EventMa
 `vMenu/MainMenu.cs`, `vMenu/FunctionsController.cs` (upstream @ `49e53065`).
 
 Third-party resources integrate with vMenu through these events. Every name, argument order,
-and argument type must match. JSON-string payloads (not tables!) stay JSON strings — upstream
-serializes with Newtonsoft and the shapes are part of the contract (see
+and argument type must match. JSON-string payloads (not tables!) stay JSON strings, since
+upstream serializes with Newtonsoft and the shapes are part of the contract (see
 [kvp-saves.md](kvp-saves.md) for record schemas).
 
 Types are the msgpack types on the wire: `int`, `float`, `bool`, `string`, `vector3`
@@ -34,40 +34,40 @@ Types are the msgpack types on the wire: `int`, `float`, `bool`, `string`, `vect
 | `vMenu:GetPlayerCoords` | `long rpcId, int playerId, funcref callback` | calls back with coords; falls back to `vMenu:GetPlayerCoords:reply` event |
 | `vMenu:GetPlayerIdentifiers` | `int target, funcref callback` | callback receives identifier list |
 | `vMenu:GetOutOfCar` | `int vehicleNetId` | personal-vehicle passenger kick; targets get `vMenu:Notify` |
-| `vMenu:ClearArea` | *(none — uses source position)* | **no server-side perm check upstream** (quirk preserved); broadcasts `vMenu:ClearArea` with source `vector3` to all clients |
+| `vMenu:ClearArea` | *(none; uses source position)* | **no server-side perm check upstream** (quirk preserved); broadcasts `vMenu:ClearArea` with source `vector3` to all clients |
 
 ## Server → Client
 
 | Event | Arguments | Notes |
 |---|---|---|
-| `vMenu:SetPermissions` | `string json` — `{ "<PermissionName>": bool, … }` | pushed on `playerJoining` + first-tick sweep (3s after resource start); **no client request event exists** |
-| `vMenu:SetSupplementaryPermissions` | `string json` — same shape | follows SetPermissions |
+| `vMenu:SetPermissions` | `string json`: `{ "<PermissionName>": bool, … }` | pushed on `playerJoining` + first-tick sweep (3s after resource start); **no client request event exists** |
+| `vMenu:SetSupplementaryPermissions` | `string json`: same shape | follows SetPermissions |
 | `vMenu:SetConfigOptions` | *(none)* | tells client to (re)load addons/config |
 | `vMenu:SetAddons` | *(none)* | **deprecated alias** of SetConfigOptions; keep handling it |
-| `vMenu:UpdateTeleportLocations` | `string json` — `TeleportLocation[]` | sent after perms + whenever a location is saved |
+| `vMenu:UpdateTeleportLocations` | `string json`: `TeleportLocation[]` | sent after perms + whenever a location is saved |
 | `vMenu:Notify` | `string message` | GTA notification (supports `~r~` etc. + `<C>` tags) |
 | `vMenu:KillMe` | `string killerName` | kills own ped |
 | `vMenu:GoodBye` | *(none)* | the "fun" cheater drop |
-| `vMenu:SetBanList` | `string json` — `BanRecord[]` | |
-| `vMenu:BanSuccessful` | `string json` — `BanRecord` | fired to source after a ban |
-| `vMenu:UnbanSuccessful` | `string json` — `BanRecord` | |
-| `vMenu:BanCheaterSuccessful` | `string json` — `BanRecord` | |
+| `vMenu:SetBanList` | `string json`: `BanRecord[]` | |
+| `vMenu:BanSuccessful` | `string json`: `BanRecord` | fired to source after a ban |
+| `vMenu:UnbanSuccessful` | `string json`: `BanRecord` | |
+| `vMenu:BanCheaterSuccessful` | `string json`: `BanRecord` | |
 | `vMenu:SetClouds` | `float opacity, string cloudsType` | |
 | `vMenu:ClearArea` | `vector3 position` | broadcast to **all** clients |
-| `vMenu:updatePedDecors` | *(none)* | note lowercase `u` — keep exact casing |
+| `vMenu:updatePedDecors` | *(none)* | note the lowercase `u`, keep the exact casing |
 | `vMenu:PrivateMessage` | `string sourceServerId, string message` | source id as string (Handle) |
 | `vMenu:PlayerJoinQuit` | `string playerName, string dropReason` | reason is `null` for joins |
-| `vMenu:ReceivePlayerList` | `object[]` — `[{ n = string name, s = int serverId }, …]` | anonymous objects, field names `n`/`s` |
+| `vMenu:ReceivePlayerList` | `object[]`: `[{ n = string name, s = int serverId }, …]` | anonymous objects, field names `n`/`s` |
 | `vMenu:GetPlayerCoords:reply` | `long rpcId, vector3 coords` | fallback RPC reply |
 | `vMenu:UpdateServerWeather` | `string weather, bool dynamicEnabled, bool snowEnabled` | also reused as broadcast |
-| `vMenu:UpdateServerTime` | `int hour, int minute, bool freezeTime` | third arg is `!FreezeTime` in the sync loop and `FreezeTime` in the setter path — port faithfully per call site |
+| `vMenu:UpdateServerTime` | `int hour, int minute, bool freezeTime` | third arg is `!FreezeTime` in the sync loop and `FreezeTime` in the setter path; port faithfully per call site |
 
 ## Client-local events (same-client TriggerEvent)
 
 | Event | Arguments | Purpose |
 |---|---|---|
 | `vMenu:SetupTickFunctions` | *(none)* | (re)registers feature tick handlers |
-| `vMenu:WeatherChangeComplete` | *(varies — port from EventManager)* | fired after weather transition |
+| `vMenu:WeatherChangeComplete` | *(varies; port from EventManager)* | fired after weather transition |
 | `vMenu:InfiniteFuelToggled` | *(bool)* | integration hook for fuel resources |
 
 ## Standard events consumed

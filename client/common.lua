@@ -1,7 +1,7 @@
--- Port of vMenu/CommonFunctions.cs — split by topic as menus land in M7+.
--- M5 brought the name sanitizer and the private-message display; M7 adds
--- the server-event wrappers, user input, and session helpers the wave-1
--- menus use.
+-- Port of vMenu/CommonFunctions.cs, split by topic: the name sanitizer, the
+-- private-message display, the server-event wrappers, user input, and the
+-- session helpers the menus use. The vehicle save/apply half lives in
+-- client/vehicle_common.lua and the ped half in client/ped_common.lua.
 
 local Config = require('shared.config')
 local Util = require('shared.util')
@@ -77,7 +77,7 @@ function Common.get_vehicle(last_vehicle)
     return 0
 end
 
--- Read by FunctionsController (M9) to know a driving task is running.
+-- Read by FunctionsController to know a driving task is running.
 Common.drive_to_wp_task_active = false
 Common.drive_wander_task_active = false
 
@@ -122,7 +122,7 @@ function Common.drive_wander(style)
 end
 
 -- ---------------------------------------------------------------------------
--- Vehicle spawning (the heart of the vehicle spawner + saved vehicles M8)
+-- Vehicle spawning (the heart of the vehicle spawner + saved vehicles)
 -- ---------------------------------------------------------------------------
 
 -- GetVehDisplayNameFromModel.
@@ -161,7 +161,7 @@ end
 -- SpawnVehicle (main overload). opts: spawn_inside, replace_previous,
 -- skip_load, vehicle_info, save_name, x, y, z, heading. Returns the vehicle
 -- handle, or 0 on failure. Mod re-application for saved vehicles
--- (vehicle_info/save_name) hooks in with the M8 SavedVehicles port.
+-- (vehicle_info/save_name) hooks in from the SavedVehicles menu.
 function Common.spawn_vehicle(vehicle_hash, opts)
     opts = opts or {}
     local ped = PlayerPedId()
@@ -322,7 +322,7 @@ function Common.spawn_vehicle(vehicle_hash, opts)
         SetVehicleCurrentRpm(vehicle, rpm)
     end
 
-    -- Saved-vehicle mod application (SavedVehicles port, M8).
+    -- Saved-vehicle mod application (SavedVehicles port).
     if opts.save_name ~= nil and opts.apply_mods ~= nil then
         opts.apply_mods(vehicle, opts.vehicle_info)
     end
@@ -362,7 +362,7 @@ function Common.spawn_vehicle_by_name(vehicle_name, spawn_inside, replace_previo
     })
 end
 
--- Test/M8 hook: the tracked previously-spawned vehicle handle.
+-- Test hook: the tracked previously-spawned vehicle handle.
 function Common.get_previous_vehicle()
     return previous_vehicle
 end
@@ -977,7 +977,7 @@ end
 -- PrivateMessage(source, message, sent): shows the PM as a notification with
 -- the sender's headshot; falls back to plain text when the headshot takes
 -- longer than 2 seconds. The "PM From:"/"PM To:" fallback labels are swapped
--- for sent messages upstream — quirk preserved.
+-- for sent messages upstream; quirk preserved.
 function Common.private_message(source, message, sent)
     sent = sent == true
     PlayerLists.request_player_list()

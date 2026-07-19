@@ -1,5 +1,5 @@
 -- Port of vMenu/EventManager.cs: every client-side event handler plus the
--- weather/time sync ticks. Contract: docs/contracts/events.md — names and
+-- weather/time sync ticks. Contract: docs/contracts/events.md; names and
 -- payloads are fixed.
 
 local Config = require('shared.config')
@@ -43,7 +43,7 @@ end
 
 -- ---------------------------------------------------------------------------
 -- Config options (addons.json / model-whitelists.json / extras.json /
--- tattoos.json) — parsed into client/state.lua for the menus.
+-- tattoos.json), parsed into client/state.lua for the menus.
 -- ---------------------------------------------------------------------------
 
 local function config_error(file_name)
@@ -306,7 +306,7 @@ function Events.register(opts)
         ClearAreaOfEverything(position.x, position.y, position.z, 100.0, false, false, false, false)
     end)
 
-    -- note the lowercase 'u' — exact casing is part of the event contract
+    -- note the lowercase 'u'; exact casing is part of the event contract
     RegisterNetEvent('vMenu:updatePedDecors', function()
         local player_appearance = State.menus.player_appearance
         if player_appearance and player_appearance.refresh_clothing_animation then

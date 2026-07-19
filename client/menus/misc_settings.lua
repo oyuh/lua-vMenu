@@ -1,8 +1,8 @@
 -- Port of vMenu/menus/MiscSettings.cs: personal settings, teleport options,
 -- keybind toggles, developer tools, connection options, and saving.
 -- Per-frame consumers of these flags (speedometers, location display, entity
--- outlines, ...) are the FunctionsController port (M9); the entity spawner
--- submenu appears once client/entity_spawner.lua lands (M9).
+-- outlines, ...) live in the FunctionsController modules; the entity spawner
+-- submenu comes from client/entity_spawner.lua.
 
 local Config = require('shared.config')
 local Permissions = require('shared.permissions')
@@ -30,7 +30,7 @@ end
 function MiscSettings.create()
     local self = {}
 
-    -- Public state (FunctionsController M9 + save_settings + events.lua).
+    -- Public state (FunctionsController + save_settings + events.lua).
     self.ShowSpeedoKmh = UserDefaults.get_bool('miscSpeedoKmh')
     self.ShowSpeedoMph = UserDefaults.get_bool('miscSpeedoMph')
     self.ShowCoordinates = false
@@ -585,7 +585,7 @@ function MiscSettings.create()
         end
     end
 
-    -- Entity spawner (appears once the M9 module lands).
+    -- Entity spawner submenu (client/entity_spawner.lua).
     if Permissions.is_allowed('MSEntitySpawner') then
         local EntitySpawner = try_require('client.entity_spawner')
         if EntitySpawner then

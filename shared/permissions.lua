@@ -1,5 +1,5 @@
 -- Port of SharedClasses/PermissionsManager.cs and SupplementaryPermissionManager.cs.
--- Contract: docs/contracts/permissions.md — ace names, parent-permission fallback,
+-- Contract: docs/contracts/permissions.md; ace names, parent-permission fallback,
 -- and the staff-only / use_permissions gates must match upstream exactly.
 --
 local Config = require('shared.config')
@@ -382,7 +382,7 @@ end
 local supplementary_set = { VWAll = true, PWAll = true, WWAll = true }
 
 -- Upstream GetPermissionAndParentPermissions: every permission is implied by
--- Everything; category members are additionally implied by their <XX>All —
+-- Everything; category members are additionally implied by their <XX>All,
 -- except the All and Menu members themselves (quirk preserved: <XX>All does
 -- NOT imply <XX>Menu). The <XX>All parent is only added when that member
 -- actually exists in the enum (upstream filters against Enum.GetValues).
@@ -457,7 +457,7 @@ end
 
 -- Builds the { [name] = bool } table pushed to a client. With the permission
 -- system disabled everyone gets everything, except the denylist entries which
--- are OMITTED entirely (not false) — upstream skips the dict.Add.
+-- are OMITTED entirely (not false); upstream skips the dict.Add.
 -- The upstream dev backdoor (vMenu.Dev + hardcoded identifier) is intentionally
 -- not ported; see docs/contracts/permissions.md.
 function Permissions.collect_for_player(player_handle)

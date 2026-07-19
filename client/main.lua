@@ -1,9 +1,8 @@
 -- Port of vMenu/MainMenu.cs: the client entrypoint. KVP cleanup, key
 -- mappings, the vmenuclient command, the permission-driven menu tree, and
--- the coords RPC. Menu submodules (client/menus/*) land in waves M7-M9;
--- until a module exists its top-level entry simply doesn't appear, but every
--- permission gate, button text, and binding below is already the exact
--- upstream structure.
+-- the coords RPC. Menu submodules live in client/menus/*; if a module is
+-- missing its top-level entry simply doesn't appear, but every permission
+-- gate, button text, and binding below is the exact upstream structure.
 
 local Util = require('shared.util')
 local Json = require('shared.json_compat')
@@ -592,8 +591,8 @@ function Main.set_permissions(payload)
     end
 
     -- Wait for the config options push, then build the menus. (Upstream's
-    -- loop condition is `!ConfigOptionsSetupComplete && !AddonPermissionSetup`
-    -- — either one completes the wait; quirk preserved.)
+    -- loop condition is `!ConfigOptionsSetupComplete && !AddonPermissionSetup`,
+    -- so either one completes the wait; quirk preserved.)
     CreateThread(function()
         while not State.config_options_setup_complete and not State.addon_permission_setup do
             Wait(100)
@@ -764,8 +763,8 @@ local function on_tick()
     if mp_ped == nil then
         return
     end
-    -- The create-character back-button protections land with the
-    -- MpPedCustomization menu port (M9); this tick gains that logic then.
+    -- The create-character back-button protections are handled by the
+    -- MpPedCustomization menu module.
 end
 
 -- ---------------------------------------------------------------------------
@@ -813,7 +812,7 @@ end
 Util.debug_log('client booted')
 
 -- ---------------------------------------------------------------------------
--- M3 verification demo: a menu exercising every item type, for side-by-side
+-- Verification demo: a menu exercising every item type, for side-by-side
 -- comparison against C# vMenu + MenuAPI. Gated behind the same fxmanifest
 -- flag upstream uses for its dev commands.
 -- ---------------------------------------------------------------------------

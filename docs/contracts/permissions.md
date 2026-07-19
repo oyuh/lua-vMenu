@@ -12,11 +12,11 @@ of the global gates.
 1. **Ace naming.** `vMenu.` + category expansion. Two-letter category prefixes map as:
    OP→OnlinePlayers, PO→PlayerOptions, VO→VehicleOptions, VS→VehicleSpawner, SV→SavedVehicles,
    PV→PersonalVehicle, PA→PlayerAppearance, TO→TimeOptions, WO→WeatherOptions, WP→WeaponOptions,
-   WL→WeaponLoadouts, MS→MiscSettings, VC→VoiceChat — e.g. `OPKick` → `vMenu.OnlinePlayers.Kick`.
+   WL→WeaponLoadouts, MS→MiscSettings, VC→VoiceChat. So `OPKick` becomes `vMenu.OnlinePlayers.Kick`.
    Everything else (`Everything`, `Staff`, `NoClip`, `DontKickMe`, `DontBanMe`) is `vMenu.<Name>`.
 2. **Implication (parents).** A permission is granted if the player has *any* of:
-   its own ace, `vMenu.Everything`, or — for category members whose suffix is neither `All` nor
-   `Menu` — the category's `<XX>All` ace. Quirk preserved on purpose: `<XX>All` does **not**
+   its own ace, `vMenu.Everything`, or (for category members whose suffix is neither `All` nor
+   `Menu`) the category's `<XX>All` ace. Quirk preserved on purpose: `<XX>All` does **not**
    imply `<XX>Menu`; menu visibility needs the Menu ace or Everything (upstream menus typically
    check `XXMenu or XXAll` explicitly at creation time instead).
 3. **Server side** checks `IsPlayerAceAllowed` per parent; **client side** checks the permission

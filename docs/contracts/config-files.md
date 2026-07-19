@@ -5,8 +5,8 @@ addon/whitelist loaders (upstream @ `49e53065`). Files ship verbatim in `config/
 with `LoadResourceFile(GetCurrentResourceName(), "config/<file>.json")`.
 
 **Error tolerance is part of the contract:** a missing/empty/corrupt file must log a warning
-(client: `vMenu:Notify` error; server: console) and degrade to empty data — never abort the
-resource.
+(client: `vMenu:Notify` error; server: console) and degrade to empty data. It should never
+abort the resource.
 
 ## `config/locations.json`
 
@@ -21,11 +21,11 @@ resource.
 }
 ```
 
-- Field names lowercase as shown (`spriteID` has the capital ID).
-- `coordinates` deserializes into CitizenFX `Vector3` — accepts `x`/`y`/`z` (Newtonsoft is
-  case-insensitive on match; we accept both cases, write lowercase).
-- `vMenu:SaveTeleportLocation` **appends** to this file server-side via `SaveResourceFile` —
-  the Lua server must preserve the existing structure when rewriting.
+- Field names are lowercase as shown (`spriteID` has the capital ID).
+- `coordinates` deserializes into CitizenFX `Vector3`. Newtonsoft is case-insensitive on
+  match, so we accept both cases and write lowercase.
+- `vMenu:SaveTeleportLocation` **appends** to this file server-side via `SaveResourceFile`,
+  so the Lua server must preserve the existing structure when rewriting.
 
 ## `config/addons.json`
 
@@ -37,12 +37,14 @@ resource.
 }
 ```
 
-Unknown keys ignored; missing keys = empty lists.
+Unknown keys are ignored; missing keys mean empty lists.
 
 ## `config/extras.json`
 
-Extra menu entries/toggles (shape owned by the extras loader — port 1:1 during M7 and extend
-this doc then).
+Per-vehicle extra labels: `{ "<model name>": { "<extra index>": "label" } }`. The loader
+(`set_extras` in `client/events.lua`) keys the result by model hash, keeps the indexes as
+string keys (matching how C#'s `Dictionary<int,string>` arrives in JSON), and warns about
+duplicate extra indexes for the same model.
 
 ## `config/model-whitelists.json`
 
@@ -55,16 +57,17 @@ this doc then).
 ```
 
 Each listed model requires the matching supplementary ace
-(`vMenu.<Category>.WhitelistedModels.<model>` or `.All`) — see
+(`vMenu.<Category>.WhitelistedModels.<model>` or `.All`). See
 [permissions.md](permissions.md).
 
 ## `config/tattoos.json` and `data/overlays.json`
 
-Tattoo/overlay collection metadata consumed by `TattoosData.cs` — schema documented when
-`scripts/gen-data` ports the data tables (M6). Ship the files unchanged.
+Tattoo/overlay collection metadata, same schema upstream's `TattoosData.cs` consumes. Loaded
+by `set_tattoos` in `client/events.lua` with the sorting half in `client/tattoos.lua`. Ship
+the files unchanged.
 
 ## `vmenu.log`
 
-Not config, but file I/O contract: when `vmenu_log_ban_actions` / `vmenu_log_kick_actions` are
-enabled the server appends `[\t<dd-MM-yyyy HH:mm:ss>\t] [BAN ACTION] <message>` lines to
-`vmenu.log` via `SaveResourceFile` (read-modify-write of the whole file).
+Not config, but a file I/O contract: when `vmenu_log_ban_actions` / `vmenu_log_kick_actions`
+are enabled the server appends `[\t<dd-MM-yyyy HH:mm:ss>\t] [BAN ACTION] <message>` lines to
+`vmenu.log` via `SaveResourceFile` (a read-modify-write of the whole file).

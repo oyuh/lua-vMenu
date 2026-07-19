@@ -1,6 +1,6 @@
 -- Port of vMenu/FunctionsController.cs (part 3 of 3): the MP character
 -- creator camera (per-menu framing, turn head/character, reverse), movement
--- blocking while the creator is open, and the world interactions — snowball
+-- blocking while the creator is open, and the world interactions: snowball
 -- pickups and helmet visor toggles.
 
 local Config = require('shared.config')

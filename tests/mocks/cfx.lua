@@ -502,7 +502,7 @@ local NATIVE_DEFAULTS = {
     { 'IsEntityInWater', false },
     { 'GetHashNameForProp', 0 },
     { 'GetShopPedApparelVariantPropCount', 0 },
-    -- functions controller ticks (M9)
+    -- functions controller ticks
     { 'SetPedCanLosePropsOnDamage' },
     { 'SetSuperJumpThisFrame' },
     { 'SetPedCanRagdoll' },

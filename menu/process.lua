@@ -9,7 +9,8 @@ require('menu.render')
 local Process = {}
 
 -- FiveM control ids (CitizenFX.Core Control enum values used by MenuAPI).
--- Ids marked "verify" get double-checked during the in-game M3 checklist.
+-- Ids marked "verify" get double-checked during the in-game checklist
+-- (docs/VERIFY.md).
 local Controls = {
     FrontendAccept = 201,
     PhoneCancel = 177,
@@ -407,7 +408,7 @@ local function is_right_held()
 end
 
 -- Hold-to-scroll: 200ms between steps, accelerating to 150/100/50/25ms after
--- 3/6/26/61 steps — exactly MenuAPI's ramp.
+-- 3/6/26/61 steps, exactly MenuAPI's ramp.
 local function hold_repeat(step, keep_holding)
     step()
     local time = GetGameTimer()

@@ -32,7 +32,7 @@ diffs, then bump the pin here.
 | `vMenu/MpPedDataManager.cs` | `client/mp_ped_data.lua` |
 | `vMenu/EntitySpawner.cs` | `client/entity_spawner.lua` |
 | `vMenu/menus/<Name>.cs` | `client/menus/<name>.lua` (one file per upstream menu) |
-| `vMenu/data/*.cs`, `vMenu/data/overlays.json` | `client/data/*.lua` — **generated** by `scripts/gen-data.ps1`, do not hand-edit. Runtime halves (ValidWeapons list building, TattoosData sorting) live in `client/weapons.lua` / `client/tattoos.lua` |
+| `vMenu/data/*.cs`, `vMenu/data/overlays.json` | `client/data/*.lua` (**generated** by `scripts/gen-data.ps1`, don't hand-edit). Runtime halves (ValidWeapons list building, TattoosData sorting) live in `client/weapons.lua` / `client/tattoos.lua` |
 | `vMenuServer/MainServer.cs` | `server/main.lua` (DebugLog class → `server/log.lua`) |
 | `vMenuServer/BanManager.cs` | `server/bans.lua` (+ `server/datetime.lua` for the C# DateTime semantics) |
 | `MenuAPI.dll` (TomGrobbe/MenuAPI) | `menu/*.lua` (full reimplementation, 1:1 API) |
@@ -40,7 +40,8 @@ diffs, then bump the pin here.
 
 ## Porting workflow
 
-1. `pwsh scripts/upstream-diff.ps1` — fetches upstream, diffs pinned..HEAD, lists affected Lua modules.
+1. `pwsh scripts/upstream-diff.ps1` fetches upstream, diffs pinned..HEAD, and lists the
+   affected Lua modules.
 2. Port each diff hunk into the mapped module(s). Menu diffs map nearly line-for-line because
    `menu/` mirrors MenuAPI's API.
 3. If a diff touches `vMenu/data/`, just re-run `scripts/gen-data` instead of porting by hand.

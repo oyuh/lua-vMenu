@@ -2,7 +2,7 @@
 
 This project is a Lua rewrite of **vMenu** and is bound by the original vMenu license terms below.
 
-Original work: vMenu by Tom Grobbe — https://www.vespura.com/ — https://github.com/tomgrobbe/vMenu
+Original work: vMenu by Tom Grobbe (https://www.vespura.com/, https://github.com/tomgrobbe/vMenu)
 
 ## Original vMenu license (applies to this derivative)
 

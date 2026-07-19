@@ -1,6 +1,6 @@
 -- Port of vMenu/Notification.cs: Notify (above-minimap notifications),
 -- Subtitle, HelpMessage, and the CommonErrors message templates. All colour
--- prefixes and wording are part of the user-visible surface — keep exact.
+-- prefixes and wording are part of the user-visible surface, so keep them exact.
 
 local Notification = {}
 

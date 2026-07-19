@@ -1,6 +1,6 @@
 -- Port of vMenu/PlayerLists.cs. Two modes:
---   * native  — players in scope, straight from GetActivePlayers()
---   * infinity — OneSync Infinity servers, where the full list comes from the
+--   * native: players in scope, straight from GetActivePlayers()
+--   * infinity: OneSync Infinity servers, where the full list comes from the
 --     server (vMenu:RequestPlayerList → vMenu:ReceivePlayerList) and is
 --     merged with the local (nearby) players
 -- Each entry mirrors IPlayer: handle, server_id, ped, is_local, is_active,

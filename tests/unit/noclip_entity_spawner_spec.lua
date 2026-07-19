@@ -1,5 +1,5 @@
--- M9 part 1 specs: noclip toggling, the entity spawner placement flow, and
--- the MultiplayerPedData record shape (against the golden fixture).
+-- Specs for noclip toggling, the entity spawner placement flow, and the
+-- MultiplayerPedData record shape (against the golden fixture).
 
 local CfxMock = require('tests.mocks.cfx')
 

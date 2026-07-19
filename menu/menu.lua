@@ -1,4 +1,4 @@
--- Port of MenuAPI/Menu.cs — menu state, item management, navigation, and
+-- Port of MenuAPI/Menu.cs: menu state, item management, navigation, and
 -- event dispatch. Drawing (menu/draw.lua) consumes this state per frame.
 --
 -- Parity notes:

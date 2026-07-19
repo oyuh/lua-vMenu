@@ -3,7 +3,7 @@
 Source: `vMenu/MainMenu.cs`, `vMenu/EntitySpawner.cs`, `vMenu/menus/MiscSettings.cs`,
 `vMenuServer/MainServer.cs` (upstream @ `49e53065`).
 
-## Key mappings — names are persistence keys
+## Key mappings (the names are persistence keys)
 
 FiveM stores each player's rebound keys **per mapping command name**. Registering different names
 would silently reset every player's binds, so these are exact:
@@ -14,7 +14,8 @@ would silently reset every player's binds, so these are exact:
 | `vMenu:{id}:MenuToggle` | `vMenu Toggle Button` | `keyboard` | `vmenu_menu_toggle_key` (`M`) |
 | `vMenu:{id}:MenuToggle` | `vMenu Toggle Button Controller` | `pad_digitalbuttonany` | `start_index` |
 
-`{id}` = `vmenu_keymapping_id` convar (default `"Default"`, whitespace ⇒ `"Default"`). The
+`{id}` is the `vmenu_keymapping_id` convar (default `"Default"`; whitespace falls back to
+`"Default"`). The
 MenuAPI-level toggle key is disabled (`MenuToggleKey = -1`); toggling happens only through these
 registered commands. Both mapping commands are registered as **non-restricted** commands whose
 handlers re-check permissions (`NoClip` perm; menu enabled state).
@@ -33,7 +34,7 @@ handlers re-check permissions (`NoClip` perm; menu enabled state).
 
 | Command | Behavior |
 |---|---|
-| `vmenuserver` | **restricted** console command; subcommands parsed from args (weather/time/ban management etc. — port the full arg grammar with MainServer in M4) |
+| `vmenuserver` | **restricted** console command; subcommands parsed from args (weather/time/ban management etc.); the full arg grammar lives in `server/main.lua`, ported from MainServer |
 
 ## fxmanifest metadata knobs (not convars)
 

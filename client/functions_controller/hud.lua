@@ -1,4 +1,4 @@
--- Port of vMenu/FunctionsController.cs (part 2 of 3): HUD/world ticks —
+-- Port of vMenu/FunctionsController.cs (part 2 of 3): HUD/world ticks for
 -- misc settings text (coords/location/time/speed), radar & camera locks,
 -- keybinds (waypoint tp, drift, pointing, recording, bigmap), death
 -- notifications, voice chat, time/weather menu sync, player blips, overhead

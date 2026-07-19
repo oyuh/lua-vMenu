@@ -1,7 +1,7 @@
 -- Cross-module client state. Upstream keeps these as statics scattered over
 -- MainMenu / EventManager / the menu classes; here they live in one dependency-
 -- free module so client/events.lua, client/main.lua, and the menu modules
--- (M7+) can share them without require cycles.
+-- can share them without require cycles.
 
 return {
     -- MainMenu statics
@@ -37,6 +37,6 @@ return {
     -- upstream's fixed category order).
     allowed_vehicle_categories = {},
 
-    -- FunctionsController.entityRange (dev tools dimensions radius, M9 tick).
+    -- FunctionsController.entityRange (dev tools dimensions radius tick).
     entity_range = 2000.0,
 }

@@ -1,7 +1,7 @@
 -- Port of CitizenFX.Core's VehicleMod localized-name lookups
 -- (LocalizedModTypeName / GetLocalizedModName). vMenu's dynamic Mod Menu
 -- relies on these for its list labels, so the GXT-entry logic is preserved
--- exactly — including the per-model special cases and the horn name table.
+-- exactly, including the per-model special cases and the horn name table.
 
 local ModNames = {}
 

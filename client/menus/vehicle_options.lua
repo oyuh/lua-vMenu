@@ -3,7 +3,7 @@
 -- underglow, doors/windows/extras/liveries, plates, radio, and delete.
 --
 -- Public PascalCase fields on the instance are read by FunctionsController
--- (M9) and UserDefaults.save_settings.
+-- and UserDefaults.save_settings.
 
 local Config = require('shared.config')
 local Permissions = require('shared.permissions')

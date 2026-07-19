@@ -1,4 +1,4 @@
--- Port of MenuAPI/items/*.cs — the menu item model.
+-- Port of MenuAPI/items/*.cs: the menu item model.
 --
 -- Public API deliberately mirrors MenuAPI (PascalCase members, 0-based
 -- indices) so upstream vMenu menu code ports line-for-line. Rendering state
@@ -86,7 +86,7 @@ function MenuItem.new(text, description)
 end
 
 -- 0-based index within the parent menu's active (possibly filtered) item
--- list, -1 when orphaned — exactly like MenuAPI's computed Index property.
+-- list, -1 when orphaned, exactly like MenuAPI's computed Index property.
 function MenuItem:Index()
     if self.ParentMenu then
         return self.ParentMenu:IndexOf(self)
@@ -218,7 +218,7 @@ function MenuSliderItem.new(text, min, max, position, description)
     item.ShowDivider = false
     item.SliderLeftIcon = Items.Icon.NONE
     item.SliderRightIcon = Items.Icon.NONE
-    -- MenuAPI slider bar colors ({r,g,b,a}); verify against C# in-game (M3 checklist)
+    -- MenuAPI slider bar colors ({r,g,b,a}); verify against C# in-game (docs/VERIFY.md)
     item.BackgroundColor = { 23, 55, 93, 255 }
     item.BarColor = { 93, 182, 229, 255 }
     return setmetatable(item, MenuSliderItem)

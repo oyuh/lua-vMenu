@@ -1,6 +1,6 @@
 -- Port of SharedClasses/ConfigManager.cs.
 -- All server settings are convars (set in permissions.cfg with setr).
--- Contract: docs/contracts/convars.md — names, defaults, and coercion rules
+-- Contract: docs/contracts/convars.md; names, defaults, and coercion rules
 -- must match upstream exactly so existing server configs keep working.
 
 local Config = {}
@@ -116,7 +116,7 @@ function Config.get_string(setting, default)
 end
 
 -- Port of ConfigManager.GetLocations: reads config/locations.json with the
--- contract's error tolerance — missing/empty/corrupt input degrades to empty
+-- contract's error tolerance: missing/empty/corrupt input degrades to empty
 -- lists plus an error string for the caller to surface (client notifies,
 -- server logs; this shared module does neither).
 function Config.get_locations()

@@ -1,7 +1,7 @@
 -- Port of vMenu/menus/PlayerOptions.cs: player toggles, wanted/armor/blood,
 -- the vehicle auto-pilot submenu, and scenarios. The toggles set public
 -- fields here; the per-frame enforcement (god mode etc.) is the
--- FunctionsController port (M9).
+-- FunctionsController port.
 
 local Permissions = require('shared.permissions')
 local Common = require('client.common')
@@ -105,7 +105,7 @@ local DRIVING_FLAG_NAMES = {
 function PlayerOptions.create()
     local self = {}
 
-    -- Public state (FunctionsController M9 + UserDefaults.save_settings).
+    -- Public state (FunctionsController + UserDefaults.save_settings).
     self.PlayerGodMode = UserDefaults.get_bool('playerGodMode')
     self.PlayerInvisible = false
     self.PlayerStamina = UserDefaults.get_bool('unlimitedStamina')

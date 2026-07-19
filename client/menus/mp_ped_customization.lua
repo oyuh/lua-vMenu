@@ -462,7 +462,7 @@ function MpPedCustomization.create()
     self.apply_saved_data_to_ped = apply_saved_data_to_ped
 
     -- SpawnSavedPed: spawns from current_character (set it first!). The
-    -- restore_weapons parameter is unused upstream too — the temp loadout is
+    -- restore_weapons parameter is unused upstream too; the temp loadout is
     -- always restored.
     local function spawn_saved_ped(_restore_weapons)
         if (current_character.Version or 0) < 1 then
@@ -1183,7 +1183,7 @@ function MpPedCustomization.create()
         SetFacialIdleAnimOverride(ped, current_character.FacialExpression, nil)
 
         -- Upstream restores the facial expression list via ElementAt(6),
-        -- which is actually the Character Props button — the type check
+        -- which is actually the Character Props button, so the type check
         -- fails and nothing happens. Quirk preserved.
         local maybe_list = create_character_menu:GetMenuItems()[7]
         if maybe_list ~= nil and maybe_list.ListItems ~= nil then

@@ -1,7 +1,7 @@
--- Port of MenuAPI/MenuController.cs — menu registry, submenu binding, and
+-- Port of MenuAPI/MenuController.cs: menu registry, submenu binding, and
 -- global menu state flags. Input processing and per-frame drawing attach to
--- this in the in-game layer (menu/draw.lua + the controller tick, later in
--- M3); everything here is game-independent.
+-- this in the in-game layer (menu/draw.lua + the controller tick);
+-- everything here is game-independent.
 
 local Controller = {
     Menus = {},

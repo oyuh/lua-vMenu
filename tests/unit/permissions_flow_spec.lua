@@ -134,7 +134,7 @@ describe('permission sync flow', function()
         cfx:grant_ace('42', 'vMenu.OnlinePlayers.All')
         cfx:grant_ace('42', 'vMenu.NoClip')
 
-        -- Client registers its handler (as client/events.lua will in M5).
+        -- Client registers its handler (as client/events.lua does).
         RegisterNetEvent('vMenu:SetPermissions', function(payload)
             Permissions.set_from_json(payload)
         end)

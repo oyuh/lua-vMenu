@@ -1,5 +1,5 @@
 -- Port of vMenu/menus/VoiceChat.cs: voice chat toggles, proximity, and
--- channels. The FunctionsController tick that applies these (M9) reads the
+-- channels. The FunctionsController tick that applies these reads the
 -- public fields on the instance.
 
 local Config = require('shared.config')
