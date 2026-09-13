@@ -68,7 +68,9 @@ function VehicleSpawner.create()
         menu:AddMenuItem(spawn_by_name)
     end
     menu:AddMenuItem(spawn_in_veh)
-    menu:AddMenuItem(replace_prev)
+    if Permissions.is_allowed('VSDisableReplacePrevious') then
+        menu:AddMenuItem(replace_prev)
+    end
 
     -- Addon vehicles submenu.
     local addon_cars_menu = Menu.new('Addon Vehicles', 'Spawn An Addon Vehicle')

@@ -9,8 +9,8 @@ diffs, then bump the pin here.
 | | |
 |---|---|
 | Repo | https://github.com/tomgrobbe/vMenu |
-| Commit | `49e53065b66f1fe82b19a825c41866a3e7fb9663` |
-| Date | 2026-07-07 |
+| Commit | `9a17371432c78894b5caa69be7a6226de776b3c7` |
+| Date | 2026-09-12 |
 
 ## File → module map
 

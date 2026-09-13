@@ -224,6 +224,28 @@ describe('vehicle options menu', function()
         assert.same({ 500, 1.0 }, last_call('SetVehicleEnginePowerMultiplier'))
     end)
 
+    it('names dynamic mods by the vehicle mod slot label when it has one', function()
+        grant({ VOAll = true })
+        enter_vehicle()
+        cfx:stub_native('GetNumVehicleMods', function(_vehicle, mod_type)
+            return (mod_type == 0 or mod_type == 1) and 2 or 0
+        end)
+        cfx:stub_native('GetModSlotName', function(_vehicle, mod_type)
+            return mod_type == 0 and 'WING_LBL' or ''
+        end)
+        cfx:stub_native('GetLabelText', function(label)
+            return label == 'WING_LBL' and 'Rear Wing' or label
+        end)
+        local instance = create_instance()
+        instance.update_mods()
+
+        assert.is_not_nil(find_item(instance.VehicleModMenu, 'Rear Wing'))
+        assert.is_nil(find_item(instance.VehicleModMenu, 'Spoilers'))
+        -- no slot label: falls back to the stock type name
+        local stock_name = require('client.vehicle_mod_names').localized_mod_type_name(500, 1)
+        assert.is_not_nil(find_item(instance.VehicleModMenu, stock_name))
+    end)
+
     it('builds the dynamic mod menu and applies mod selections', function()
         grant({ VOAll = true })
         enter_vehicle()

@@ -1831,7 +1831,13 @@ function VehicleOptions.create()
 
         -- dynamic (vehicle-specific) mods
         for _, mod in ipairs(VehicleCommon.get_all_vehicle_mods(vehicle)) do
-            local type_name = ModNames.localized_mod_type_name(vehicle, mod.mod_type)
+            -- Prefer the vehicle's own mod slot label (addon mod kits name their
+            -- slots), then the stock localized type name.
+            local raw_label = GetModSlotName(vehicle, mod.mod_type)
+            local type_name = raw_label ~= nil and raw_label ~= '' and GetLabelText(raw_label) or nil
+            if type_name == nil or type_name == 'NULL' then
+                type_name = ModNames.localized_mod_type_name(vehicle, mod.mod_type)
+            end
             local modlist = {}
             local mod_count = GetNumVehicleMods(vehicle, mod.mod_type)
             modlist[#modlist + 1] = ('Stock %s [1/%d]'):format(type_name, mod_count + 1)

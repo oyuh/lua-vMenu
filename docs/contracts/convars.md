@@ -44,7 +44,7 @@ Types are how the code reads them; "template default" is the value in the shippe
 | `vmenu_disable_entity_outlines_tool` | bool | `false` |
 | `vmenu_disable_player_stats_setup` | bool | `false` |
 | `vmenu_using_chameleon_colours` | bool | `false` |
-| `vmenu_vehicle_spawn_delay` | int (seconds, default 5) | (not in template) |
+| `vmenu_vehicle_spawn_delay` | int (seconds) | `5` |
 | `vmenu_delete_vehicle_distance` | float | `5.0` |
 | `vmenu_prevent_extras_when_damaged` | bool | `false` |
 | `vmenu_allowed_engine_damage_for_extra_change` | int | `800` |
@@ -71,9 +71,3 @@ Types are how the code reads them; "template default" is the value in the shippe
 | `vmenu_current_minute` | int | `0` |
 | `vmenu_sync_to_machine_time` | bool | `false` |
 | `vmenu_override_voicechat_default_range` | float (meters, 0.0 = off) | `0.0` |
-
-### Known template oddity
-
-`vmenu_vehicle_spawn_rate_limit` appears in the shipped `permissions.cfg` but is **never read**
-by the code at the pinned commit (rate limiting is the `VSBypassRateLimit` ace). We keep it in
-the template for byte-compatibility and likewise don't read it.
