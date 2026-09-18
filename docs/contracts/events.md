@@ -1,14 +1,14 @@
 # Contract: event protocol
 
 Source: `vMenuServer/MainServer.cs`, `vMenuServer/BanManager.cs`, `vMenu/EventManager.cs`,
-`vMenu/MainMenu.cs`, `vMenu/FunctionsController.cs` (upstream @ `49e53065`).
+`vMenu/MainMenu.cs`, `vMenu/FunctionsController.cs` (upstream @ `e0f3b92a`).
 
-Third-party resources integrate with vMenu through these events. Every name, argument order,
-and argument type must match. JSON-string payloads (not tables!) stay JSON strings, since
-upstream serializes with Newtonsoft and the shapes are part of the contract (see
-[kvp-saves.md](kvp-saves.md) for record schemas).
+Third-party resources hook into vMenu through these events, so every name, argument order, and
+argument type has to match. JSON-string payloads stay JSON strings, not tables: upstream
+serializes with Newtonsoft and the shapes are part of the contract. Record schemas live in
+[kvp-saves.md](kvp-saves.md).
 
-Types are the msgpack types on the wire: `int`, `float`, `bool`, `string`, `vector3`
+Types below are the msgpack types on the wire: `int`, `float`, `bool`, `string`, `vector3`
 (CitizenFX Vector3), `funcref` (net callback), `object[]`.
 
 ## Client → Server
@@ -80,30 +80,32 @@ Types are the msgpack types on the wire: `int`, `float`, `bool`, `string`, `vect
 | `playerSpawned` | client | first-spawn appearance/default-character restore |
 | `chatMessage` | both | staff-log and PM display via chat resource |
 
-## Security model (must be preserved)
+## Security model (keep it)
 
 Server handlers re-check ACE permissions on every call and treat an unauthorized trigger as a
-cheating attempt: `BanCheater(source)` auto-bans when `vmenu_auto_ban_cheaters` is enabled.
-The Lua server must never trust a client-supplied permission claim.
+cheating attempt. `BanCheater(source)` auto-bans when `vmenu_auto_ban_cheaters` is on. The Lua
+server never trusts a client-supplied permission claim.
 
-### Intentional hardening deviations from upstream
+### Hardening deviations from upstream, on purpose
 
-Upstream leaves a handful of server handlers ungated, relying on the stock client to only send
-them when authorized. A modded client bypasses that, so the Lua rewrite adds server-side checks.
-These are deliberate behavioral differences (like the removed dev backdoor in
-[permissions.md](permissions.md)); the stock client is unaffected because it already only sends
-these when the player holds the permission.
+Upstream leaves a few server handlers ungated and trusts the stock client to only send them
+when the player is authorized. A modded client walks straight through that, so the Lua rewrite
+checks server side. These are deliberate behavior differences, same category as the removed dev
+backdoor in [permissions.md](permissions.md). Stock clients notice nothing, since they already
+only send these when the player holds the permission.
 
-- **`vMenu:RequestBanList`** now requires `OPViewBannedPlayers`/`OPUnban`/`OPAll`/`Everything`.
-  Upstream replied to any caller, leaking every banned player's full identifier set (including
-  `ip:`), ban reasons, and staff names. Unauthorized ⇒ BanCheater.
-- **`vMenu:GetPlayerIdentifiers`** now requires `OPIdentifiers`. Read-only, so unauthorized
-  callers get `[]` (no auto-ban), matching the `GetPlayerCoords` pattern. `ip:` stays stripped.
-- **`vMenu:RequestPlayerList`** now requires `OPMenu` (the only place the client sends it).
-  Read-only: unauthorized callers still get a reply (empty list) so the client's request wait
-  resolves.
-- **`vMenu:ClearArea`** now requires `MSClearArea`. Upstream had no check, letting any client
-  broadcast an area wipe of other players' nearby entities. Unauthorized ⇒ BanCheater.
-- **`vMenu:UpdateServerTime`** clamps the client-supplied `hour`/`minute` to `0-23`/`0-59`
-  integers before the smooth-transition loop. Out-of-range or non-integer values would otherwise
-  never match the clamped current hour and spin the loop forever, hanging the thread (DoS).
+- **`vMenu:RequestBanList`** now wants `OPViewBannedPlayers`/`OPUnban`/`OPAll`/`Everything`.
+  Upstream replied to anyone who asked, handing over every banned player's full identifier set
+  (`ip:` included), ban reasons, and staff names. Unauthorized callers get BanCheater.
+- **`vMenu:GetPlayerIdentifiers`** now wants `OPIdentifiers`. It's read-only, so unauthorized
+  callers get `[]` and no auto-ban, matching the `GetPlayerCoords` pattern. `ip:` stays
+  stripped.
+- **`vMenu:RequestPlayerList`** now wants `OPMenu`, the only permission the client sends it
+  under. Read-only again: unauthorized callers still get a reply, an empty list, so the
+  client's request wait resolves instead of hanging.
+- **`vMenu:ClearArea`** now wants `MSClearArea`. Upstream had no check at all, so any client
+  could broadcast an area wipe of other players' nearby entities. Unauthorized callers get
+  BanCheater.
+- **`vMenu:UpdateServerTime`** clamps the client-supplied `hour` and `minute` to `0-23` and
+  `0-59` integers before the smooth-transition loop. Out-of-range or non-integer values never
+  match the clamped current hour, so the loop spins forever and hangs the thread. That's a DoS.

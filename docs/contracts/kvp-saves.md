@@ -2,29 +2,29 @@
 
 Sources: `vMenu/StorageManager.cs`, `vMenu/CommonFunctions.cs` (VehicleInfo/PedInfo, save/load),
 `vMenu/MpPedDataManager.cs`, `vMenu/UserDefaults.cs`, `vMenu/menus/{SavedVehicles,MpPedCustomization,WeaponLoadouts}.cs`,
-`vMenuServer/BanManager.cs` (upstream @ `49e53065`).
+`vMenuServer/BanManager.cs` (upstream @ `e0f3b92a`).
 
 **Why this works at all:** FiveM KVP storage is keyed by *resource name*. Deployed as `vMenu`,
 the Lua rewrite reads the same physical store the C# version wrote. Everything below is about
 keeping the *values* byte-compatible with Newtonsoft.Json output.
 
-Golden fixtures live in `tests/fixtures/`. They were derived from the struct definitions and
-should be re-validated against a real C# vMenu save whenever the save schemas are touched.
+Golden fixtures live in `tests/fixtures/`. They came out of the struct definitions, so
+re-validate them against a real C# vMenu save whenever a save schema moves.
 
-## Newtonsoft encoding rules we must reproduce
+## Newtonsoft encoding rules to reproduce
 
-- Public **fields** serialize under their exact C# names. That's mixed camelCase/PascalCase per
-  struct, no renaming, and no ordering requirements (JSON objects are unordered).
-- Public **read-only properties** are *also serialized* on save and *ignored* on load
-  (ValidWeapon's `GetMaxAmmo`, `Accuracy`, `Damage`, `Range`, `Speed`).
+- Public **fields** serialize under their exact C# names. Mixed camelCase and PascalCase per
+  struct, no renaming, and order doesn't matter since JSON objects are unordered.
+- Public **read-only properties** serialize on save and get ignored on load: ValidWeapon's
+  `GetMaxAmmo`, `Accuracy`, `Damage`, `Range`, `Speed`.
 - Enums serialize as **numbers** (`Perm`, `Icon` fields).
 - `Dictionary<int, T>` becomes a JSON object with **string keys** (`"0": …`).
 - `KeyValuePair<A, B>` becomes `{"Key": a, "Value": b}`.
-- `DateTime` becomes ISO `"3000-01-01T00:00:00"` (no timezone suffix).
+- `DateTime` becomes ISO `"3000-01-01T00:00:00"`, no timezone suffix.
 - `Guid` becomes a lowercase hyphenated string.
-- `uint` model hashes are full 32-bit values (they can exceed 2^31, so Lua must not go through
-  signed-32 truncation).
-- Loader tolerance: upstream wraps loads in try/catch and returns empty/default on bad JSON.
+- `uint` model hashes are full 32-bit values. They can exceed 2^31, so don't let Lua truncate
+  them to signed 32.
+- Loader tolerance: upstream wraps loads in try/catch and returns empty or default on bad JSON.
   Never crash on a corrupt save.
 
 ## Client KVP keys
@@ -49,9 +49,9 @@ should be re-validated against a real C# vMenu save whenever the save schemas ar
 | float | `SetResourceKvpFloat` | native float KVP |
 | string | `SetResourceKvp` | plain string |
 
-The Lua port must **write** `"True"`/`"False"` exactly and read them case-correctly, and must
-use the matching typed getter (`GetResourceKvpInt` vs `...String` vs `...Float`) per key. The
-key names (`settings_playerGodMode`, `settings_miscRightAlignMenu`, …) are enumerated in
+The Lua port writes `"True"`/`"False"` exactly, reads them with the same casing, and uses the
+matching typed getter per key (`GetResourceKvpInt` vs `...String` vs `...Float`). Key names
+(`settings_playerGodMode`, `settings_miscRightAlignMenu`, and the rest) are listed in
 `client/user_defaults.lua`.
 
 ## Server KVP keys
@@ -61,8 +61,8 @@ key names (`settings_playerGodMode`, `settings_miscRightAlignMenu`, …) are enu
 | `vmenu_ban_<uuid>` | `BanRecord` JSON | `ban_record.json` |
 
 `BanRecord`: `{playerName, identifiers: string[], bannedUntil: DateTime, banReason, bannedBy,
-uuid}`. Permanent bans use `bannedUntil` year ≥ 3000 (written as 3000-01-01), and the ban uuid
-is appended to `banReason` as `"\nYour ban id: <uuid>"` at construction.
+uuid}`. Permanent bans carry a `bannedUntil` year of 3000 or later, written as 3000-01-01, and
+the ban uuid gets appended to `banReason` as `"\nYour ban id: <uuid>"` at construction.
 
 ## Struct field references
 
@@ -81,8 +81,8 @@ is appended to `banReason` as `"\nYour ban id: <uuid>"` at construction.
 `PedHeadBlendData` (CitizenFX struct; field names should be re-checked against a real save),
 `DrawableVariations{clothes}`, `PropVariations{props}` (int-keyed `{Key,Value}` pairs),
 `FaceShapeFeatures{features}` (int-keyed floats), `PedAppearance` (camelCase style/color/opacity
-fields + `HairOverlay {Key,Value}`), **`PedTatttoos`** (the triple-t typo is load-bearing;
-upstream comments "DO NOT RENAME"; nine `[{Key,Value}]` lists), `PedFacePaints` (empty object),
+fields plus `HairOverlay {Key,Value}`), **`PedTatttoos`** (the triple-t typo is load-bearing,
+upstream comments "DO NOT RENAME", nine `[{Key,Value}]` lists), `PedFacePaints` (empty object),
 `IsMale`, `ModelHash` (uint), `SaveName`, `Version`, `WalkingStyle`, `FacialExpression`,
 `Category`.
 

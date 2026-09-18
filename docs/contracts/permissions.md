@@ -1,39 +1,39 @@
 # Contract: ACE permissions
 
 Source: `SharedClasses/PermissionsManager.cs`, `SharedClasses/SupplementaryPermissionManager.cs`
-(upstream @ `49e53065`). Implemented by `shared/permissions.lua`.
+(upstream @ `e0f3b92a`). Implemented by `shared/permissions.lua`.
 
-An existing `permissions.cfg` must produce **identical menu visibility and action gating** in the
-Lua rewrite. That means identical ace names, identical implication rules, and identical behavior
-of the global gates.
+An existing `permissions.cfg` has to produce **the same menu visibility and action gating**
+here as it does upstream. Same ace names, same implication rules, same behavior from the global
+gates.
 
 ## Resolution rules
 
-1. **Ace naming.** `vMenu.` + category expansion. Two-letter category prefixes map as:
+1. **Ace naming.** `vMenu.` plus the expanded category. The two-letter prefixes map as
    OP→OnlinePlayers, PO→PlayerOptions, VO→VehicleOptions, VS→VehicleSpawner, SV→SavedVehicles,
    PV→PersonalVehicle, PA→PlayerAppearance, TO→TimeOptions, WO→WeatherOptions, WP→WeaponOptions,
    WL→WeaponLoadouts, MS→MiscSettings, VC→VoiceChat. So `OPKick` becomes `vMenu.OnlinePlayers.Kick`.
    Everything else (`Everything`, `Staff`, `NoClip`, `DontKickMe`, `DontBanMe`) is `vMenu.<Name>`.
-2. **Implication (parents).** A permission is granted if the player has *any* of:
-   its own ace, `vMenu.Everything`, or (for category members whose suffix is neither `All` nor
-   `Menu`) the category's `<XX>All` ace. Quirk preserved on purpose: `<XX>All` does **not**
-   imply `<XX>Menu`; menu visibility needs the Menu ace or Everything (upstream menus typically
-   check `XXMenu or XXAll` explicitly at creation time instead).
-3. **Server side** checks `IsPlayerAceAllowed` per parent; **client side** checks the permission
-   dictionary pushed by the server, with a local memo cache.
-4. **Staff-only gate.** If `vmenu_menu_staff_only` is true, the client returns false for every
-   permission unless `Staff` or `Everything` was granted.
-5. **Permissions disabled mode.** If `vmenu_use_permissions` is false, the server grants
-   everyone everything **except**: `Everything`, `OPAll`, `OPKick`, `OPKill`, `OPPermBan`,
-   `OPTempBan`, `OPUnban`, `OPIdentifiers`, `OPViewBannedPlayers`.
-6. **Sync.** On join (and on request) the server serializes `{ [PermissionName] = bool }` to
-   JSON and fires `vMenu:SetPermissions`; supplementary permissions go via
-   `vMenu:SetSupplementaryPermissions` with the same shape. See
-   [events.md](events.md) for ordering (`SetConfigOptions` and `UpdateTeleportLocations` follow).
+2. **Implication (parents).** A player has a permission if they hold *any* of: its own ace,
+   `vMenu.Everything`, or the category's `<XX>All` ace when the suffix is neither `All` nor
+   `Menu`. One quirk is kept on purpose: `<XX>All` does **not** imply `<XX>Menu`. Menu
+   visibility wants the Menu ace or Everything, and upstream menus mostly check
+   `XXMenu or XXAll` at creation time instead.
+3. **Server side** checks `IsPlayerAceAllowed` per parent. **Client side** checks the permission
+   dictionary the server pushed, with a local memo cache.
+4. **Staff-only gate.** With `vmenu_menu_staff_only` true, the client returns false for every
+   permission unless `Staff` or `Everything` came through.
+5. **Permissions disabled mode.** With `vmenu_use_permissions` false, the server grants everyone
+   everything **except** `Everything`, `OPAll`, `OPKick`, `OPKill`, `OPPermBan`, `OPTempBan`,
+   `OPUnban`, `OPIdentifiers`, and `OPViewBannedPlayers`.
+6. **Sync.** On join, and on request, the server serializes `{ [PermissionName] = bool }` to
+   JSON and fires `vMenu:SetPermissions`. Supplementary permissions follow through
+   `vMenu:SetSupplementaryPermissions` with the same shape. [events.md](events.md) has the
+   ordering, with `SetConfigOptions` and `UpdateTeleportLocations` after.
 
 ## Supplementary (model-whitelist) permissions
 
-Separate string-keyed system with three members and their own ace expansion:
+A separate string-keyed system, three members, its own ace expansion:
 
 | Permission | Ace name | Client fallback when unset |
 |---|---|---|
@@ -41,18 +41,18 @@ Separate string-keyed system with three members and their own ace expansion:
 | `PWAll` | `vMenu.PlayerAppearance.WhitelistedModels.All` | granted if `PAAll` is allowed |
 | `WWAll` | `vMenu.WeaponOptions.WhitelistedModels.All` | granted if `WPAll` is allowed |
 
-Per-model whitelist aces (`vMenu.<Category>.WhitelistedModels.<model>`) are checked dynamically
-against `config/model-whitelists.json` entries; the parent rule (`Everything`, `<XX>All`) applies
-with only the `All` suffix excluded.
+Per-model whitelist aces (`vMenu.<Category>.WhitelistedModels.<model>`) get checked at runtime
+against `config/model-whitelists.json` entries. The parent rule (`Everything`, `<XX>All`)
+applies, with only the `All` suffix excluded.
 
-## Intentional deviation: no dev backdoor
+## Deviation on purpose: no dev backdoor
 
-Upstream `SetPermissionsForPlayer` grants `Everything` to a hardcoded player identifier hash
-(`4510587c…`, the original author) when the server has granted the `vMenu.Dev` ace **and** debug
-mode is on. The Lua rewrite does **not** port this backdoor. Nothing else references
-`vMenu.Dev`. This is the only intentional behavioral difference in the permission system.
+Upstream's `SetPermissionsForPlayer` grants `Everything` to one hardcoded player identifier
+hash (`4510587c…`, the original author) when the server has granted the `vMenu.Dev` ace **and**
+debug mode is on. This rewrite doesn't port that. Nothing else references `vMenu.Dev`. It's the
+only deliberate behavior difference in the permission system.
 
-## Full permission → ace table
+## Full permission to ace table
 
 <!-- GEN-BEGIN ace-table (run scripts/gen-permissions.ps1 to update) -->
 | Permission | Ace name |

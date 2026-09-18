@@ -1,26 +1,28 @@
 # Contract: convars
 
-Source: `SharedClasses/ConfigManager.cs` + shipped `permissions.cfg` template (upstream @
-`49e53065`). Implemented by `shared/config.lua`; the machine-readable list is
-`Config.settings` (47 entries) with a spec asserting the count.
+Source: `SharedClasses/ConfigManager.cs` plus the shipped `permissions.cfg` template (upstream
+@ `e0f3b92a`). Implemented by `shared/config.lua`. The machine-readable list is
+`Config.settings`, 47 entries, with a spec asserting the count.
 
-All settings are **replicated convars** (`setr`) read at runtime with `GetConvar*`. An existing
-server config must behave identically, so the coercion rules are part of the contract:
+Every setting is a **replicated convar** (`setr`) read at runtime with `GetConvar*`. An
+existing server config has to behave the same here, so the coercion rules are part of the
+contract:
 
 | Accessor | Rule (must match C# exactly) |
 |---|---|
 | bool | `GetConvar(name, "false") == "true"`, so only the lowercase literal `true` counts |
-| int | `GetConvarInt(name, default)`; if that returns the default, re-read as string and parse with `int.TryParse` semantics (optional sign, digits only, surrounding whitespace OK, **no fractions/hex**); on parse failure keep `GetConvarInt`'s answer. Default `-1` unless a call site passes one |
-| float | parse `GetConvar(name, tostring(default))`; on failure use the default. Default `-1.0` |
-| string | `GetConvar(name, default or "")`; empty or unset means **nil** (C# returns null) |
+| int | `GetConvarInt(name, default)`. If that hands back the default, re-read as a string and parse with `int.TryParse` semantics (optional sign, digits only, surrounding whitespace fine, **no fractions or hex**). On parse failure, keep `GetConvarInt`'s answer. Default `-1` unless a call site passes one |
+| float | parse `GetConvar(name, tostring(default))`, fall back to the default on failure. Default `-1.0` |
+| string | `GetConvar(name, default or "")`. Empty or unset means **nil**, since C# returns null |
 
-Debug modes are **not** convars: `client_debug_mode` / `server_debug_mode` are fxmanifest
-metadata read via `GetResourceMetadata("vMenu", key, 0) == "true"` (case-insensitive compare).
+Debug modes aren't convars. `client_debug_mode` and `server_debug_mode` are fxmanifest
+metadata, read with `GetResourceMetadata("vMenu", key, 0) == "true"` and compared
+case-insensitively.
 
 ## Settings and template defaults
 
-Types are how the code reads them; "template default" is the value in the shipped
-`permissions.cfg`. Where it says "(not in template)" the code default applies.
+Types are how the code reads them. "Template default" is the value in the shipped
+`permissions.cfg`. Where it says "(not in template)", the code default applies.
 
 | Convar | Type | Template default |
 |---|---|---|
