@@ -24,4 +24,20 @@ function Platform.has(native_name)
     return type(rawget(_G, native_name)) == 'function'
 end
 
+-- Writes a file into this resource. FiveM Enhanced refuses unless server.cfg
+-- grants the resource write access to itself, so a failure names that line.
+function Platform.save_file(path, contents)
+    local resource = GetCurrentResourceName()
+    if SaveResourceFile(resource, path, contents, -1) then
+        return true
+    end
+    print(
+        (
+            "^1[ERROR]^7 Could not write %s. Add 'add_filesystem_permission "
+            .. "%s write %s' to your server.cfg, above the line that starts %s."
+        ):format(path, resource, resource, resource)
+    )
+    return false
+end
+
 return Platform

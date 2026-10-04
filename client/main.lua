@@ -3,6 +3,8 @@
 local Log = require('shared.log')
 local Platform = require('shared.platform')
 local ResourceIdentity = require('shared.data.resource_identity')
+local Config = require('shared.config')
+local Permissions = require('client.permissions')
 
 local RESOURCE = GetCurrentResourceName()
 
@@ -12,6 +14,9 @@ if not ResourceIdentity.is_correctly_named(RESOURCE) then
     end
     return
 end
+
+Permissions.register_events()
+Config.init()
 
 Log.info(
     ('[Core] Loaded vMenu Enhanced (Lua) v%s on %s.'):format(

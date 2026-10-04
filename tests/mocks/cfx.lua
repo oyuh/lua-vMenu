@@ -27,6 +27,8 @@ local INSTALLED_GLOBALS = {
     'TriggerEvent',
     'TriggerServerEvent',
     'TriggerClientEvent',
+    'TriggerLatentClientEvent',
+    'AddConvarChangeListener',
     -- server runtime
     'SetConvarReplicated',
     'GetPlayers',
@@ -977,10 +979,23 @@ function Cfx:install()
         mock.event_cancelled = true
     end
 
-    -- Statebag access: Player(id).state.key
+    -- Statebag access: Player(id).state.key, Player(id).state:set(key, value, replicated)
+    local function statebag(values)
+        return setmetatable({}, {
+            __index = function(_, key)
+                if key == 'set' then
+                    return function(_, name, value)
+                        values[name] = value
+                    end
+                end
+                return values[key]
+            end,
+            __newindex = values,
+        })
+    end
     _G.Player = function(handle)
         local player = mock.players[tostring(handle)]
-        return { state = player and player.state or {} }
+        return { state = statebag(player and player.state or {}) }
     end
 
     _G.GetGameTimer = function()
@@ -1168,6 +1183,18 @@ function Cfx:install()
     _G.TriggerClientEvent = function(name, _target, ...)
         mock:_record('to_client', name, ...)
         mock:_dispatch('client', name, ...)
+    end
+
+    _G.TriggerLatentClientEvent = function(name, target, _bytes_per_second, ...)
+        _G.TriggerClientEvent(name, target, ...)
+    end
+
+    -- Listeners are recorded; set_convar does not fire them, call them from
+    -- the spec when a change should be observed.
+    mock.convar_listeners = {}
+    _G.AddConvarChangeListener = function(filter, handler)
+        table.insert(mock.convar_listeners, { filter = filter, handler = handler })
+        return #mock.convar_listeners
     end
 
     -- Recording no-op natives with canned defaults.

@@ -1,0 +1,411 @@
+###############################################################################
+#  THIS FILE IS REGENERATED EVERY TIME vMenu Enhanced STARTS.
+#  ANY CHANGES YOU MAKE TO IT WILL BE LOST.
+#
+#  To use it:
+#    1. Copy this file and name the copy 'permissions.cfg'.
+#    2. Edit that copy, never this one.
+#    3. Exec it from your server.cfg ABOVE the line that starts vMenu:
+#
+#         exec @vMenu.Enhanced/config/permissions.cfg
+#         ensure vMenu.Enhanced
+#
+#  Permissions are checked live. HOWEVER, the permissions.cfg does not
+#  re-execute itself. You can either execute it manually again, but I do not
+#  recommend this if you made big changes, because conflicting aces and
+#  principals will cause issues. Instead, if all you did was add somebody to a
+#  group, simply execute that one command in the server console manually. Then
+#  execute `vmenu_refresh_permissions` in the server console and every person
+#  should have their menu permissions refreshed automatically. For big
+#  permissions.cfg changes I still recommend to restart your server!
+###############################################################################
+
+# vMenu needs these two lines so an integration's role sync can add and remove
+# permission groups for players. They do nothing if you do not use role sync.
+add_ace resource.vMenu.Enhanced command.add_principal allow
+add_ace resource.vMenu.Enhanced command.remove_principal allow
+
+# Give a player a group by one of their identifiers. Use whichever you can
+# look up most easily. Note, Steam identifiers no longer work in FiveM
+# Enhanced, so use either license, license2, discord or fivem identifiers.
+# (You can also use the IP identifier, but I don't really recommended that
+# one). !!! Make sure you replace these with your own identifiers and remove
+# the # !!! If you're using another system to add people to principal groups
+# during runtime (for example TxAdmin for your admins), then you do not need
+# to manually add them here.
+# add_principal identifier.discord:223799456162775043 group.admin
+# add_principal identifier.fivem:25104 group.admin
+
+# Groups inherit from each other (if you set it up correctly). This one gives
+# everybody in group.admin everything group.mod may do, on top of whatever
+# group.admin is granted below.
+add_principal group.admin group.mod
+
+# Every permission vMenu Enhanced knows about is listed below, ready to run as
+# it is. Each line already suggests who gets it: builtin.everyone for the
+# permissions that are fine for any player, and group.admin for the few that
+# should stay with your staff. Change that principal if somebody else should
+# have them.
+#
+# A line that has other lines indented under it hands out every one of them,
+# so it is suggested to group.admin as soon as anything below it is. That is
+# why a .All can say group.admin while most of what sits under it says
+# builtin.everyone. Those lines are still there on their own, so your players
+# keep them.
+#
+# A permission ending in .All grants everything nested underneath it, so
+# keeping only the .All line is usually all you need. When you want to
+# restrict some features, delete the .All and keep only the specific lines
+# below it instead, or put a # in front of the ones you do not want. Checkout
+# https://docs.vespura.com/vMenu/Enhanced/ for more permissions information.
+#
+# Permissions that a plugin brings along are not listed here. Every plugin
+# gets its own pair of templates in config/plugins/, named after the resource
+# they came from. The vMenu.Enhanced.Plugins.All line below still grants all
+# of them at once, so you only need those files to hand out a plugin's
+# permissions one by one.
+
+# Note: While some of the permissions below are indented, that's only to show
+# you to which parent they belong. You do not need to have them indented
+# inside the permissions.cfg like this to function correctly while executing
+# the file. It doesn't make a difference when executing the permissions.cfg
+# from your server.cfg.
+
+add_ace group.admin "vMenu.Enhanced.Everything" allow
+
+add_ace group.admin "vMenu.Enhanced.Integration.All" allow
+
+  add_ace group.admin "vMenu.Enhanced.Integration.Allowlist.Bypass" allow
+
+  add_ace group.admin "vMenu.Enhanced.Integration.Queue.Bypass" allow
+
+add_ace group.admin "vMenu.Enhanced.Menus.All" allow
+
+  add_ace group.admin "vMenu.Enhanced.Menus.Admin.All" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.Announce" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.ClearArea" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.DeleteAllVehicles" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.DeleteEmptyVehicles" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.DeleteVehicle" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.FreezePlayer" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.GrabPlayer" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.ManageAnnouncements" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.Menu" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.RefreshPermissions" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.ResetRoutingBucket" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.Create" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.Manage" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.OnlineOutfits" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.Presets" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.PresetsManage" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.Save" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.SetDefault" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.Spawn" allow
+
+  add_ace group.admin "vMenu.Enhanced.Menus.DisplaySettings.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.Forecast" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.HideHud" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.HideRadar" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.LocationBlips" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.DisplaySettings.ManageBlips" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.NightVision" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.OverheadNames" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.PlayerBlips" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.DisplaySettings.SeeLeaveReasons" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.DisplaySettings.SeeNoClipPlayers" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.ShowCoordinates" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.ShowLocation" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.ThermalVision" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.Timecycles" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.VehicleHealth" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.MiscSettings.All" allow
+
+  add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.All" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.CheckStatus" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.DeleteVehicle" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.ExplodeVehicle" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.Identifiers" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.Kick" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.Kill" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.Menu" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.NoClip" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.RefreshPermissions" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.SendMessage" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.SetWantedLevel" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.Summon" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.SummonIntoVehicle" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.TeleportIntoVehicle" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.TeleportTo" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.TxAdmin" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.OnlinePlayers.Waypoint" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.All" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.animals" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.corpses" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.criminals_prisoners" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.cutscene_characters_a_j" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.cutscene_characters_k_z" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.djs_musicians" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.emergency_services" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.female" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.gangs" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.main" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.male" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.military_agencies" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.nightlife_entertainment" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.oddballs_costumes" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.police_sheriff" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.rockstar_cameos" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.security_guards" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.shops_hospitality" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.story_characters_a_c" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.story_characters_d_j" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.story_characters_k_m" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.story_characters_n_r" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.story_characters_s_z" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.unique_characters" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.workers_trades" allow
+      # from config/ped-models.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Categories.zombies_monsters" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PedModels.SpawnByName" allow
+
+  add_ace group.admin "vMenu.Enhanced.Menus.PersonalVehicle.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Blip" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Delete" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Doors" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Engine" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.PersonalVehicle.Explode" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Horn" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Kick" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Lights" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Lock" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Windows" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerAppearance.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerAppearance.Customize" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerAppearance.IlluminatedClothing" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerAppearance.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerAppearance.WalkingStyle" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.AutoPilot" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.CleanPlayer" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.ClearBlood" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.DryPlayer" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.FastRun" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.FastSwim" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Freeze" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Godmode" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Ignored" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Invisible" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.MaxArmor" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.MaxHealth" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.MpStats" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.NeverWanted" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.NoHelmet" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.NoRagdoll" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Scenarios" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.SetBlood" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.SetWanted" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.StayInVehicle" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Suicide" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.SuperJump" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.UnlimitedOxygen" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.WetPlayer" allow
+
+  add_ace group.admin "vMenu.Enhanced.Menus.PropSpawner.All" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.PropSpawner.Delete" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.PropSpawner.Manage" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.PropSpawner.Menu" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.PropSpawner.Networked" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.PropSpawner.Sets" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.PropSpawner.SetsManage" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.PropSpawner.Spawn" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.SavedPeds.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.SavedPeds.Manage" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.SavedPeds.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.SavedPeds.Save" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.SavedPeds.Spawn" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.SavedVehicles.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.SavedVehicles.Manage" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.SavedVehicles.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.SavedVehicles.Save" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.SavedVehicles.Spawn" allow
+
+  add_ace group.admin "vMenu.Enhanced.Menus.TeleportMenu.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.TeleportMenu.Category" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.TeleportMenu.Coords" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.TeleportMenu.Manage" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.TeleportMenu.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.TeleportMenu.Waypoint" allow
+
+  add_ace group.admin "vMenu.Enhanced.Menus.TimeOptions.All" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.TimeOptions.FreezeTime" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.TimeOptions.Menu" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.TimeOptions.SetTime" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Aircraft" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Alarm" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.AnchorBoat" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Colors" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.CycleSeat" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Damage" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.DeleteVehicle" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Dirt" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Doors" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Engine" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.EngineAlwaysOn" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.EngineHealth" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Extras" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Flip" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Freeze" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.God" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Handling" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Invisible" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.KeepClean" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Lights" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Liveries" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Modify" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Neon" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Plate" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.PowerMultiplier" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Radio" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.RepairVehicle" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.SpeedLimiter" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.ToggleEngine" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.TorqueMultiplier" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Turbulence" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Tyres" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.WashVehicle" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Wheels" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleOptions.Windows" allow
+
+  add_ace group.admin "vMenu.Enhanced.Menus.VehicleSpawner.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.AllowKeepPreviousVehicle" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.All" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Boats" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Commercial" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Compacts" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Coupes" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Cycles" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Emergency" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Helicopters" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Industrial" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Military" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Motorcycles" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Muscle" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.OffRoad" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.OpenWheel" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Planes" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Sedans" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Service" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Sports" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.SportsClassics" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Super" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Suvs" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Trains" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Utility" allow
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Categories.Vans" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.SpawnByName" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.VehicleSpawner.SpawnLimitTier1" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.VehicleSpawner.SpawnLimitTier2" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.VehicleSpawner.SpawnLimitTier3" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponLoadouts.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponLoadouts.Equip" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponLoadouts.EquipOnRespawn" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponLoadouts.KeepOnPedChange" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponLoadouts.Manage" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponLoadouts.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponLoadouts.Save" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Categories.All" allow
+      # from config/weapons.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Categories.assault_rifles" allow
+      # from config/weapons.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Categories.handguns" allow
+      # from config/weapons.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Categories.heavy_weapons" allow
+      # from config/weapons.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Categories.melee" allow
+      # from config/weapons.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Categories.shotguns" allow
+      # from config/weapons.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Categories.sniper_rifles" allow
+      # from config/weapons.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Categories.sub_light_machine_guns" allow
+      # from config/weapons.json
+      add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Categories.throwables" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.GetAll" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Modify" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.NoReload" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Parachute" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.RemoveAll" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.SetAllAmmo" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Snowball" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Spawn" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.SpawnByName" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.UnlimitedAmmo" allow
+
+  add_ace group.admin "vMenu.Enhanced.Menus.WeatherOptions.All" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.WeatherOptions.Blackout" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeatherOptions.Menu" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.WeatherOptions.SetWeather" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.WeatherOptions.Snow" allow
+
+add_ace builtin.everyone "vMenu.Enhanced.NoClip" allow
+
+add_ace group.admin "vMenu.Enhanced.Plugins.All" allow
+
+add_ace group.admin "vMenu.Enhanced.Staff" allow
+
+add_ace builtin.everyone "vMenu.Enhanced.SupplementalPermissions.All" allow
+
+  # also granted by vMenu.Enhanced.Menus.PedModels.All
+  add_ace builtin.everyone "vMenu.Enhanced.SupplementalPermissions.Peds.All" allow
+
+  # also granted by vMenu.Enhanced.Menus.VehicleSpawner.All
+  add_ace builtin.everyone "vMenu.Enhanced.SupplementalPermissions.VehicleModels.All" allow
+
+  # also granted by vMenu.Enhanced.Menus.WeaponOptions.All
+  add_ace builtin.everyone "vMenu.Enhanced.SupplementalPermissions.Weapons.All" allow

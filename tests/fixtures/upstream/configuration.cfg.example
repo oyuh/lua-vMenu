@@ -1,0 +1,468 @@
+###############################################################################
+#  THIS FILE IS REGENERATED EVERY TIME vMenu Enhanced STARTS.
+#  ANY CHANGES YOU MAKE TO IT WILL BE LOST.
+#
+#  To use it:
+#    1. Copy this file and name the copy 'configuration.cfg'.
+#    2. Edit that copy, never this one.
+#    3. Exec it from your server.cfg ABOVE the line that starts vMenu:
+#
+#         exec @vMenu.Enhanced/config/configuration.cfg
+#         ensure vMenu.Enhanced
+#
+#  Most options below use 'setr' so they are replicated to clients. A few use
+#  plain 'set' instead, which keeps the value on the server where no player
+#  can read it. Those are the ones holding something secret, such as a webhook
+#  URL, and you must not change their 'set' into a 'setr'.
+#
+#  Deleting an option, or commenting it out, restores vMenu's own default for
+#  it. Although I do recommend that you manually set it to the default
+#  yourself instead of commenting it out, because if the default ever changes
+#  with an update, you won't be surprised when it's suddenly changed in-game!
+###############################################################################
+
+### Languages ###
+
+# The languages players can pick, as a comma separated list of file names
+# without .json, in picker order. Each code needs a matching
+# language/<code>.json. To add one, copy language/example.json to
+# language/<code>.json, translate it, and list the code here. Don't include
+# 'en' (English is built in and always available), nor use 'example' (a
+# template file that is rewritten on every vMenu update).
+# Default value: "nl,de,es,fr" (string)
+setr vMenu.Enhanced.Languages "nl,de,es,fr"
+
+### About ###
+
+# The documentation link shown in the About menu. Change this if you'd like to
+# have your own server documentation listed here.
+# Default value: "https://docs.vespura.com/vmenu/enhanced" (string)
+setr vMenu.Enhanced.DocumentationUrl "https://docs.vespura.com/vmenu/enhanced"
+
+# The Discord invite link shown in the About menu.
+# Default value: "https://discord.gg/fivem" (string)
+setr vMenu.Enhanced.DiscordUrl "https://discord.gg/fivem"
+
+### Updates ###
+
+# Configures the automatic version checks vMenu performs. Can be set to 'off',
+# 'prerelease' or 'stable'.
+# Default value: "prerelease" (string)
+setr vMenu.Enhanced.Updates.CheckMode "prerelease"
+
+### Key Bindings ###
+
+# The default key that opens and closes the menu. Use a key name from
+# https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/.
+# This is only the default key: players can rebind it themselves under
+# Settings, Key Bindings
+# Default value: "M" (string)
+setr vMenu.Enhanced.KeyBindings.MenuToggleKey "M"
+
+# The default key that turns noclip on and off. Use a key name from
+# https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/.
+# This is only the default key: players can rebind it themselves under
+# Settings, Key Bindings
+# Default value: "F2" (string)
+setr vMenu.Enhanced.KeyBindings.NoClipToggleKey "F2"
+
+# The default key that runs the 'teleport action' (see teleportation menu
+# in-game) Use a key name from
+# https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/.
+# This is only the default key: players can rebind it themselves under
+# Settings, Key Bindings
+# Default value: "F10" (string)
+setr vMenu.Enhanced.KeyBindings.TeleportKey "F10"
+
+### Menu Appearance ###
+
+# Choose a default theme: 'default', 'dark', 'cartoon' or 'gta'. You can also
+# choose any plugin-added theme here.
+# Default value: "default" (string)
+setr vMenu.Enhanced.MenuAppearance.Skin "default"
+
+# Where the title sits on the banner: 'left', 'center' or 'right'.
+# Default value: "left" (string)
+setr vMenu.Enhanced.MenuAppearance.TitleAlignment "left"
+
+# Enables or disables the Globe in the menu header and the glare effect, like
+# GTA Online's interaction menu.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.MenuAppearance.HeaderGlare true
+
+### Gameplay ###
+
+# 0 = vMenu does not touch PVP, 1 = PVP Enabled, 2 = PVP Disabled.
+# Default value: "1" (int)
+setr vMenu.Enhanced.Gameplay.PvpMode 1
+
+### Admin ###
+
+# How far around a player, in metres, the Clear Area button reaches.
+# Default value: "100" (int)
+setr vMenu.Enhanced.Admin.ClearAreaRadius 100
+
+# How far away, in metres, the freeze and grab buttons will find a nearby
+# player.
+# Default value: "3" (int)
+setr vMenu.Enhanced.Admin.ClosestPlayerRange 3
+
+# Turns the announcement schedule in config/announcements.json on or off.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.Admin.ScheduledAnnouncements true
+
+# How long an announcement stays on screen, in seconds.
+# Default value: "20" (int)
+setr vMenu.Enhanced.Admin.AnnouncementSeconds 20
+
+### Staff Alerts ###
+
+# Allows players to alert staff via the 'Alert staff' button in the misc
+# settings.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.StaffAlerts.Enabled true
+
+# How long one player has to wait between sending multiple alerts, in seconds.
+# This is to prevent spam.
+# Default value: "60" (int)
+setr vMenu.Enhanced.StaffAlerts.CooldownSeconds 60
+
+# This is how long an alert will stay active before it is discarded in
+# seconds.
+# Default value: "300" (int)
+setr vMenu.Enhanced.StaffAlerts.ExpireSeconds 300
+
+# How long an alert stays visible on screen in seconds. You can always see all
+# active alerts in the staff alerts menu.
+# Default value: "30" (int)
+setr vMenu.Enhanced.StaffAlerts.DisplaySeconds 30
+
+### Online Players ###
+
+# How many things one player may do to other players from the online players
+# menu within the time window below.
+# Default value: "8" (int)
+setr vMenu.Enhanced.OnlinePlayers.ActionLimit 8
+
+# The length of the window the allowance above is counted over, in seconds.
+# With the defaults, a player gets 8 actions per 10 seconds.
+# Default value: "10" (int)
+setr vMenu.Enhanced.OnlinePlayers.ActionLimitSeconds 10
+
+# Whether teleporting to a player, teleporting into their vehicle, and
+# summoning a player should also move somebody into the other player's routing
+# bucket. Routing buckets are separate worlds or dimensions (usually used for
+# interiors).
+# Default value: "true" (bool)
+setr vMenu.Enhanced.OnlinePlayers.MatchRoutingBucket true
+
+### Join and Leave ###
+
+# Logs player connections to the server console.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.JoinLeave.LogToConsole true
+
+### Webhook Logging ###
+
+# Enables or disables all the webhooks, regardless of what you configured
+# below.
+# Default value: "false" (bool)
+setr vMenu.Enhanced.Logging.Enabled false
+
+# A Discord webhook URL for server events. Use 'set' instead of 'setr' to keep
+# your webhook URL secure.
+# Default value: "" (string)
+set vMenu.Enhanced.Logging.Webhook.Events ""
+
+# A Discord webhook URL for what players do to themselves. Chatty on a busy
+# server, so give it its own channel. Use 'set' instead of 'setr' to keep your
+# webhook URL secure.
+# Default value: "" (string)
+set vMenu.Enhanced.Logging.Webhook.Actions ""
+
+# A Discord webhook URL for what players do to each other, including attempts
+# refused for lack of permission. Use 'set' instead of 'setr' to keep your
+# webhook URL secure.
+# Default value: "" (string)
+set vMenu.Enhanced.Logging.Webhook.Staff ""
+
+# A Discord webhook URL when possible cheating is detected. If you leave this
+# empty, the events will be sent to the staff webhook instead. Use 'set'
+# instead of 'setr' to keep your webhook URL secure.
+# Default value: "" (string)
+set vMenu.Enhanced.Logging.Webhook.Security ""
+
+# A URL that receives the same lines as plain JSON instead of Discord
+# messages, for your own tooling. If it uses HTTPS, the certificate must be
+# valid and trusted. Use 'set' instead of 'setr' to keep your webhook URL
+# secure.
+# Default value: "" (string)
+set vMenu.Enhanced.Logging.Webhook.Generic ""
+
+# How often vMenu sends what it has collected, in seconds. Lines are batched
+# instead of sent one at a time, since Discord throttles you for posting too
+# fast. Values outside 1 to 60 are clamped to that range.
+# Default value: "4" (int)
+setr vMenu.Enhanced.Logging.FlushSeconds 4
+
+# How many lines vMenu holds per webhook while waiting to send. Past this the
+# oldest are dropped, and the next message through says how many. Stops an
+# unresponsive webhook eating your server's memory.
+# Default value: "500" (int)
+setr vMenu.Enhanced.Logging.QueueLimit 500
+
+# (Rate limiting) How many menu actions one player may log per window. These
+# are reported by the player's own game, so this stops a modified client
+# filling your channel. Set to 0 to turn the limit off, not recommended.
+# Default value: "30" (int)
+setr vMenu.Enhanced.Logging.MenuActionLimit 30
+
+# How long the menu action window above lasts, in seconds.
+# Default value: "10" (int)
+setr vMenu.Enhanced.Logging.MenuActionLimitSeconds 10
+
+# How many security lines one player may log per window. A modified client can
+# try thousands of things a second, and this stops that filling your channel.
+# The next line through says how many were left out. Set to 0 to turn the
+# limit off, not recommended.
+# Default value: "10" (int)
+setr vMenu.Enhanced.Logging.SecurityLimit 10
+
+# How long the security window above lasts, in seconds.
+# Default value: "60" (int)
+setr vMenu.Enhanced.Logging.SecurityLimitSeconds 60
+
+### Player Stats ###
+
+# Max shooting ability stat value, as a percentage. A player can still pick a
+# higher number but vMenu will only apply it up to the limits configured here.
+# Default value: "100" (int)
+setr vMenu.Enhanced.PlayerOptions.MaxShooting 100
+
+# Max strength stat value, as a percentage. A player can still pick a higher
+# number but vMenu will only apply it up to the limits configured here.
+# Default value: "100" (int)
+setr vMenu.Enhanced.PlayerOptions.MaxStrength 100
+
+# Max stamina stat value, as a percentage. A player can still pick a higher
+# number but vMenu will only apply it up to the limits configured here.
+# Default value: "100" (int)
+setr vMenu.Enhanced.PlayerOptions.MaxStamina 100
+
+# Max stealth ability stat value, as a percentage. A player can still pick a
+# higher number but vMenu will only apply it up to the limits configured here.
+# Default value: "100" (int)
+setr vMenu.Enhanced.PlayerOptions.MaxStealth 100
+
+# Max flying ability stat value, as a percentage. A player can still pick a
+# higher number but vMenu will only apply it up to the limits configured here.
+# Default value: "100" (int)
+setr vMenu.Enhanced.PlayerOptions.MaxFlying 100
+
+# Max driving ability stat value, as a percentage. A player can still pick a
+# higher number but vMenu will only apply it up to the limits configured here.
+# Default value: "100" (int)
+setr vMenu.Enhanced.PlayerOptions.MaxDriving 100
+
+# Max lung capacity stat value, as a percentage. A player can still pick a
+# higher number but vMenu will only apply it up to the limits configured here.
+# Default value: "100" (int)
+setr vMenu.Enhanced.PlayerOptions.MaxLungCapacity 100
+
+### Vehicle Options ###
+
+# Distance in meters how far away the /dv command (and menu delete vehicle
+# action) reaches for cars in front of the player.
+# Default value: "5.0" (float)
+setr vMenu.Enhanced.VehicleOptions.DeleteVehicleDistance 5.0
+
+# Enables or disables the /dv command from vMenu. Uses the same permission as
+# the delete vehicle option inside the vehicle options menu.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.VehicleOptions.DeleteVehicleCommand true
+
+# Enables the /fixveh command to quickly repair a vehicle. Uses the same
+# permission as the fix vehicle option inside the vehicle options menu.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.VehicleOptions.RepairVehicleCommand true
+
+# Enables the /washveh command to quickly clean a vehicle. Uses the same
+# permission as the clean vehicle option inside the vehicle options menu.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.VehicleOptions.WashVehicleCommand true
+
+# When set to true, it disables vehicle god mode for a vehicle as soon as the
+# driver leaves the car (if they had vehicle god mode enabled).
+# Default value: "true" (bool)
+setr vMenu.Enhanced.VehicleOptions.ClearGodModeOnExit true
+
+### Personal Vehicle ###
+
+# Rate limit of personal vehicle remote actions within the configured time
+# limit. Zero means no limit.
+# Default value: "8" (int)
+setr vMenu.Enhanced.PersonalVehicle.ActionLimit 8
+
+# Time in seconds for the rate limit from above. With the default values that
+# would be 8 actions within 10 seconds. Zero switches the limit off entirely.
+# Default value: "10" (int)
+setr vMenu.Enhanced.PersonalVehicle.ActionLimitSeconds 10
+
+# Leave this as 350.0 for now, this convar only exists for debugging purposes.
+# Default value: "350.0" (float)
+setr vMenu.Enhanced.PersonalVehicle.ControlRange 350.0
+
+# Just leave this at 1500 unless you know what you're doing. Timeout for
+# moving on to the next client to try and act on a vehicle within range. Three
+# players are tried before giving up, so keep this under 5 seconds.
+# Default value: "1500" (int)
+setr vMenu.Enhanced.PersonalVehicle.ControlTimeout 1500
+
+### Vehicle Spawner ###
+
+# What the server does to a vehicle if the player that spawned it leaves the
+# server or crashes their game. DeleteWhenNotRelevant = 0,
+# DeleteOnOwnerDisconnect = 1, KeepEntity = 2.
+# Default value: "1" (int)
+setr vMenu.Enhanced.VehicleSpawner.OrphanMode 1
+
+# Keeps a vehicle a player spawned loaded after they spawn another one with
+# Replace Previous Vehicle turned off, instead of letting the game clean it up
+# on its own. Turning this on means abandoned vehicles pile up until somebody
+# deletes them.
+# Default value: "false" (bool)
+setr vMenu.Enhanced.VehicleSpawner.KeepSpawnedVehiclesPersistent false
+
+# The stretch of time, in seconds, the three allowances below are counted
+# over. Set this to zero to switch spawn limits off entirely.
+# Default value: "60" (int)
+setr vMenu.Enhanced.VehicleSpawner.SpawnLimitSeconds 60
+
+# How many vehicles a tier 1 player may spawn within the window above. Zero
+# means no limit.
+# Default value: "5" (int)
+setr vMenu.Enhanced.VehicleSpawner.SpawnLimitTier1 5
+
+# How many vehicles a tier 2 player may spawn within the window above. Zero
+# means no limit.
+# Default value: "15" (int)
+setr vMenu.Enhanced.VehicleSpawner.SpawnLimitTier2 15
+
+# How many vehicles a tier 3 player may spawn within the window above. Zero
+# means no limit.
+# Default value: "0" (int)
+setr vMenu.Enhanced.VehicleSpawner.SpawnLimitTier3 0
+
+### Weather Options ###
+
+# Enables or disables vMenu's weather control and sync. Turn this off if you
+# want another resource to control the weather.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.WeatherOptions.Enabled true
+
+# Syncs clouds with all players.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.WeatherOptions.SyncClouds true
+
+# How long, in seconds, it takes for weather to transition from one type to
+# another when manually changing types in the menu.
+# Default value: "45" (int)
+setr vMenu.Enhanced.WeatherOptions.TransitionSeconds 45
+
+### Time Options ###
+
+# Enables vMenu time control/sync. Set this to 'false' if you have another
+# resource controlling game time.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.TimeOptions.Enabled true
+
+# How fast the in-game clock runs compared to how GTA normally runs it. Value
+# must be between 0.01 and 1000.
+# Default value: "1.0" (float)
+setr vMenu.Enhanced.TimeOptions.SpeedMultiplier 1.0
+
+# A list of preset times to choose from in the time options menu.
+# Default value: "0000,0300,0600,0900,1200,1500,1800,2100" (string)
+setr vMenu.Enhanced.TimeOptions.Presets "0000,0300,0600,0900,1200,1500,1800,2100"
+
+# How long time transitions take. Zero instantly jumps to the desired time.
+# Default value: "4" (int)
+setr vMenu.Enhanced.TimeOptions.TransitionSeconds 4
+
+### World API ###
+
+# A password that lets your own tools read the weather, time, date and moon
+# phase over HTTP, so a Discord bot or a website can show what the sky is
+# doing without guessing. Leave it empty and the endpoint is switched off and
+# answers nobody. Set it to any long random string and callers hand it back in
+# an X-vMenu-Token header, or a token query parameter, to be let in. Uses
+# 'set' and not 'setr': this is a secret.
+# Default value: "" (string)
+set vMenu.Enhanced.WorldApi.Token ""
+
+### Integration ###
+
+# Please read https://docs.vespura.com/vmenu/enhanced/integrations. Uses 'set'
+# and not 'setr'! This is important to keep your API key secret!
+# Default value: "" (string)
+set vMenu.Enhanced.Integration.ApiKey ""
+
+# The base URL of the external tool this server connects to, for example
+# 'https://example.com/api'. Value can be http or https, and an IP or a domain
+# both work. If using HTTPS, the certificate must be valid and trusted. This
+# server makes outgoing HTTP(S) calls to this URL, and also opens a websocket
+# derived from it, so 'https://example.com/api' becomes
+# 'wss://example.com/api/socket' (uses 'ws' for http instead). Leave it empty
+# and this server makes no outgoing calls at all. Please read the
+# documentation if you're planning on using this. Uses 'set' and not 'setr'.
+# Default value: "" (string)
+set vMenu.Enhanced.Integration.Endpoint ""
+
+# If set to true, it will allow external tools that connect using the
+# websocket to perform actions against players. For example: kill, kick, heal,
+# etc. Uses 'set' and not 'setr'.
+# Default value: "false" (bool)
+set vMenu.Enhanced.Integration.AllowActions false
+
+# Only lets in players with the 'vMenu.Enhanced.Integration.Allowlist.Bypass'
+# permission, or players a connected integration (like SnowstormBot) allows.
+# Uses 'set', not 'setr'.
+# Default value: "false" (bool)
+set vMenu.Enhanced.Integration.Allowlist false
+
+# Customize the message someone sees if they're not on the allowlist.
+# Default value: "You are not on the allowlist for this server." (string)
+set vMenu.Enhanced.Integration.AllowlistMessage "You are not on the allowlist for this server."
+
+# If set to true, connecting players are held in a join queue that a connected
+# external tool (like SnowstormBot) manages. Unlike the allowlist, this
+# feature does not work without an external tool managing it! The tool decides
+# the queues, priorities and delays. This convar only turns the queue on or
+# off. A player holding the 'vMenu.Enhanced.Integration.Queue.Bypass'
+# permission can skip the queue if they choose to (there is a button in the
+# join screen they can click to bypass the queue). Uses 'set' and not 'setr'.
+# Default value: "false" (bool)
+set vMenu.Enhanced.Integration.Queue false
+
+### Developer Features ###
+
+# Enables the Developer Features menu. Pretty much all features in here are
+# generally harmless. Give them a try, and then decide if you want to have
+# them enabled or disabled for your server. If you're unsure, turn this off on
+# a public, production, server.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.DeveloperFeatures true
+
+### Debugging ###
+
+# Enables additional console logging on the client side.
+# Default value: "false" (bool)
+setr vMenu.Enhanced.Debugging.Client false
+
+# Enables additional console logging on the server side.
+# Default value: "false" (bool)
+setr vMenu.Enhanced.Debugging.Server false
+
+# Currently doesn't do anything, leave this as false for now.
+# Default value: "false" (bool)
+setr vMenu.Enhanced.Debugging.ExperimentalFeatures false
