@@ -1,16 +1,18 @@
 # Upstream tracking
 
-This rewrite targets parity with one specific upstream commit. When upstream moves, run
-`scripts/upstream-diff.ps1` to see what changed and which Lua modules it touches, port the
-diffs, then bump the pin below.
+This branch (`original`) targets parity with one specific commit on upstream's `legacy` branch,
+the classic C# vMenu. The `stable` branch tracks upstream's `enhanced` branch instead, see
+[BRANCH-PLAN.md](BRANCH-PLAN.md). When upstream moves, run `scripts/upstream-diff.ps1` to see what
+changed and which Lua modules it touches, port the diffs, then bump the pin below.
 
 ## Pinned upstream
 
 | | |
 |---|---|
 | Repo | https://github.com/tomgrobbe/vMenu |
-| Commit | `e0f3b92a64549a498d60d13d08ea163b47c2ac3b` |
-| Date | 2026-09-16 |
+| Branch | `legacy` |
+| Commit | `f615b15b38df4e67742658e36a52a160dbcd88c6` |
+| Date | 2026-10-02 |
 
 ## File to module map
 
@@ -40,8 +42,8 @@ diffs, then bump the pin below.
 
 ## Porting workflow
 
-1. `pwsh scripts/upstream-diff.ps1` fetches upstream, diffs pinned..HEAD, and lists the
-   affected Lua modules.
+1. `pwsh scripts/upstream-diff.ps1` fetches upstream, diffs the pin against the head of the
+   pinned branch, and lists the affected Lua modules.
 2. Port each hunk into the mapped module. Menu diffs land nearly line for line, since `menu/`
    mirrors MenuAPI's API.
 3. If a diff touches `vMenu/data/`, re-run `scripts/gen-data` instead of porting by hand.

@@ -64,6 +64,6 @@ jobs:
             2. Unzip it into your server's `resources/` folder. It extracts as a single
                `vMenu` folder. **Keep that folder name** (player saves are keyed to it).
             3. Migrating from C# vMenu? Copy your old `config/*.json` files in and follow
-               [docs/MIGRATION.md](https://github.com/oyuh/lua-vMenu/blob/main/docs/MIGRATION.md);
+               [docs/MIGRATION.md](https://github.com/oyuh/lua-vMenu/blob/original/docs/MIGRATION.md);
                your `permissions.cfg`, player saves, and keybinds all carry over unchanged.
             4. `ensure vMenu` in your server.cfg (as usual).
