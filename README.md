@@ -19,8 +19,8 @@ vMenu Enhanced is GPL-3.0-or-later, so this port is too. If you hand a modified 
 The port follows the phases in [docs/BRANCH-PLAN.md](docs/BRANCH-PLAN.md):
 
 0. Branch setup: done
-1. Foundation (platform layer, settings, permissions, example files, storage, languages): in progress
-2. Menu engine (MenuAPI with native and NUI rendering, themes)
+1. Foundation (platform layer, settings, permissions, example files, storage): done
+2. Menu engine (MenuAPI with native and NUI rendering, themes, languages): in progress
 3. Plugins
 4. Menus, wave 1
 5. Menus, wave 2

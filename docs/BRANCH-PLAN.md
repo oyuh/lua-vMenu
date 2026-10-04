@@ -172,10 +172,11 @@ Each phase ends with something that runs on both a Legacy and an Enhanced server
    so it starts clean.
 1. **Foundation.** The platform layer, logging, the settings and permission catalogs, and the
    example `permissions.cfg.example` and `configuration.cfg.example` writers. Golden-file tests
-   compare them to upstream's generated output. Also the KVP envelope store and the language
-   loader. Milestone: the server boots and writes the same example files upstream does.
-2. **Menu engine.** The MenuAPI port in both render modes, the MenuFramework, themes and banners.
-   Milestone: an empty main menu opens on both platforms with every theme.
+   compare them to upstream's generated output. Also the KVP envelope store. Milestone: the
+   server boots and writes the same example files upstream does.
+2. **Menu engine.** The MenuAPI port in both render modes, the MenuFramework, themes and banners,
+   and the language loader (translations live in the framework's menu text). Milestone: an empty
+   main menu opens on both platforms with every theme.
 3. **Plugins.** The host, the server registry and the Lua helper. This comes early because the
    protocol is self-contained and gives the framework a real workout. Player actions wait for
    Online Players. Milestone: the Example plugin works.
