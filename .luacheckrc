@@ -5,7 +5,6 @@ self = false
 
 exclude_files = {
     'vendor/**',
-    'client/data/**', -- generated tables
     '.upstream/**',
     -- CI installs the Lua toolchain into the workspace (leafo/gh-actions-*)
     '.lua/**',
@@ -23,7 +22,7 @@ local mock_natives = dofile('tests/mocks/cfx.lua').NATIVE_NAMES
 
 read_globals = {
     -- events / runtime not covered by the mock's native list
-    'RemoveEventHandler', 'SetTimeout',
+    'RemoveEventHandler', 'SetTimeout', 'GetGameName',
     -- server-side natives without mock entries yet
     'NetworkGetEntityFromNetworkId', 'NetworkGetEntityOwner', 'IsPedAPlayer',
     'TaskLeaveVehicle', 'SetEntityCoords',

@@ -1,13 +1,14 @@
 name: Release
 
-# Every v* tag builds a drop-in resource zip and attaches it to a GitHub
-# Release: server owners unzip it straight into resources/, no picking
-# files out of the repo. The zip contains a single top-level vMenu/ folder
-# (the folder name matters: client KVP saves are keyed by resource name).
+# Every stable-v* tag builds a drop-in resource zip and attaches it to a
+# GitHub Release. The zip holds a single top-level vMenu.Enhanced/ folder (the
+# name matters: plugins, config names and player KVP are keyed to it).
+# The original branch releases from plain v* tags; neither pattern matches the
+# other's tags.
 
 on:
   push:
-    tags: ['v*']
+    tags: ['stable-v*']
 
 permissions:
   contents: write
@@ -38,32 +39,37 @@ jobs:
 
       - name: Assemble drop-in resource folder
         run: |
-          mkdir -p dist/vMenu
-          cp fxmanifest.lua LICENSE.md dist/vMenu/
-          cp -r shared menu client server config dist/vMenu/
+          mkdir -p dist/vMenu.Enhanced
+          cp fxmanifest.lua LICENSE.md dist/vMenu.Enhanced/
+          for dir in shared menu client server config ui language plugin; do
+            if [ -d "$dir" ]; then cp -r "$dir" dist/vMenu.Enhanced/; fi
+          done
 
       - name: Build zip
         run: |
           cd dist
-          zip -r "vMenu-${GITHUB_REF_NAME}.zip" vMenu
+          zip -r "vMenu.Enhanced-${GITHUB_REF_NAME}.zip" vMenu.Enhanced
           echo "Contents:"
-          unzip -l "vMenu-${GITHUB_REF_NAME}.zip" | head -30
+          unzip -l "vMenu.Enhanced-${GITHUB_REF_NAME}.zip" | head -30
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
           name: lua-vmenu ${{ github.ref_name }}
-          files: dist/vMenu-*.zip
+          files: dist/vMenu.Enhanced-*.zip
           generate_release_notes: true
+          # Pre-release until the port reaches parity with upstream (stable-v1.0.0).
+          prerelease: ${{ startsWith(github.ref_name, 'stable-v0.') }}
           body: |
-            **Drop-in Lua rewrite of [vMenu](https://github.com/tomgrobbe/vMenu), ready to deploy.**
+            **Lua port of [vMenu Enhanced](https://github.com/TomGrobbe/vMenu/tree/enhanced). Runs on FiveM Legacy and FiveM Enhanced.**
 
             ## Install
 
-            1. Download `vMenu-${{ github.ref_name }}.zip` below.
+            1. Download `vMenu.Enhanced-${{ github.ref_name }}.zip` below.
             2. Unzip it into your server's `resources/` folder. It extracts as a single
-               `vMenu` folder. **Keep that folder name** (player saves are keyed to it).
-            3. Migrating from C# vMenu? Copy your old `config/*.json` files in and follow
-               [docs/MIGRATION.md](https://github.com/oyuh/lua-vMenu/blob/original/docs/MIGRATION.md);
-               your `permissions.cfg`, player saves, and keybinds all carry over unchanged.
-            4. `ensure vMenu` in your server.cfg (as usual).
+               `vMenu.Enhanced` folder. **Keep that folder name**, the resource refuses to start under any other.
+            3. Add to your server.cfg, in this order:
+               ```
+               add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced
+               ensure vMenu.Enhanced
+               ```

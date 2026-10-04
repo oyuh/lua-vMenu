@@ -1,100 +1,51 @@
-# lua-vMenu
+# lua-vMenu (stable)
 
-[vMenu](https://github.com/tomgrobbe/vMenu) rewritten from scratch in CfxLua (Lua 5.4). Same
-resource name, same config, same permissions, same player saves, no .NET runtime. Swap the
-folder and your server carries on like nothing happened.
+This branch is a Lua port of [vMenu Enhanced](https://github.com/TomGrobbe/vMenu/tree/enhanced), Tom Grobbe's rewrite of vMenu. It aims to be a drop-in for the C# build, with the same folder name, permissions, settings, player saves and plugins. Unlike upstream, it runs on both FiveM Legacy and FiveM Enhanced.
+
+The port is in progress and not ready for a live server yet. For the classic vMenu in Lua, use the [`original` branch](https://github.com/oyuh/lua-vMenu/tree/original), which is finished and tracks upstream's `legacy` branch.
 
 ## Credits
 
-- Original vMenu by Tom Grobbe (Vespura): <https://www.vespura.com/vmenu> /
-  <https://github.com/tomgrobbe/vMenu>, with contributions from Deltanic, Brigliar, IllusiveTea,
-  Shayan Doust, zr0iq, and Golden.
-- Lua rewrite by Lawson ([oyuh](https://github.com/oyuh)): <https://github.com/oyuh/lua-vMenu>.
+- **vMenu and vMenu Enhanced**: Tom Grobbe (Vespura), <https://github.com/TomGrobbe/vMenu>
+- **MenuAPI**: Tom Grobbe, <https://github.com/TomGrobbe/MenuAPI>
+- **Lua port**: Lawson ([oyuh](https://github.com/oyuh))
 
-A derivative rewrite, released with credit per the original license, not for sale. The vMenu
-name and all of the original functionality belong to Tom Grobbe. This repo only reimplements
-the resource in Lua.
+## License
 
-## Drop-in means drop-in
+vMenu Enhanced is GPL-3.0-or-later, so this port is too. If you hand a modified copy to anyone, you have to give them the source. Files copied from MenuAPI keep their LGPL-3.0-or-later license. [LICENSE.md](LICENSE.md) has the full text.
 
-Deploy this folder as `vMenu`, keep the folder name, and everything a server already leans on
-keeps working:
+## Progress
 
-- your existing `permissions.cfg` is read unchanged, every `vmenu_*` convar and `vMenu.*` ace
-  permission included
-- your `config/*.json` files (addons, extras, locations, model whitelists, tattoos) load from
-  the same paths with the same schemas
-- players keep their saved vehicles, peds, MP characters, and weapon loadouts. Client KVP is
-  keyed by resource name and the save formats are byte-compatible with the C# version
-  (Newtonsoft JSON, quirks and all)
-- players keep their menu and noclip keybinds, same key-mapping registration
-- third-party resources built on the `vMenu:*` event protocol keep working unchanged
+The port follows the phases in [docs/BRANCH-PLAN.md](docs/BRANCH-PLAN.md):
 
-Migrating is stop, swap, start. [docs/MIGRATION.md](docs/MIGRATION.md) has the walkthrough and
-the table of what carries over.
+0. Branch setup: done
+1. Foundation (platform layer, settings, permissions, example files, storage, languages): in progress
+2. Menu engine (MenuAPI with native and NUI rendering, themes)
+3. Plugins
+4. Menus, wave 1
+5. Menus, wave 2
+6. Server extras (webhooks, update checker, integrations)
+7. Parity and `stable-v1.0.0`
 
-## Why a Lua rewrite
+## Install
 
-Upstream vMenu ships as a compiled .NET assembly and runs on the server's mono/.NET runtime.
-This one is plain CfxLua, which buys you:
+Builds aren't published yet. Once they are, each `stable-v*` release ships a zip that extracts as one `vMenu.Enhanced` folder. Keep that name, because the resource refuses to start under any other. Then add these lines to your `server.cfg`, in this order:
 
-- **No .NET or mono dependency.** No `vMenu.net.dll`, nothing to compile, no runtime to keep in
-  sync with your FiveM artifacts. Unzip and `ensure vMenu`.
-- **Source you can read.** Every menu and feature is Lua you can open and edit in place,
-  instead of a DLL you would have to fork and rebuild.
-- **The same quirks.** Serialization typos and save-schema oddities are kept on purpose, so
-  saves and integrations behave exactly like upstream. The handful of spots where upstream code
-  contradicted its own intent are fixed, each with a comment in the source saying so.
+```ini
+add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced
+ensure vMenu.Enhanced
+```
 
-## Performance
-
-Measured on my server with resmon, side by side against the C# build:
-
-- **About 60% lower frame time overall.** Same features on, same player count.
-- **About 40% cheaper noclip.** Upstream runs its noclip logic whether or not you are in it.
-  Here the thread only exists while noclip is active, and it is torn down on exit.
-- **Roughly 0.00ms idle.** Menu ticks early-out every frame while the menu is closed, and the
-  entity spawner follows the same only-while-active pattern as noclip.
-- **No per-frame server work** beyond the weather and time sync loops upstream already runs.
-
-One server, one set of numbers. Yours will differ with player count, artifacts, and whatever
-else you have loaded. Checking resmon is on the live-deployment list in
-[docs/VERIFY.md](docs/VERIFY.md).
-
-## Features
-
-Everything upstream vMenu does: the player / vehicle / world menu trees, the vehicle spawner
-(all classes, addon vehicles, whitelist locks, stats panels), saved vehicles with the
-C#-compatible capture/apply engine, vehicle options (dynamic mod menu, colors, neon, plates,
-extras, liveries), weapon options and loadouts, player appearance and the full MP character
-creator/editor, online and banned player management (spectate, teleport, kick, ban/tempban,
-unban), noclip, the entity spawner, time / weather / voice-chat options, misc settings and
-developer tools, and the FunctionsController tick engine (god modes, speedometers, blips and
-overhead names, notifications, restore-on-respawn, keybinds, the MP creator camera, the lot).
-
-## Installation
-
-1. Grab the latest `vMenu-vX.Y.Z.zip` from the
-   [Releases](https://github.com/oyuh/lua-vMenu/releases) page.
-2. Unzip it into your server's `resources/` folder. It extracts as a single `vMenu` folder.
-   Keep that name, player saves are keyed to it.
-3. Coming from C# vMenu? Copy your existing `config/*.json` across and read
-   [docs/MIGRATION.md](docs/MIGRATION.md).
-4. `ensure vMenu` in your `server.cfg`.
+FiveM Enhanced needs the first line before vMenu can write its example config files. FiveM Legacy already lets a resource write to its own folder, so the line is harmless there.
 
 ## Development
 
-Lua 5.4, [busted](https://lunarmodules.github.io/busted/) for tests,
-[luacheck](https://github.com/lunarmodules/luacheck) for lint,
-[StyLua](https://github.com/JohnnyMorganz/StyLua) for formatting. The unit suite runs in pure
-Lua with the FiveM natives mocked, so no game server needed.
+The code is Lua 5.4. Tests run on [busted](https://lunarmodules.github.io/busted/) with the FiveM natives mocked, so you don't need a game server. Lint with [luacheck](https://github.com/lunarmodules/luacheck) and format with [StyLua](https://github.com/JohnnyMorganz/StyLua):
 
 ```sh
-busted            # run unit tests
-luacheck .        # lint
-stylua --check .  # format check
+busted
+luacheck .
+stylua --check .
 ```
 
-The compatibility contracts (permissions, convars, events, KVP save schemas) live under
-[docs/contracts/](docs/contracts/README.md). [docs/UPSTREAM.md](docs/UPSTREAM.md) covers how
-this tracks the upstream C# project when it moves.
+[docs/UPSTREAM.md](docs/UPSTREAM.md) explains how this branch follows upstream's `enhanced` releases.

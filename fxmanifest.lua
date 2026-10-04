@@ -2,30 +2,23 @@ fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
 
--- Deploy this resource folder as "vMenu" so existing client KVP saves,
--- keybinds, and permissions.cfg keep working (see docs/contracts/).
-name 'vMenu'
-description 'Server sided trainer for FiveM, rewritten in Lua. Drop-in replacement for the original C# vMenu by Tom Grobbe.'
-version '1.0.10'
-author 'Tom Grobbe (original vMenu), Lawson / oyuh (Lua rewrite)'
-url 'https://github.com/tomgrobbe/vMenu'
-
--- Adds additional logging, useful when debugging issues.
-client_debug_mode 'false'
-server_debug_mode 'false'
+-- Deploy this resource folder as "vMenu.Enhanced". Plugins, permission and
+-- setting names, the generated example files, and player KVP saves all depend
+-- on that name, and the resource refuses to start under any other.
+name 'vMenu Enhanced'
+description 'vMenu Enhanced rewritten in Lua. Runs on FiveM Legacy and FiveM Enhanced.'
+version '0.0.0'
+author 'Tom Grobbe (vMenu Enhanced), Lawson / oyuh (Lua port)'
+url 'https://github.com/oyuh/lua-vMenu/tree/stable'
 
 -- Architecture: shared/bootstrap.lua installs a require() shim; everything
 -- else is a plain Lua module listed under files and loaded on demand. Only
 -- entrypoints execute directly.
 files {
-    'config/*.json',
     'shared/*.lua',
+    'shared/data/*.lua',
     'menu/*.lua',
     'client/*.lua',
-    'client/data/*.lua',
-    'client/data/overlays.json',
-    'client/functions_controller/*.lua',
-    'client/menus/*.lua',
     'server/*.lua',
 }
 
