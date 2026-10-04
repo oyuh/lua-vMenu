@@ -5,6 +5,7 @@ local Platform = require('shared.platform')
 local ResourceIdentity = require('shared.data.resource_identity')
 local Config = require('shared.config')
 local Permissions = require('client.permissions')
+local UserDefaults = require('client.user_defaults')
 
 local RESOURCE = GetCurrentResourceName()
 
@@ -17,6 +18,7 @@ end
 
 Permissions.register_events()
 Config.init()
+UserDefaults.init()
 
 Log.info(
     ('[Core] Loaded vMenu Enhanced (Lua) v%s on %s.'):format(
