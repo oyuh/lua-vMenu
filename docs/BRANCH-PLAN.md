@@ -7,20 +7,23 @@ branches of its own:
 | | `original` | `stable` |
 |---|---|---|
 | What it is | This repo as it is today | A Lua port of vMenu Enhanced |
-| Tracks upstream | `legacy` (pin `f615b15b`, no code changes since our `e0f3b92a`) | `enhanced` (pin release tag `enhanced-v1.0.3`, `ee284020`) |
+| Tracks upstream | `legacy` (pin `f615b15b`, no code changes since our `e0f3b92a`) | `main`, by release tag (see [UPSTREAM.md](UPSTREAM.md)) |
 | Look | MenuAPI drawn with natives | MenuAPI drawn natively or in the browser (NUI), with themes |
 | Resource folder | `vMenu` | `vMenu.Enhanced` |
 | Permissions, settings | `vMenu.*` aces, `vmenu_*` convars, one `permissions.cfg` | `vMenu.Enhanced.*` aces, `permissions.cfg` and `configuration.cfg`, examples written by the resource |
 | Player saves | Legacy KVP keys and formats | Enhanced KVP envelope format, `VME1` transfer codes |
-| Plugins | No | Yes, upstream's protocol v1, so C# and Lua plugins both work |
+| Plugins | No | Yes, upstream's plugin protocol, so C#, Lua and JavaScript plugins all work |
 | Runs on | FiveM Legacy and FiveM Enhanced | FiveM Legacy and FiveM Enhanced |
 | License | Original vMenu license (unchanged) | GPL-3.0-or-later (required, it's a port of GPL code). The MenuAPI web files are LGPL-3.0 |
 | Release tags | `v1.x.y` (keeps the existing series) | `stable-v0.x.y` until parity, then `stable-v1.0.0` |
 
 Each branch is a drop-in for its upstream counterpart: same folder name, same config, same
 permissions, same saves. That's the promise `original` already makes, and `stable` makes the
-same one for vMenu Enhanced. On top of that, `stable` runs on FiveM Legacy, which upstream's
-version doesn't.
+same one for vMenu Enhanced.
+
+Since enhanced-v1.0.14, upstream ships vMenu Enhanced for FiveM Legacy too, as a second zip built
+from `src/Legacy/`. `stable` still differs in what it is made of: plain Lua with no .NET runtime,
+and one zip that runs on both platforms instead of one build per platform.
 
 ## Why the stable folder has to be `vMenu.Enhanced`
 
@@ -130,7 +133,9 @@ differences we've actually confirmed:
 ### Plugins
 
 Plugins are separate resources that talk to vMenu through local events carrying JSON strings.
-Protocol version 1, straight from upstream's `PluginContracts`:
+The summary below is protocol version 1 as of enhanced-v1.0.3. Upstream is on client protocol 3
+(standalone menus) and server protocol 1 as of enhanced-v1.0.16, so phase 3 ports whatever
+`PluginContracts` holds at the pin then:
 
 - **Client, plugin to vMenu:** `vMenu.Enhanced:Plugins:Probe`, `Register`, `Unregister`,
   `Update`, `Notify`, `Prompt`, `SetTheme`, `RegisterThemes`.
@@ -154,10 +159,9 @@ What ships:
 
 1. The host, in `client/plugins/` and `server/plugins.lua`: a Plugins submenu in the main menu
    and a Plugin Actions submenu in Online Players.
-2. A Lua helper so Lua plugins don't have to build JSON by hand. A plugin resource adds
-   `client_script '@vMenu.Enhanced/plugin/client.lua'` and `server_script '@vMenu.Enhanced/plugin/server.lua'`
-   and gets a small API shaped like upstream's `ClientAPI`/`ServerAPI`. Lua plugins run on both
-   platforms.
+2. No helper of our own. Upstream ships an official Lua plugin API (`plugin-api/vmenu.lua`) and a
+   JavaScript one, both of which run on either platform. Plugin authors copy those into their
+   resource, so our host only has to speak the same protocol.
 3. C# plugins built on `vMenu.Enhanced.ClientAPI` should work unchanged. They need FiveM
    Enhanced's C# runtime, so in practice they're Enhanced-only.
 4. Test against the official plugins: Example, Routing Buckets, Theme Picker and Custom Themes.
@@ -177,7 +181,7 @@ Each phase ends with something that runs on both a Legacy and an Enhanced server
 2. **Menu engine.** The MenuAPI port in both render modes, the MenuFramework, themes and banners,
    and the language loader (translations live in the framework's menu text). Milestone: an empty
    main menu opens on both platforms with every theme.
-3. **Plugins.** The host, the server registry and the Lua helper. This comes early because the
+3. **Plugins.** The host and the server registry. This comes early because the
    protocol is self-contained and gives the framework a real workout. Player actions wait for
    Online Players. Milestone: the Example plugin works.
 4. **Menus, wave 1.** Player options, ped models, saved peds, appearance. Vehicle spawner,
@@ -192,8 +196,9 @@ Each phase ends with something that runs on both a Legacy and an Enhanced server
 
 ## Risks and open questions
 
-- **Platform detection.** Unknown until we test on a FiveM Enhanced server. Nothing in phases 0
-  to 2 depends on it.
+- **Platform detection.** Solved with the checks upstream's Legacy build uses: native
+  `0x4DD998F6` (IS_GAME_ENHANCED_VERSION) on the client, the `gamename` convar on the server. See
+  `shared/platform.lua`. Still worth a look on real servers of both kinds.
 - **Upstream moves fast.** Pin a release tag, port release to release, and keep one diff list
   per pin bump.
 - **License.** `stable` has to be GPL-3.0-or-later. Anyone redistributing a modified copy has to

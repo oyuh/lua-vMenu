@@ -76,8 +76,8 @@ setr vMenu.Enhanced.KeyBindings.TeleportKey "F10"
 
 ### Menu Appearance ###
 
-# Choose a default theme: 'default', 'dark', 'cartoon' or 'gta'. You can also
-# choose any plugin-added theme here.
+# Choose a default theme: 'default', 'gold', 'green', 'red', 'gta', 'dark' or
+# 'cartoon'. You can also choose any plugin-added theme here.
 # Default value: "default" (string)
 setr vMenu.Enhanced.MenuAppearance.Skin "default"
 
@@ -95,6 +95,11 @@ setr vMenu.Enhanced.MenuAppearance.HeaderGlare true
 # 0 = vMenu does not touch PVP, 1 = PVP Enabled, 2 = PVP Disabled.
 # Default value: "1" (int)
 setr vMenu.Enhanced.Gameplay.PvpMode 1
+
+# Shows a puff of smoke where a player goes into or comes out of noclip, for
+# everyone nearby.
+# Default value: "true" (bool)
+setr vMenu.Enhanced.Gameplay.NoClipSmoke true
 
 ### Admin ###
 
@@ -156,6 +161,23 @@ setr vMenu.Enhanced.OnlinePlayers.ActionLimitSeconds 10
 # Default value: "true" (bool)
 setr vMenu.Enhanced.OnlinePlayers.MatchRoutingBucket true
 
+### Bully ###
+
+# Enables the Bully menu, a set of mean things staff can do to players, and
+# the electrocuting door option for personal vehicles.
+# Default value: "false" (bool)
+setr vMenu.Enhanced.Bully.Enabled false
+
+# Turns off the Explode and Up-n-Atomizer bully actions, for servers whose
+# anti cheat flags explosions.
+# Default value: "false" (bool)
+setr vMenu.Enhanced.Bully.DisableExplosions false
+
+# Turns off the Fireworks and Beast Scare bully actions and the smoke of
+# Transform Vehicle, for servers whose anti cheat flags particle effects.
+# Default value: "false" (bool)
+setr vMenu.Enhanced.Bully.DisableParticleEffects false
+
 ### Join and Leave ###
 
 # Logs player connections to the server console.
@@ -191,6 +213,13 @@ set vMenu.Enhanced.Logging.Webhook.Staff ""
 # instead of 'setr' to keep your webhook URL secure.
 # Default value: "" (string)
 set vMenu.Enhanced.Logging.Webhook.Security ""
+
+# A Discord webhook URL for private messages players send each other,
+# including what they wrote. Give it a channel only trusted staff can see. If
+# you leave this empty, private messages are not sent to Discord. Use 'set'
+# instead of 'setr' to keep your webhook URL secure.
+# Default value: "" (string)
+set vMenu.Enhanced.Logging.Webhook.Messages ""
 
 # A URL that receives the same lines as plain JSON instead of Discord
 # messages, for your own tooling. If it uses HTTPS, the certificate must be
@@ -368,6 +397,14 @@ setr vMenu.Enhanced.WeatherOptions.SyncClouds true
 # another when manually changing types in the menu.
 # Default value: "45" (int)
 setr vMenu.Enhanced.WeatherOptions.TransitionSeconds 45
+
+# Which weather schedule the server follows: 'default' (the normal GTA Online
+# one), 'snowy' (a winter one that keeps snow on the ground while the snow
+# setting is on automatic) or 'custom' (your own schedule from
+# config/weather-cycle.json, which is the only one that can also schedule
+# blackouts).
+# Default value: "default" (string)
+setr vMenu.Enhanced.WeatherOptions.WeatherCycle "default"
 
 ### Time Options ###
 

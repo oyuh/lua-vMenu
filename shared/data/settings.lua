@@ -73,7 +73,7 @@ return {
                 name = 'vMenu.Enhanced.MenuAppearance.Skin',
                 type = 'string',
                 default = 'default',
-                description = "Choose a default theme: 'default', 'dark', 'cartoon' or 'gta'. You can also choose any plugin-added theme here.",
+                description = "Choose a default theme: 'default', 'gold', 'green', 'red', 'gta', 'dark' or 'cartoon'. You can also choose any plugin-added theme here.",
             },
             {
                 name = 'vMenu.Enhanced.MenuAppearance.TitleAlignment',
@@ -97,6 +97,12 @@ return {
                 type = 'int',
                 default = 1,
                 description = '0 = vMenu does not touch PVP, 1 = PVP Enabled, 2 = PVP Disabled.',
+            },
+            {
+                name = 'vMenu.Enhanced.Gameplay.NoClipSmoke',
+                type = 'bool',
+                default = true,
+                description = 'Shows a puff of smoke where a player goes into or comes out of noclip, for everyone nearby.',
             },
         },
     },
@@ -182,6 +188,29 @@ return {
         },
     },
     {
+        title = 'Bully',
+        settings = {
+            {
+                name = 'vMenu.Enhanced.Bully.Enabled',
+                type = 'bool',
+                default = false,
+                description = 'Enables the Bully menu, a set of mean things staff can do to players, and the electrocuting door option for personal vehicles.',
+            },
+            {
+                name = 'vMenu.Enhanced.Bully.DisableExplosions',
+                type = 'bool',
+                default = false,
+                description = 'Turns off the Explode and Up-n-Atomizer bully actions, for servers whose anti cheat flags explosions.',
+            },
+            {
+                name = 'vMenu.Enhanced.Bully.DisableParticleEffects',
+                type = 'bool',
+                default = false,
+                description = 'Turns off the Fireworks and Beast Scare bully actions and the smoke of Transform Vehicle, for servers whose anti cheat flags particle effects.',
+            },
+        },
+    },
+    {
         title = 'Join and Leave',
         settings = {
             {
@@ -228,6 +257,13 @@ return {
                 default = '',
                 server_only = true,
                 description = "A Discord webhook URL when possible cheating is detected. If you leave this empty, the events will be sent to the staff webhook instead. Use 'set' instead of 'setr' to keep your webhook URL secure.",
+            },
+            {
+                name = 'vMenu.Enhanced.Logging.Webhook.Messages',
+                type = 'string',
+                default = '',
+                server_only = true,
+                description = "A Discord webhook URL for private messages players send each other, including what they wrote. Give it a channel only trusted staff can see. If you leave this empty, private messages are not sent to Discord. Use 'set' instead of 'setr' to keep your webhook URL secure.",
             },
             {
                 name = 'vMenu.Enhanced.Logging.Webhook.Generic',
@@ -446,6 +482,12 @@ return {
                 type = 'int',
                 default = 45,
                 description = 'How long, in seconds, it takes for weather to transition from one type to another when manually changing types in the menu.',
+            },
+            {
+                name = 'vMenu.Enhanced.WeatherOptions.WeatherCycle',
+                type = 'string',
+                default = 'default',
+                description = "Which weather schedule the server follows: 'default' (the normal GTA Online one), 'snowy' (a winter one that keeps snow on the ground while the snow setting is on automatic) or 'custom' (your own schedule from config/weather-cycle.json, which is the only one that can also schedule blackouts).",
             },
         },
     },

@@ -93,6 +93,12 @@ add_ace group.admin "vMenu.Enhanced.Menus.All" allow
     add_ace group.admin "vMenu.Enhanced.Menus.Admin.Menu" allow
     add_ace group.admin "vMenu.Enhanced.Menus.Admin.RefreshPermissions" allow
     add_ace group.admin "vMenu.Enhanced.Menus.Admin.ResetRoutingBucket" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.Admin.SeePrivateMessages" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.AutoPilot.All" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.AutoPilot.Menu" allow
+
+  add_ace group.admin "vMenu.Enhanced.Menus.Bully.Menu" allow
 
   add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.All" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.Create" allow
@@ -104,6 +110,8 @@ add_ace group.admin "vMenu.Enhanced.Menus.All" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.Save" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.SetDefault" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.CharacterCreator.Spawn" allow
+
+  add_ace builtin.everyone "vMenu.Enhanced.Menus.Cutscenes.Menu" allow
 
   add_ace group.admin "vMenu.Enhanced.Menus.DisplaySettings.All" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.DisplaySettings.Forecast" allow
@@ -204,6 +212,7 @@ add_ace group.admin "vMenu.Enhanced.Menus.All" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Blip" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Delete" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Doors" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Electrocute" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Engine" allow
     add_ace group.admin "vMenu.Enhanced.Menus.PersonalVehicle.Explode" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PersonalVehicle.Horn" allow
@@ -220,7 +229,6 @@ add_ace group.admin "vMenu.Enhanced.Menus.All" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerAppearance.WalkingStyle" allow
 
   add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.All" allow
-    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.AutoPilot" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.CleanPlayer" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.ClearBlood" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.DryPlayer" allow
@@ -229,10 +237,12 @@ add_ace group.admin "vMenu.Enhanced.Menus.All" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Freeze" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Godmode" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Ignored" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Intoxication" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Invisible" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.MaxArmor" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.MaxHealth" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Menu" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.MoveSpeed" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.MpStats" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.NeverWanted" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.NoHelmet" allow
@@ -243,6 +253,7 @@ add_ace group.admin "vMenu.Enhanced.Menus.All" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.StayInVehicle" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.Suicide" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.SuperJump" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.SwimSpeed" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.UnlimitedOxygen" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.PlayerOptions.WetPlayer" allow
 
@@ -375,6 +386,7 @@ add_ace group.admin "vMenu.Enhanced.Menus.All" allow
       add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Categories.sub_light_machine_guns" allow
       # from config/weapons.json
       add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Categories.throwables" allow
+    add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.GameLoadouts" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.GetAll" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Menu" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.WeaponOptions.Modify" allow
@@ -392,6 +404,7 @@ add_ace group.admin "vMenu.Enhanced.Menus.All" allow
     add_ace builtin.everyone "vMenu.Enhanced.Menus.WeatherOptions.Menu" allow
     add_ace group.admin "vMenu.Enhanced.Menus.WeatherOptions.SetWeather" allow
     add_ace group.admin "vMenu.Enhanced.Menus.WeatherOptions.Snow" allow
+    add_ace group.admin "vMenu.Enhanced.Menus.WeatherOptions.WeatherCycle" allow
 
 add_ace builtin.everyone "vMenu.Enhanced.NoClip" allow
 

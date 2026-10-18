@@ -51,6 +51,23 @@ return {
             { name = 'vMenu.Enhanced.Menus.Admin.ManageAnnouncements' },
             { name = 'vMenu.Enhanced.Menus.Admin.RefreshPermissions' },
             { name = 'vMenu.Enhanced.Menus.Admin.ResetRoutingBucket' },
+            { name = 'vMenu.Enhanced.Menus.Admin.SeePrivateMessages' },
+        },
+    },
+    {
+        class = 'AutoPilot',
+        prefix = 'vMenu.Enhanced.Menus.AutoPilot',
+        permissions = {
+            { name = 'vMenu.Enhanced.Menus.AutoPilot.All' },
+            { name = 'vMenu.Enhanced.Menus.AutoPilot.Menu' },
+        },
+    },
+    {
+        class = 'Bully',
+        prefix = 'vMenu.Enhanced.Menus.Bully',
+        staff_only = true,
+        permissions = {
+            { name = 'vMenu.Enhanced.Menus.Bully.Menu' },
         },
     },
     {
@@ -67,6 +84,13 @@ return {
             { name = 'vMenu.Enhanced.Menus.CharacterCreator.Presets' },
             { name = 'vMenu.Enhanced.Menus.CharacterCreator.PresetsManage' },
             { name = 'vMenu.Enhanced.Menus.CharacterCreator.OnlineOutfits' },
+        },
+    },
+    {
+        class = 'Cutscenes',
+        prefix = 'vMenu.Enhanced.Menus.Cutscenes',
+        permissions = {
+            { name = 'vMenu.Enhanced.Menus.Cutscenes.Menu' },
         },
     },
     {
@@ -154,6 +178,7 @@ return {
             { name = 'vMenu.Enhanced.Menus.PersonalVehicle.Windows' },
             { name = 'vMenu.Enhanced.Menus.PersonalVehicle.Horn' },
             { name = 'vMenu.Enhanced.Menus.PersonalVehicle.Explode', staff_only = true },
+            { name = 'vMenu.Enhanced.Menus.PersonalVehicle.Electrocute' },
         },
     },
     {
@@ -185,6 +210,9 @@ return {
             { name = 'vMenu.Enhanced.Menus.PlayerOptions.FastSwim' },
             { name = 'vMenu.Enhanced.Menus.PlayerOptions.MpStats' },
             { name = 'vMenu.Enhanced.Menus.PlayerOptions.UnlimitedOxygen' },
+            { name = 'vMenu.Enhanced.Menus.PlayerOptions.MoveSpeed' },
+            { name = 'vMenu.Enhanced.Menus.PlayerOptions.SwimSpeed' },
+            { name = 'vMenu.Enhanced.Menus.PlayerOptions.Intoxication' },
             { name = 'vMenu.Enhanced.Menus.PlayerOptions.NeverWanted' },
             { name = 'vMenu.Enhanced.Menus.PlayerOptions.SetWanted' },
             { name = 'vMenu.Enhanced.Menus.PlayerOptions.MaxHealth' },
@@ -196,7 +224,6 @@ return {
             { name = 'vMenu.Enhanced.Menus.PlayerOptions.DryPlayer' },
             { name = 'vMenu.Enhanced.Menus.PlayerOptions.WetPlayer' },
             { name = 'vMenu.Enhanced.Menus.PlayerOptions.Scenarios' },
-            { name = 'vMenu.Enhanced.Menus.PlayerOptions.AutoPilot' },
         },
     },
     {
@@ -364,6 +391,7 @@ return {
             { name = 'vMenu.Enhanced.Menus.WeaponOptions.Menu' },
             { name = 'vMenu.Enhanced.Menus.WeaponOptions.GetAll' },
             { name = 'vMenu.Enhanced.Menus.WeaponOptions.RemoveAll' },
+            { name = 'vMenu.Enhanced.Menus.WeaponOptions.GameLoadouts' },
             { name = 'vMenu.Enhanced.Menus.WeaponOptions.UnlimitedAmmo' },
             { name = 'vMenu.Enhanced.Menus.WeaponOptions.NoReload' },
             { name = 'vMenu.Enhanced.Menus.WeaponOptions.SetAllAmmo' },
@@ -390,6 +418,7 @@ return {
             { name = 'vMenu.Enhanced.Menus.WeatherOptions.SetWeather', staff_only = true },
             { name = 'vMenu.Enhanced.Menus.WeatherOptions.Blackout', staff_only = true },
             { name = 'vMenu.Enhanced.Menus.WeatherOptions.Snow', staff_only = true },
+            { name = 'vMenu.Enhanced.Menus.WeatherOptions.WeatherCycle', staff_only = true },
         },
     },
     {
