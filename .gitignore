@@ -10,3 +10,7 @@ luacov.*.out
 .idea/
 Thumbs.db
 .DS_Store
+
+# Written by vMenu itself on every start (the test servers link this repo in)
+config/*.cfg.example
+config/plugins/*.example
