@@ -97,11 +97,15 @@ return Registry.definition({
                                 Localization.key(
                                     'weaponloadouts.equipped.skipped',
                                     { name = loadout.name, count = tostring(skipped) }
-                                )
+                                ),
+                                Notifications.SPAWN_DURATION_MS
                             )
                             return
                         end
-                        Notifications.success(Localization.key('weaponloadouts.equipped', { name = loadout.name }))
+                        Notifications.success(
+                            Localization.key('weaponloadouts.equipped', { name = loadout.name }),
+                            Notifications.SPAWN_DURATION_MS
+                        )
                     end,
                 }))
                 detail:add(Entries.button({

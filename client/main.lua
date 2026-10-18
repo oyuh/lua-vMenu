@@ -94,6 +94,7 @@ WeaponLoadouts.init()
 -- returns the file path, which would become an extra entry.
 local MAIN_MENU = {
     (require('client.menus.player')),
+    (require('client.menus.vehicles')),
     (require('client.menus.world')),
     (require('client.menus.teleport')),
     (require('client.menus.recording')),

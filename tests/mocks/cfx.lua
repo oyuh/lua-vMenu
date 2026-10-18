@@ -829,6 +829,28 @@ local NATIVE_DEFAULTS = {
             return { x = 0.0, y = 0.0, z = 0.0 }
         end,
     },
+    -- vehicles (client/menus/vehicles)
+    {
+        'GetAllVehicleModels',
+        function()
+            return {}
+        end,
+    },
+    { 'GetEntityType', 0 },
+    {
+        'GetEntityVelocity',
+        function()
+            return { x = 0.0, y = 0.0, z = 0.0 }
+        end,
+    },
+    { 'IsThisModelAJetski', false },
+    { 'IsThisModelASubmersible', false },
+    { 'IsThisModelAnAmphibiousQuadbike', false },
+    { 'IsThisModelAnEmergencyBoat', false },
+    { 'NetworkGetEntityIsNetworked', false },
+    { 'SetEntityAsNoLongerNeeded' },
+    { 'SetEntityOrphanMode' },
+    { 'SetHeliBladesSpeed' },
     -- weapons (client/menus/weapons)
     { 'AddAmmoToPedByType' },
     {

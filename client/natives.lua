@@ -93,4 +93,20 @@ function Natives.weapon_component_hud_stats(component_hash)
     return hud_stats(0xB3CAF387AE12E9F8, component_hash)
 end
 
+-- Legacy's database drops the last argument, which skips the ground check.
+function Natives.create_vehicle(hash, x, y, z, heading, networked, script_host, ignore_ground)
+    return Citizen.InvokeNative(
+        0xAF35D0D2583051B0,
+        hash,
+        x + 0.0,
+        y + 0.0,
+        z + 0.0,
+        heading + 0.0,
+        networked,
+        script_host,
+        ignore_ground,
+        Citizen.ResultAsInteger()
+    )
+end
+
 return Natives

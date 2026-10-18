@@ -12,6 +12,7 @@ local World = require('server.world')
 local Teleport = require('server.teleport')
 local NoClip = require('server.noclip')
 local Weapons = require('server.weapons')
+local Vehicles = require('server.vehicles')
 
 local RESOURCE = GetCurrentResourceName()
 
@@ -37,6 +38,7 @@ Permissions.register_events()
 Plugins.register_events()
 Actions.register_events()
 NoClip.register_events()
+Vehicles.register_events()
 
 -- Last, so plugins that started first know vMenu is ready for them.
 Plugins.announce_ready()

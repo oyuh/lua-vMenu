@@ -279,7 +279,10 @@ return Registry.definition({
             description = Localization.key('weaponoptions.getall.desc'),
             gate = PERMISSION .. 'GetAll',
             on_selected = function()
-                Notifications.success(count_text('weaponoptions.getall.done', Inventory.give_all()))
+                Notifications.success(
+                    count_text('weaponoptions.getall.done', Inventory.give_all()),
+                    Notifications.SPAWN_DURATION_MS
+                )
             end,
         }))
         menu:add(Entries.button({
