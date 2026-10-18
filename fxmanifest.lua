@@ -27,6 +27,7 @@ files {
     'client/*.lua',
     'client/framework/*.lua',
     'client/menus/*.lua',
+    'client/plugins/*.lua',
     'server/*.lua',
 }
 

@@ -11,6 +11,7 @@ local UserPreferences = require('client.user_preferences')
 local Skin = require('client.framework.skin')
 local Notifications = require('client.framework.notifications')
 local Registry = require('client.framework.registry')
+local PluginHost = require('client.plugins.host')
 local Controller = require('menu.controller')
 
 local RESOURCE = GetCurrentResourceName()
@@ -31,6 +32,8 @@ Log.info(
 
 Permissions.register_events()
 Notifications.register_events()
+-- Early, so plugins that register before the menus exist are held, not lost.
+PluginHost.register_events()
 Config.init()
 UserDefaults.init()
 
@@ -42,6 +45,7 @@ Controller.init()
 -- The menus the main menu links to, in order (MainMenuComposition.cs). The
 -- rest join as they are ported.
 local MAIN_MENU = {
+    require('client.menus.plugins'),
     require('client.menus.about'),
 }
 
@@ -51,4 +55,5 @@ CreateThread(function()
     end
     UserPreferences.restore()
     Registry.build(MAIN_MENU)
+    PluginHost.announce_ready()
 end)

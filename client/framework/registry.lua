@@ -292,6 +292,8 @@ function Registry.create_standalone(title, subtitle, build, audit_name)
     local host = track(Host.new(menu, nil, Gate.ALWAYS, title, subtitle, nil, audit_name))
     build(host)
     materialise_tree(host, false)
+    -- Nothing else gates it before it opens: the arbiter opens it directly.
+    Registry.refresh_branch(host)
     return {
         menu = menu,
         builder = host,

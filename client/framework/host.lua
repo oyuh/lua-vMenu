@@ -146,13 +146,23 @@ end
 -- Holds back the refresh and filter pass of insert, remove and move until fn
 -- returns, so many changes cost one pass. Nesting is fine.
 function Host:update(fn)
-    self.update_depth = self.update_depth + 1
+    self:begin_update()
     local ok, err = pcall(fn)
-    self.update_depth = self.update_depth - 1
-    self:settle()
+    self:end_update()
     if not ok then
         error(err, 0)
     end
+end
+
+-- The open-ended form of update, for a caller holding several menus at once.
+-- Every begin_update needs its end_update.
+function Host:begin_update()
+    self.update_depth = self.update_depth + 1
+end
+
+function Host:end_update()
+    self.update_depth = self.update_depth - 1
+    self:settle()
 end
 
 local function settle(self)
