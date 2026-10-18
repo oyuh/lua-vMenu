@@ -8,7 +8,7 @@ branches of its own:
 |---|---|---|
 | What it is | This repo as it is today | A Lua port of vMenu Enhanced |
 | Tracks upstream | `legacy` (pin `f615b15b`, no code changes since our `e0f3b92a`) | `main`, by release tag (see [UPSTREAM.md](UPSTREAM.md)) |
-| Look | MenuAPI drawn with natives | MenuAPI drawn natively or in the browser (NUI), with themes |
+| Look | MenuAPI drawn with natives | MenuAPI 4, drawn on its NUI page, with themes |
 | Resource folder | `vMenu` | `vMenu.Enhanced` |
 | Permissions, settings | `vMenu.*` aces, `vmenu_*` convars, one `permissions.cfg` | `vMenu.Enhanced.*` aces, `permissions.cfg` and `configuration.cfg`, examples written by the resource |
 | Player saves | Legacy KVP keys and formats | Enhanced KVP envelope format, `VME1` transfer codes |
@@ -88,7 +88,7 @@ somewhere around 70,000 to 80,000. It's about three times the size of the first 
 
 | Upstream (C#) | Lines | Here (Lua) | Notes |
 |---|---|---|---|
-| `MenuAPI.FiveM.Enhanced` 1.0.28 (TomGrobbe/MenuAPI `fivem-enhanced`) | 8,500 | `menu/` | Upgrade our MenuAPI port. Add the NUI render mode next to the native one. Ship upstream's `ui/menuapi/*.js|css` unchanged (LGPL). |
+| MenuAPI 4.0.1 (TomGrobbe/MenuAPI `main`, both upstream builds use it) | 8,300 | `menu/` | NUI only: MenuAPI 4 dropped native drawing. Upstream's `ui/` folder ships unchanged, MenuAPI's files under `ui/menuapi` (LGPL). |
 | `vMenu.Enhanced.MenuFramework` | 11,300 | `client/framework/` | Menu definitions, builder, entries, gates, confirm rows, input prompt, notifications, HUD anchors, localization. |
 | `vMenu.Enhanced.Menus` | 47,900 | `client/menus/` | Same folder layout as upstream (`Players/`, `Vehicles/`, `Weapons/`, `World/`, `Admin/`, `Props/`, `Teleport/`, `Misc/`, `Developer/`). |
 | `vMenu.Enhanced.Data` | 7,300 | `shared/data/` | The permission and setting catalogs, event names, weather and time tables. |
@@ -178,7 +178,7 @@ Each phase ends with something that runs on both a Legacy and an Enhanced server
    example `permissions.cfg.example` and `configuration.cfg.example` writers. Golden-file tests
    compare them to upstream's generated output. Also the KVP envelope store. Milestone: the
    server boots and writes the same example files upstream does.
-2. **Menu engine.** The MenuAPI port in both render modes, the MenuFramework, themes and banners,
+2. **Menu engine.** The MenuAPI port (NUI only since MenuAPI 4), the MenuFramework, themes and banners,
    and the language loader (translations live in the framework's menu text). Milestone: an empty
    main menu opens on both platforms with every theme.
 3. **Plugins.** The host and the server registry. This comes early because the

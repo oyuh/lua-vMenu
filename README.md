@@ -20,7 +20,7 @@ The port follows the phases in [docs/BRANCH-PLAN.md](docs/BRANCH-PLAN.md):
 
 0. Branch setup: done
 1. Foundation (platform layer, settings, permissions, example files, storage): done
-2. Menu engine (MenuAPI with native and NUI rendering, themes, languages): in progress
+2. Menu engine (MenuAPI 4 on its NUI page, the menu framework, themes, languages, notifications): done in code, waiting for in-game testing
 3. Plugins
 4. Menus, wave 1
 5. Menus, wave 2
