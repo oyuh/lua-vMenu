@@ -72,6 +72,7 @@ files['fxmanifest.lua'] = {
         'dependency', 'dependencies', 'export', 'exports', 'server_exports', 'ui_page', 'loadscreen',
     },
 }
+files['tools/test-plugin/fxmanifest.lua'] = files['fxmanifest.lua']
 
 -- The bootstrap installs a require() shim in the CfxLua runtime by design.
 files['shared/bootstrap.lua'] = {
@@ -89,3 +90,8 @@ files['scripts/**'] = { std = 'lua54' }
 -- Converted catalogs keep upstream's prose on one line per entry.
 files['shared/data/settings.lua'] = { max_line_length = false }
 files['shared/data/english.lua'] = { max_line_length = false }
+
+-- The test plugin runs as its own resource on top of upstream's plugin API.
+files['tools/test-plugin/**'] = {
+    read_globals = { 'vMenu', 'json', 'PlayerId', 'source' },
+}

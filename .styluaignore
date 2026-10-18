@@ -8,3 +8,4 @@ vendor/
 .source/
 shared/data/english.lua
 tools/test-plugin/vmenu.lua
+tools/test-plugin/fxmanifest.lua

@@ -1,0 +1,23 @@
+/* A custom theme registered by the test plugin. */
+#menuapi {
+    --menuapi-radius: 6px;
+    --menuapi-shadow: 0 2px 6px rgb(0 0 0 / 30%);
+
+    --menuapi-subtitle-bg: rgb(20 12 30 / 80%);
+    --menuapi-subtitle-text: rgb(240 232 255);
+    --menuapi-freemode: rgb(176 132 255);
+
+    --menuapi-rows-bg: rgb(20 12 30 / 60%);
+    --menuapi-row-text: rgb(240 232 255);
+    --menuapi-row-selected-bg: rgb(176 132 255 / 90%);
+    --menuapi-row-selected-text: rgb(16 8 28);
+    --menuapi-row-disabled-text: rgb(150 136 170);
+    --menuapi-row-selected-disabled-text: rgb(16 8 28 / 52%);
+
+    --menuapi-header-text: rgb(240 232 255);
+    --menuapi-slider-divider: rgb(176 132 255);
+
+    --menuapi-overflow-bg: rgb(20 12 30 / 60%);
+    --menuapi-desc-bg: rgb(20 12 30 / 70%);
+    --menuapi-desc-rule: rgb(255 255 255 / 12%);
+}
