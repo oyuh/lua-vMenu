@@ -56,6 +56,7 @@ local INSTALLED_GLOBALS = {
     'GetHashKey',
     'LocalPlayer',
     'Entity',
+    'Citizen',
 }
 
 -- Client-side game natives faked as recording no-ops. Each entry is
@@ -1207,6 +1208,17 @@ function Cfx:install()
         mock:_record('to_client', name, ...)
         mock:_dispatch('client', name, ...)
     end
+
+    -- Natives invoked by hash. The mock knows none, so every call fails the way
+    -- an unknown native does on a real client (FiveM Legacy's answer to
+    -- IS_GAME_ENHANCED_VERSION, for example).
+    _G.Citizen = {
+        InvokeNative = function(hash)
+            error(('Failed to invoke native 0x%X'):format(hash))
+        end,
+        ReturnResultAnyway = function() end,
+        ResultAsInteger = function() end,
+    }
 
     _G.TriggerLatentClientEvent = function(name, target, _bytes_per_second, ...)
         _G.TriggerClientEvent(name, target, ...)
