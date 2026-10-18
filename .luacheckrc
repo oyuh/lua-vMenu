@@ -33,6 +33,7 @@ read_globals = {
     'GetHudColour', 'GetFinalRenderedCamRot',
     -- NUI
     'SendNuiMessage', 'RegisterNUICallback', 'SetNuiFocus', 'NetworkIsSessionStarted', 'GetInvokingResource',
+    'GetNumResourceMetadata',
     -- controls
     'IsControlPressed', 'IsDisabledControlPressed', 'IsControlJustPressed',
     'IsDisabledControlJustPressed', 'IsControlJustReleased', 'IsDisabledControlJustReleased',

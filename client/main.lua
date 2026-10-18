@@ -39,8 +39,11 @@ Skin.init()
 Localization.load('vMenu.Enhanced.Languages', Config.value('vMenu.Enhanced.Languages'))
 Controller.init()
 
--- The menus the main menu links to, in order (MainMenuComposition.cs).
-local MAIN_MENU = {}
+-- The menus the main menu links to, in order (MainMenuComposition.cs). The
+-- rest join as they are ported.
+local MAIN_MENU = {
+    require('client.menus.about'),
+}
 
 CreateThread(function()
     while not Permissions.has_received() do
