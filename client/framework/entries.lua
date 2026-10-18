@@ -158,7 +158,7 @@ function Entry:effective_gate()
     return self.gate
 end
 
-function Entry:menu_title()
+function Entry:title_of_menu()
     return is_empty(self.menu_title) and self.text or self.menu_title
 end
 

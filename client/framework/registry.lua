@@ -88,7 +88,7 @@ local function create_child(parent, submenu, link_item)
         )
         return nil
     end
-    local title = definition and definition.title or submenu:menu_title()
+    local title = definition and definition.title or submenu:title_of_menu()
     local subtitle = definition and definition.subtitle or submenu.menu_subtitle
     local child_menu = Menu.new(resolve(title), Host.resolve_subtitle(title, subtitle))
     Controller.BindMenuItem(parent.menu, child_menu, link_item)
