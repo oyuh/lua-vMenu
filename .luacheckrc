@@ -32,7 +32,7 @@ read_globals = {
     'PlaySoundFrontend', 'IsPlayerDead', 'IsHudComponentActive', 'GetScreenAspectRatio',
     'GetHudColour', 'GetFinalRenderedCamRot',
     -- NUI
-    'SendNuiMessage', 'RegisterNUICallback',
+    'SendNuiMessage', 'RegisterNUICallback', 'SetNuiFocus', 'NetworkIsSessionStarted', 'GetInvokingResource',
     -- controls
     'IsControlPressed', 'IsDisabledControlPressed', 'IsControlJustPressed',
     'IsDisabledControlJustPressed', 'IsControlJustReleased', 'IsDisabledControlJustReleased',

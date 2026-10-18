@@ -8,7 +8,7 @@
 --
 -- Menu text is resolved late, so a language switch relabels menus in place:
 --   'Plain text'                      a literal, never translated
---   Localization.key('a.b', { n = x }) a translation key with named arguments,
+--   Localization.key('mainmenu.title', { n = x })  a key with named arguments,
 --                                     each itself menu text
 --   Localization.from(fn)             text produced on demand, for GTA labels
 

@@ -5,6 +5,7 @@
 local Log = require('shared.log')
 local Localization = require('shared.localization')
 local UserDefaults = require('client.user_defaults')
+local Notifications = require('client.framework.notifications')
 local Controller = require('menu.controller')
 
 local UserPreferences = {}
@@ -20,6 +21,11 @@ local function restore_language()
     -- The preference is kept for servers that do offer the language.
     Log.debug(("[Localization] '%s' is not available here, so English is being used."):format(stored))
     Localization.set_language('en')
+    -- Deferred: this runs before the player has spawned.
+    Notifications.show_when_visible(
+        'warning',
+        Localization.key('miscsettings.language.unavailable', { language = stored })
+    )
 end
 
 function UserPreferences.is_right_aligned()
@@ -31,6 +37,7 @@ end
 local function apply_right_aligned(right, persist)
     Controller.MenuAlignment = right and 'Right' or 'Left'
     if right and not UserPreferences.is_right_aligned() then
+        Notifications.show_when_visible('error', Localization.key('displaysettings.rightaligned.unsupported'))
         UserDefaults.set('displayRightAlignMenu', false)
         return
     end

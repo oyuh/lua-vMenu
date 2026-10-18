@@ -9,6 +9,7 @@ local Permissions = require('client.permissions')
 local UserDefaults = require('client.user_defaults')
 local UserPreferences = require('client.user_preferences')
 local Skin = require('client.framework.skin')
+local Notifications = require('client.framework.notifications')
 local Registry = require('client.framework.registry')
 local Controller = require('menu.controller')
 
@@ -29,6 +30,7 @@ Log.info(
 )
 
 Permissions.register_events()
+Notifications.register_events()
 Config.init()
 UserDefaults.init()
 
