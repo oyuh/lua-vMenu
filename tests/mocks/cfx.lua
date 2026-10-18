@@ -43,6 +43,7 @@ local INSTALLED_GLOBALS = {
     'Wait',
     'RegisterCommand',
     'GlobalState',
+    'exports',
     'GetPlayerPed',
     'GetEntityCoords',
     'DoesEntityExist',
@@ -828,6 +829,34 @@ local NATIVE_DEFAULTS = {
             return { x = 0.0, y = 0.0, z = 0.0 }
         end,
     },
+    -- world sync (client/menus/world)
+    { 'IsPedDeadOrDying', false },
+    { 'GetClockDayOfMonth', 1 },
+    { 'GetClockMonth', 0 },
+    { 'GetClockSeconds', 0 },
+    { 'GetClockYear', 2000 },
+    {
+        'GetUtcTime',
+        function()
+            return 1999, 12, 31, 0, 0, 0
+        end,
+    },
+    {
+        'GetWeatherTypeTransition',
+        function()
+            return 0, 0, 0.0
+        end,
+    },
+    { 'AddStateBagChangeHandler', 0 },
+    { 'ClearOverrideWeather' },
+    { 'ClearWeatherTypePersist' },
+    { 'NetworkClearClockTimeOverride' },
+    { 'PauseClock' },
+    { 'SetClockDate' },
+    { 'SetMillisecondsPerGameMinute' },
+    { 'SetWeatherOwnedByNetwork' },
+    { 'SetWeatherTypeTransition' },
+    { 'UnloadCloudHat' },
     -- player features (client/menus/players)
     { 'AnimpostfxIsRunning', false },
     { 'HasClipSetLoaded', false },
@@ -1095,6 +1124,14 @@ function Cfx:install()
     }, {
         __index = function(_, key)
             return mock.global_state[key]
+        end,
+    })
+
+    -- exports('Name', fn) registers a local export; the mock keeps them here.
+    mock.exports = {}
+    _G.exports = setmetatable({}, {
+        __call = function(_, name, fn)
+            mock.exports[name] = fn
         end,
     })
 

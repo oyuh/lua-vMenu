@@ -17,6 +17,14 @@ local Jump = require('client.menus.players.jump')
 local MpStats = require('client.menus.players.mp_stats')
 local MoveSpeed = require('client.menus.players.move_speed')
 local Intoxication = require('client.menus.players.intoxication')
+local Actions = require('client.actions')
+local WorldState = require('client.menus.world.state')
+local WorldTime = require('client.menus.world.time')
+local WorldWeather = require('client.menus.world.weather')
+local WorldTemperature = require('client.menus.world.temperature')
+local WorldEffects = require('client.menus.world.effects')
+local Snowball = require('client.menus.world.snowball')
+local Forecast = require('client.menus.world.forecast')
 local Controller = require('menu.controller')
 local Ticks = require('menu.ticks')
 
@@ -38,6 +46,7 @@ Log.info(
 
 Permissions.register_events()
 Notifications.register_events()
+Actions.register_events()
 -- Early, so plugins that register before the menus exist are held, not lost.
 PluginHost.register_events()
 Config.init()
@@ -56,11 +65,21 @@ MpStats.init()
 MoveSpeed.init()
 Intoxication.init()
 
+-- World sync (WorldSync.cs), in upstream's order.
+WorldState.init()
+WorldTime.init()
+WorldWeather.init()
+WorldTemperature.init()
+WorldEffects.init()
+Snowball.init()
+Forecast.init()
+
 -- The menus the main menu links to, in order (MainMenuComposition.cs). The
 -- rest join as they are ported. Parenthesized because Lua 5.4's require also
 -- returns the file path, which would become an extra entry.
 local MAIN_MENU = {
     (require('client.menus.player')),
+    (require('client.menus.world')),
     (require('client.menus.plugins')),
     (require('client.menus.about')),
 }

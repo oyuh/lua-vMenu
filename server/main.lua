@@ -7,6 +7,8 @@ local Config = require('shared.config')
 local ConfigurationExample = require('shared.data.configuration_example')
 local Permissions = require('server.permissions')
 local Plugins = require('server.plugins')
+local Actions = require('server.actions')
+local World = require('server.world')
 
 local RESOURCE = GetCurrentResourceName()
 
@@ -24,9 +26,11 @@ if Platform.save_file(ConfigurationExample.RESOURCE_PATH, ConfigurationExample.r
     Log.debug(('[Config] Wrote %s.'):format(ConfigurationExample.RESOURCE_PATH))
 end
 Permissions.write_example()
+World.init()
 
 Permissions.register_events()
 Plugins.register_events()
+Actions.register_events()
 
 -- Last, so plugins that started first know vMenu is ready for them.
 Plugins.announce_ready()
