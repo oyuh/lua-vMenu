@@ -35,6 +35,7 @@ files {
     'client/menus/misc/*.lua',
     'client/menus/weapons/*.lua',
     'client/menus/vehicles/*.lua',
+    'client/menus/vehicles/sections/*.lua',
     'client/plugins/*.lua',
     'server/*.lua',
 }

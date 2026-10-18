@@ -32,6 +32,8 @@ local TeleportTargets = require('client.menus.teleport.targets')
 local WeaponCatalog = require('client.menus.weapons.catalog')
 local WeaponFeatures = require('client.menus.weapons.features')
 local WeaponLoadouts = require('client.menus.weapons.loadouts')
+local VehicleGodMode = require('client.menus.vehicles.god_mode')
+local VehicleToggles = require('client.menus.vehicles.toggles')
 local Controller = require('menu.controller')
 local Ticks = require('menu.ticks')
 
@@ -88,6 +90,8 @@ NoClipSmoke.init()
 TeleportTargets.init()
 WeaponFeatures.init()
 WeaponLoadouts.init()
+VehicleGodMode.init()
+VehicleToggles.init()
 
 -- The menus the main menu links to, in order (MainMenuComposition.cs). The
 -- rest join as they are ported. Parenthesized because Lua 5.4's require also

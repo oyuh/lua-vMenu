@@ -6,6 +6,7 @@
 local Log = require('shared.log')
 local Config = require('shared.config')
 local Platform = require('shared.platform')
+local Actions = require('server.actions')
 
 local Vehicles = {}
 
@@ -117,7 +118,37 @@ local function drain()
     end
 end
 
+-- VehicleActions.cs: a driver deleting their own vehicle. The server checks
+-- they really drive it, so nobody deletes someone else's car this way.
+local function delete_vehicle(source, args)
+    local network_id = math.tointeger(tonumber(args[1]))
+    if not network_id then
+        return Actions.INVALID_REQUEST
+    end
+    local entity = NetworkGetEntityFromNetworkId(network_id)
+    if entity == 0 or not DoesEntityExist(entity) then
+        return Actions.NOT_FOUND
+    end
+    if GetEntityType(entity) ~= VEHICLE_ENTITY_TYPE then
+        return Actions.INVALID_REQUEST
+    end
+    local ped = GetPlayerPed(source)
+    if ped == 0 or not DoesEntityExist(ped) then
+        return Actions.NOT_FOUND
+    end
+    if GetVehiclePedIsIn(ped, false) ~= entity or GetPedInVehicleSeat(entity, -1) ~= ped then
+        return Actions.REFUSED
+    end
+    DeleteEntity(entity)
+    return Actions.OK
+end
+
 function Vehicles.register_events()
+    Actions.register(
+        'VehicleOptions.DeleteVehicle',
+        'vMenu.Enhanced.Menus.VehicleOptions.DeleteVehicle',
+        delete_vehicle
+    )
     RegisterNetEvent(EVENT_SPAWNED, function(network_id)
         if math.type(network_id) ~= 'integer' or network_id == 0 then
             return

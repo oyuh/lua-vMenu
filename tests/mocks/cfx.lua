@@ -851,6 +851,10 @@ local NATIVE_DEFAULTS = {
     { 'SetEntityAsNoLongerNeeded' },
     { 'SetEntityOrphanMode' },
     { 'SetHeliBladesSpeed' },
+    { 'GetNumberOfVehicleDoors', 0 },
+    { 'SetVehicleDeformationFixed' },
+    { 'SetVehicleDoorCanBreak' },
+    { 'SetVehicleUndriveable' },
     -- weapons (client/menus/weapons)
     { 'AddAmmoToPedByType' },
     {

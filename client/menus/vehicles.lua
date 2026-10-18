@@ -17,6 +17,7 @@ return Registry.definition({
         'vMenu.Enhanced.Menus.SavedVehicles.Menu'
     ),
     build = function(menu)
+        menu:add(Entries.submenu_for(require('client.menus.vehicle_options')))
         menu:add(Entries.submenu_for(require('client.menus.vehicle_spawner')))
     end,
 })
