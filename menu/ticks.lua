@@ -68,7 +68,7 @@ local function drive(handle)
                     break
                 end
             end
-            Wait(handle.rate)
+            Wait(type(handle.rate) == 'function' and handle.rate() or handle.rate)
         end
         handle.driver_in_flight = false
     end)
@@ -93,7 +93,8 @@ local function apply(handle)
     end
 end
 
--- opts: rate (ms between iterations, 0 = every frame), condition, on_started,
+-- opts: rate (ms between iterations, 0 = every frame, or a function returning
+-- that, read after each iteration), condition, on_started,
 -- on_stopped, auto_start (default true; only used without a condition).
 function Ticks.register(name, handler, opts)
     opts = opts or {}
@@ -149,7 +150,9 @@ end
 function Ticks.describe()
     local lines = {}
     for _, handle in ipairs(handles) do
-        local rate = handle.rate <= 0 and 'per frame' or ('every %dms'):format(handle.rate)
+        local rate = type(handle.rate) == 'function' and 'varying'
+            or handle.rate <= 0 and 'per frame'
+            or ('every %dms'):format(handle.rate)
         lines[#lines + 1] = ('%s (%s): %s'):format(handle.name, rate, handle.running and 'running' or 'stopped')
     end
     return lines
