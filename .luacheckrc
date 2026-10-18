@@ -6,6 +6,8 @@ self = false
 exclude_files = {
     'vendor/**',
     '.upstream/**',
+    -- Upstream's Lua plugin API, kept byte for byte apart from its version.
+    'tools/test-plugin/vmenu.lua',
     -- CI installs the Lua toolchain into the workspace (leafo/gh-actions-*)
     '.lua/**',
     '.luarocks/**',

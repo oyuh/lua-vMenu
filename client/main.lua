@@ -43,10 +43,11 @@ Localization.load('vMenu.Enhanced.Languages', Config.value('vMenu.Enhanced.Langu
 Controller.init()
 
 -- The menus the main menu links to, in order (MainMenuComposition.cs). The
--- rest join as they are ported.
+-- rest join as they are ported. Parenthesized because Lua 5.4's require also
+-- returns the file path, which would become an extra entry.
 local MAIN_MENU = {
-    require('client.menus.plugins'),
-    require('client.menus.about'),
+    (require('client.menus.plugins')),
+    (require('client.menus.about')),
 }
 
 CreateThread(function()
