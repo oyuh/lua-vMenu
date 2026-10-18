@@ -85,3 +85,4 @@ files['scripts/**'] = { std = 'lua54' }
 
 -- Converted catalogs keep upstream's prose on one line per entry.
 files['shared/data/settings.lua'] = { max_line_length = false }
+files['shared/data/english.lua'] = { max_line_length = false }

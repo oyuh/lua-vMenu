@@ -19,10 +19,13 @@ ui_page 'ui/index.html'
 -- entrypoints execute directly.
 files {
     'ui/**/*',
+    -- A wildcard, so a language a server owner adds is picked up.
+    'language/*.json',
     'shared/*.lua',
     'shared/data/*.lua',
     'menu/*.lua',
     'client/*.lua',
+    'client/framework/*.lua',
     'server/*.lua',
 }
 

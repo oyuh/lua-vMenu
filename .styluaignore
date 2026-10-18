@@ -6,3 +6,4 @@ vendor/
 .luarocks/
 .install/
 .source/
+shared/data/english.lua
