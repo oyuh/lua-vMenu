@@ -5,6 +5,7 @@
 local Permissions = require('client.permissions')
 local UserDefaults = require('client.user_defaults')
 local Ticks = require('menu.ticks')
+local Natives = require('client.natives')
 
 local Jump = {}
 
@@ -69,11 +70,11 @@ local function play(name, ped)
 end
 
 local function play_jump_sounds(ped)
-    if not IsPedDoingABeastJump(ped) then
+    if not Natives.is_ped_doing_a_beast_jump(ped) then
         beast.jump_played, beast.land_played = false, false
         return
     end
-    local landing = IsPedLanding(ped)
+    local landing = Natives.is_ped_landing(ped)
     if not beast.jump_played and not landing and not IsPedClimbing(ped) then
         play('Beast_Jump', ped)
         beast.jump_played = true
@@ -99,7 +100,7 @@ local function stop_sprint_sound()
 end
 
 local function play_sprint_sound(ped)
-    local airborne = IsPedJumping(ped) or IsPedLanding(ped) or IsEntityInAir(ped)
+    local airborne = IsPedJumping(ped) or Natives.is_ped_landing(ped) or IsEntityInAir(ped)
     local sprinting = IsPedSprinting(ped)
     if IsPedInjured(ped) or airborne or not (sprinting or IsPedRunning(ped)) then
         stop_sprint_sound()
@@ -132,11 +133,11 @@ end
 
 local function beast_frame()
     local ped = PlayerPedId()
-    SetBeastJumpThisFrame(PlayerId())
+    Natives.set_beast_jump_this_frame(PlayerId())
     SetPedResetFlag(ped, DISABLE_PLAYER_VAULTING, true)
     if not beast.bank_loaded then
         beast.bank_requested = true
-        beast.bank_loaded = RequestScriptAudioBank(SOUND_BANK, true, ALL_PLAYERS)
+        beast.bank_loaded = Natives.request_script_audio_bank(SOUND_BANK, true, ALL_PLAYERS)
         return
     end
     if not IsAudioSceneActive(AUDIO_SCENE) then

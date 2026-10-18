@@ -6,6 +6,7 @@
 local Permissions = require('client.permissions')
 local UserDefaults = require('client.user_defaults')
 local Ticks = require('menu.ticks')
+local Natives = require('client.natives')
 local Roster = require('client.menus.players.roster')
 
 local MoveSpeed = {}
@@ -172,7 +173,7 @@ MoveSpeed.swim = speed({
     rate_preference = 'playerSwimSpeed',
     max = 3.0,
     apply = function(ped, rate)
-        SetPedMoveRateInWaterOverride(ped, rate)
+        Natives.set_ped_move_rate_in_water_override(ped, rate)
     end,
 })
 
