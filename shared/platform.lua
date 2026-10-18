@@ -26,22 +26,21 @@ function Platform.is_enhanced()
     return enhanced
 end
 
--- One line for the startup log.
+-- One line for the startup log: the game build on a client, the server
+-- version on the server, which has no game build of its own.
 function Platform.describe()
-    local parts = {
-        Platform.is_enhanced() and 'FiveM Enhanced' or 'FiveM Legacy',
-        ('game build %s'):format(tostring(GetGameBuildNumber and GetGameBuildNumber() or '?')),
-    }
+    local platform = Platform.is_enhanced() and 'FiveM Enhanced' or 'FiveM Legacy'
     if IsDuplicityVersion() then
-        parts[#parts + 1] = ('server %s'):format(GetConvar('version', '?'))
+        return ('%s, server %s'):format(platform, GetConvar('version', '?'))
     end
-    return table.concat(parts, ', ')
+    return ('%s, game build %s'):format(platform, tostring(GetGameBuildNumber()))
 end
 
 -- Natives are globals generated from each platform's native database, so one
--- the running game lacks is simply nil.
+-- the running game lacks is nil. Read through _G, not rawget: current CfxLua
+-- defines a native the first time a script reads its name.
 function Platform.has(native_name)
-    return type(rawget(_G, native_name)) == 'function'
+    return type(_G[native_name]) == 'function'
 end
 
 -- Writes a file into this resource. FiveM Enhanced refuses unless server.cfg
