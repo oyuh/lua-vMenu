@@ -11,10 +11,14 @@ version '0.0.0'
 author 'Tom Grobbe (vMenu Enhanced), Lawson / oyuh (Lua port)'
 url 'https://github.com/oyuh/lua-vMenu/tree/stable'
 
+-- MenuAPI draws every menu on this page (ui/menuapi, from MenuAPI v4.0.1).
+ui_page 'ui/index.html'
+
 -- Architecture: shared/bootstrap.lua installs a require() shim; everything
 -- else is a plain Lua module listed under files and loaded on demand. Only
 -- entrypoints execute directly.
 files {
+    'ui/**/*',
     'shared/*.lua',
     'shared/data/*.lua',
     'menu/*.lua',

@@ -1,363 +1,243 @@
--- Navigation/state specs for the MenuAPI port (menu/*.lua) against the
--- behaviors in MenuAPI/Menu.cs and MenuAPI/items/*.cs.
+-- Specs for the MenuAPI port (menu/*.lua) against MenuAPI v4: the navigation
+-- behavior vMenu's menus are built on, and the JSON snapshot that MenuAPI's
+-- page (ui/menuapi) reads. The page is upstream's file, so a field name or
+-- shape that drifts from the C# writer breaks the menu in game.
 
-local Controller = require('menu.controller')
-local Menu = require('menu.menu')
-local Items = require('menu.items')
+local CfxMock = require('tests.mocks.cfx')
+local dkjson = require('dkjson')
 
-describe('menu framework', function()
+local MODULES = {
+    'shared.log',
+    'menu.frame_state',
+    'menu.ticks',
+    'menu.icons',
+    'menu.sprites',
+    'menu.nui',
+    'menu.class',
+    'menu.sounds',
+    'menu.items',
+    'menu.menu',
+    'menu.input',
+    'menu.controller',
+}
+
+describe('MenuAPI port', function()
+    local cfx, Controller, Menu, Items, Nui
+
     before_each(function()
-        Controller._reset()
+        cfx = CfxMock.new({ resource_name = 'vMenu.Enhanced' }):install()
+        for _, name in ipairs(MODULES) do
+            package.loaded[name] = nil
+        end
+        Controller = require('menu.controller')
+        Menu = require('menu.menu')
+        Items = require('menu.items')
+        Nui = require('menu.nui')
     end)
 
-    local function menu_with_items(count)
+    after_each(function()
+        cfx:uninstall()
+    end)
+
+    local function menu_with(count)
         local menu = Menu.new('Title', 'Subtitle')
-        for i = 1, count do
-            menu:AddMenuItem(Items.MenuItem.new('Item ' .. i))
+        for index = 1, count do
+            menu:AddMenuItem(Items.MenuItem.new('Item ' .. index, 'Description ' .. index))
         end
         Controller.AddMenu(menu)
         return menu
     end
 
-    describe('items', function()
-        it('computes 0-based Index from the parent menu', function()
-            local menu = menu_with_items(3)
-            local items = menu:GetMenuItems()
-            assert.equal(0, items[1]:Index())
-            assert.equal(2, items[3]:Index())
-            assert.equal(-1, Items.MenuItem.new('orphan'):Index())
-        end)
+    local function sounds()
+        local played = {}
+        for _, call in ipairs(cfx.native_calls.PlaySoundFrontend or {}) do
+            played[#played + 1] = call[2]
+        end
+        return played
+    end
 
-        it('reports Selected for the item at CurrentIndex', function()
-            local menu = menu_with_items(3)
-            assert.is_true(menu:GetMenuItems()[1]:Selected())
-            assert.is_false(menu:GetMenuItems()[2]:Selected())
-        end)
-    end)
+    local function messages()
+        local sent = {}
+        for _, call in ipairs(cfx.native_calls.SendNuiMessage or {}) do
+            sent[#sent + 1] = call[1]
+        end
+        return sent
+    end
 
-    describe('GoDown / GoUp', function()
-        it('does nothing when closed or fewer than 2 items', function()
-            local menu = menu_with_items(5)
-            menu:GoDown()
-            assert.equal(0, menu.CurrentIndex)
-            local tiny = menu_with_items(1)
-            tiny:OpenMenu()
-            tiny:GoDown()
-            assert.equal(0, tiny.CurrentIndex)
-        end)
-
-        it('moves and wraps around, firing OnIndexChange', function()
-            local menu = menu_with_items(3)
+    describe('navigation', function()
+        it('wraps around and keeps the highlighted row on screen', function()
+            local menu = menu_with(15)
             menu:OpenMenu()
-            local events = {}
-            menu.OnIndexChange = function(_, old_item, new_item, old_index, new_index)
-                events[#events + 1] = { old_item = old_item, new_item = new_item, old = old_index, new = new_index }
-            end
-
-            menu:GoDown()
-            assert.equal(1, menu.CurrentIndex)
-            assert.equal(0, events[1].old)
-            assert.equal(1, events[1].new)
-
-            menu:GoDown()
-            menu:GoDown() -- wraps
-            assert.equal(0, menu.CurrentIndex)
-
-            menu:GoUp() -- wraps to end
-            assert.equal(2, menu.CurrentIndex)
-            assert.equal(4, #events)
-        end)
-
-        it('scrolls the view window like MenuAPI', function()
-            local menu = menu_with_items(15)
-            menu:OpenMenu()
-            -- walk to the end: view offset should follow once past 10 items
             for _ = 1, 14 do
                 menu:GoDown()
             end
-            assert.equal(14, menu.CurrentIndex)
-            assert.equal(5, menu.ViewIndexOffset)
-            -- wrap to top resets the offset
+            assert.are.equal(14, menu.CurrentIndex)
+            assert.are.equal(5, menu.ViewIndexOffset)
+
             menu:GoDown()
-            assert.equal(0, menu.CurrentIndex)
-            assert.equal(0, menu.ViewIndexOffset)
-            -- wrap upward jumps the window to the bottom
+            assert.are.equal(0, menu.CurrentIndex)
+            assert.are.equal(0, menu.ViewIndexOffset)
+
             menu:GoUp()
-            assert.equal(14, menu.CurrentIndex)
-            assert.equal(5, menu.ViewIndexOffset)
-        end)
-    end)
-
-    describe('SelectItem', function()
-        it('fires OnItemSelect for enabled items only', function()
-            local menu = menu_with_items(2)
-            menu:OpenMenu()
-            local selected = nil
-            menu.OnItemSelect = function(_, item, index)
-                selected = { item = item, index = index }
-            end
-
-            menu:GetMenuItems()[2].Enabled = false
-            menu:SelectItem(1)
-            assert.is_nil(selected)
-
-            menu:SelectItem(0)
-            assert.equal(menu:GetMenuItems()[1], selected.item)
-            assert.equal(0, selected.index)
+            assert.are.equal(14, menu.CurrentIndex)
+            assert.are.equal(5, menu.ViewIndexOffset)
         end)
 
-        it('toggles checkboxes on right-press too (MenuAPI quirk)', function()
-            local menu = Menu.new('t', 's')
-            local checkbox = Items.MenuCheckboxItem.new('Seatbelt', nil, false)
-            menu:AddMenuItem(checkbox)
-            Controller.AddMenu(menu)
+        it('keeps the same row highlighted when rows are added or removed above it', function()
+            local menu = menu_with(5)
             menu:OpenMenu()
+            menu:RefreshIndex(3)
+            local highlighted = menu:GetCurrentMenuItem()
+
+            menu:InsertMenuItem(0, Items.MenuItem.new('New'))
+            assert.are.equal(highlighted, menu:GetCurrentMenuItem())
+
+            menu:RemoveMenuItem(menu:GetMenuItems()[1])
+            assert.are.equal(highlighted, menu:GetCurrentMenuItem())
+        end)
+
+        it('pages with left and right, except on rows that hold a value', function()
+            local menu = menu_with(25)
+            menu:SetPageSize(10)
+            menu:OpenMenu()
+            assert.are.equal(10, menu:Size())
+            assert.are.equal(3, menu:PageCount())
 
             menu:GoRight()
-            assert.is_true(checkbox.Checked)
+            assert.are.equal(1, menu.PageIndex)
+            assert.are.equal('Item 11', menu:GetCurrentMenuItem().Text)
+
+            menu:GoLeft()
+            menu:GoLeft()
+            assert.are.equal(2, menu.PageIndex) -- wrapped to the last page
+            assert.are.equal(5, menu:Size())
+
+            local list = Items.MenuListItem.new('List', { 'a', 'b' }, 0)
+            menu:InsertMenuItem(20, list)
+            menu:RefreshIndex(0)
+            menu:GoRight()
+            assert.are.equal(2, menu.PageIndex)
+            assert.are.equal(1, list.ListIndex)
         end)
 
-        it('toggles checkboxes and fires OnCheckboxChange instead', function()
-            local menu = Menu.new('t', 's')
-            local checkbox = Items.MenuCheckboxItem.new('God Mode', nil, false)
-            menu:AddMenuItem(checkbox)
-            Controller.AddMenu(menu)
-            menu:OpenMenu()
+        it('opens a bound submenu on select and goes back to its parent', function()
+            local main = menu_with(1)
+            local child = Menu.new('Child')
+            local button = main:GetMenuItems()[1]
+            Controller.BindMenuItem(main, child, button)
 
-            local fired = nil
-            menu.OnCheckboxChange = function(_, item, index, checked)
-                fired = { item = item, index = index, checked = checked }
-            end
-            local item_selected = false
-            menu.OnItemSelect = function()
-                item_selected = true
-            end
-
-            menu:SelectItem(checkbox)
-            assert.is_true(checkbox.Checked)
-            assert.is_true(fired.checked)
-            assert.equal(0, fired.index)
-            assert.is_false(item_selected)
-
-            menu:SelectItem(checkbox)
-            assert.is_false(checkbox.Checked)
-        end)
-
-        it('opens bound submenus and closes the current menu', function()
-            local parent = menu_with_items(2)
-            local child = Menu.new('t', 'child')
-            local opener = parent:GetMenuItems()[1]
-            Controller.BindMenuItem(parent, child, opener)
-            parent:OpenMenu()
-
-            parent:SelectItem(opener)
-            assert.is_false(parent.Visible)
+            main:OpenMenu()
+            main:SelectItem(button)
+            assert.is_false(main.Visible)
             assert.is_true(child.Visible)
-            assert.equal(parent, child.ParentMenu)
-            assert.equal(child, Controller.GetCurrentMenu())
-        end)
-
-        it('GoBack returns to the parent menu', function()
-            local parent = menu_with_items(2)
-            local child = Menu.new('t', 'child')
-            local opener = parent:GetMenuItems()[1]
-            Controller.BindMenuItem(parent, child, opener)
-            parent:OpenMenu()
-            parent:SelectItem(opener)
+            assert.are.equal(child, Controller.GetCurrentMenu())
 
             child:GoBack()
+            assert.is_true(main.Visible)
             assert.is_false(child.Visible)
-            assert.is_true(parent.Visible)
+        end)
+
+        it('never selects a separator, and does so without the error sound', function()
+            local menu = menu_with(0)
+            local separator = Items.SeparatorMenuItem.new('Section')
+            menu:AddMenuItem(separator)
+            local selected = false
+            menu.OnItemSelect = function()
+                selected = true
+            end
+            menu:OpenMenu()
+            menu:SelectItem(0)
+            assert.is_false(selected)
+            assert.same({}, sounds())
         end)
     end)
 
-    describe('list, slider, and dynamic items', function()
-        it('list items wrap both directions and fire index-change events', function()
-            local menu = Menu.new('t', 's')
-            local list = Items.MenuListItem.new('Hats', { 'None', 'Cap', 'Helmet' }, 0)
+    describe('items', function()
+        it('wraps a list both ways and reports old and new index', function()
+            local menu = menu_with(0)
+            local list = Items.MenuListItem.new('List', { 'a', 'b', 'c' }, 0)
             menu:AddMenuItem(list)
-            Controller.AddMenu(menu)
-            menu:OpenMenu()
-
             local changes = {}
             menu.OnListIndexChange = function(_, _, old_index, new_index)
-                changes[#changes + 1] = { old = old_index, new = new_index }
+                changes[#changes + 1] = { old_index, new_index }
             end
-
-            menu:GoRight()
-            assert.equal(1, list.ListIndex)
-            assert.equal('Cap', list:GetCurrentSelection())
-
-            menu:GoRight()
-            menu:GoRight() -- wraps to 0
-            assert.equal(0, list.ListIndex)
-
-            menu:GoLeft() -- wraps back to end
-            assert.equal(2, list.ListIndex)
-            assert.same({ old = 0, new = 2 }, changes[4])
+            list:GoLeft()
+            list:GoRight()
+            assert.same({ { 0, 2 }, { 2, 0 } }, changes)
         end)
 
-        it('list select fires OnListItemSelect with the list index', function()
-            local menu = Menu.new('t', 's')
-            local list = Items.MenuListItem.new('Hats', { 'None', 'Cap' }, 1)
-            menu:AddMenuItem(list)
-            Controller.AddMenu(menu)
-            menu:OpenMenu()
-
-            local fired = nil
-            menu.OnListItemSelect = function(_, item, selected_index, item_index)
-                fired = { item = item, selected = selected_index, index = item_index }
-            end
-            menu:SelectItem(list)
-            assert.equal(1, fired.selected)
-            assert.equal(0, fired.index)
-        end)
-
-        it('sliders clamp at min/max without wrapping', function()
-            local menu = Menu.new('t', 's')
-            local slider = Items.MenuSliderItem.new('Density', 0, 2, 1)
+        it('stops a slider at its bounds with the error sound', function()
+            local menu = menu_with(0)
+            local slider = Items.MenuSliderItem.new('Slider', 0, 2, 2)
             menu:AddMenuItem(slider)
-            Controller.AddMenu(menu)
-            menu:OpenMenu()
+            slider:GoRight()
+            assert.are.equal(2, slider.Position)
+            assert.same({ 'ERROR' }, sounds())
+        end)
 
-            local positions = {}
-            menu.OnSliderPositionChange = function(_, _, old_position, new_position)
-                positions[#positions + 1] = { old = old_position, new = new_position }
+        it('toggles a checkbox and reports the new state', function()
+            local menu = menu_with(0)
+            local checkbox = Items.MenuCheckboxItem.new('Check', nil, false)
+            menu:AddMenuItem(checkbox)
+            local reported
+            menu.OnCheckboxChange = function(_, _, _, checked)
+                reported = checked
             end
-
-            menu:GoRight()
-            assert.equal(2, slider.Position)
-            menu:GoRight() -- at max: no event
-            assert.equal(2, slider.Position)
-            assert.equal(1, #positions)
-
-            menu:GoLeft()
-            menu:GoLeft()
-            assert.equal(0, slider.Position)
-            menu:GoLeft() -- at min: no event
-            assert.equal(0, slider.Position)
-            assert.equal(3, #positions)
-        end)
-
-        it('dynamic list items delegate to their callback', function()
-            local menu = Menu.new('t', 's')
-            local dynamic = Items.MenuDynamicListItem.new('Value', '5', function(item, left)
-                local value = tonumber(item.CurrentItem)
-                return tostring(left and (value - 1) or (value + 1))
-            end)
-            menu:AddMenuItem(dynamic)
-            Controller.AddMenu(menu)
             menu:OpenMenu()
-
-            local changed = nil
-            menu.OnDynamicListItemCurrentItemChange = function(_, _, old_value, new_value)
-                changed = { old = old_value, new = new_value }
-            end
-
-            menu:GoRight()
-            assert.equal('6', dynamic.CurrentItem)
-            assert.same({ old = '5', new = '6' }, changed)
-            menu:GoLeft()
-            assert.equal('5', dynamic.CurrentItem)
+            menu:SelectItem(checkbox)
+            assert.is_true(checkbox.Checked)
+            assert.is_true(reported)
         end)
     end)
 
-    describe('GoLeft back-navigation (arrow navigation)', function()
-        it('returns to the parent when the menu has no items', function()
-            local parent = menu_with_items(1)
-            local child = Menu.new('t', 'child')
-            Controller.AddSubmenu(parent, child)
-            child:OpenMenu()
-
-            child:GoLeft()
-            assert.is_false(child.Visible)
-            assert.is_true(parent.Visible)
-        end)
-
-        it('respects PreventExitingMenu for root menus', function()
-            local root = Menu.new('t', 'root')
-            Controller.AddMenu(root)
-            root:OpenMenu()
-            Controller.PreventExitingMenu = true
-
-            root:GoLeft()
-            assert.is_true(root.Visible)
-        end)
-    end)
-
-    describe('filtering', function()
-        it('filters the active item list and resets indices', function()
-            local menu = menu_with_items(5)
+    describe('NUI snapshot', function()
+        it('describes the open menu in the shape the page reads', function()
+            local menu = menu_with(12)
+            local checkbox = Items.MenuCheckboxItem.new('Check', 'Check description', true)
+            local list = Items.MenuListItem.new('List', { 'a', 'b' }, 1)
+            local slider = Items.MenuSliderItem.new('Slider', 0, 10, 4)
+            menu:InsertMenuItem(0, checkbox)
+            menu:InsertMenuItem(1, list)
+            menu:InsertMenuItem(2, slider)
+            menu:RefreshIndex(0)
             menu:OpenMenu()
-            menu:GoDown()
-            menu:GoDown()
 
-            menu:FilterMenuItems(function(item)
-                return item.Text ~= 'Item 2'
-            end)
-            assert.equal(4, menu:Size())
-            assert.equal(0, menu.CurrentIndex)
-            assert.equal('Item 1', menu:GetCurrentMenuItem().Text)
+            Nui.send_changes(menu)
+            local snapshot = dkjson.decode(messages()[1])
 
-            menu:ResetFilter()
-            assert.equal(5, menu:Size())
+            assert.are.equal('menuapi', snapshot.type)
+            assert.is_true(snapshot.visible)
+            assert.are.equal('left', snapshot.align)
+            assert.are.equal('Title', snapshot.header.title)
+            assert.are.equal('center', snapshot.header.titleAlign)
+            assert.are.equal('interaction_bgd', snapshot.header.texture.name)
+            assert.are.equal('1 / 15', snapshot.subtitle.counter)
+            assert.are.equal(10, #snapshot.rows)
+            assert.is_true(snapshot.overflow)
+            assert.are.equal('Check description', snapshot.description)
+
+            local check_row, list_row, slider_row = snapshot.rows[1], snapshot.rows[2], snapshot.rows[3]
+            assert.are.equal('checkbox', check_row.kind)
+            assert.is_true(check_row.selected)
+            assert.are.equal('shop_box_tickb', check_row.checkbox.name)
+            assert.are.equal('item', list_row.kind)
+            assert.are.equal('~s~← b ~s~→', list_row.label)
+            assert.are.equal('slider', slider_row.kind)
+            assert.are.equal(4, slider_row.slider.position)
+            assert.are.equal('#185d97', slider_row.slider.background)
         end)
 
-        it('keeps Index consistent with the filtered view', function()
-            local menu = menu_with_items(5)
-            menu:FilterMenuItems(function(item)
-                return item.Text == 'Item 4'
-            end)
-            local visible = menu:GetMenuItems()
-            assert.equal(1, #visible)
-            assert.equal(0, visible[1]:Index())
-        end)
-    end)
-
-    describe('controller state', function()
-        it('tracks open menus', function()
-            local menu = menu_with_items(2)
-            assert.is_false(Controller.IsAnyMenuOpen())
+        it('sends again only after something drawn changed', function()
+            local menu = menu_with(3)
             menu:OpenMenu()
-            assert.is_true(Controller.IsAnyMenuOpen())
-            Controller.CloseAllMenus()
-            assert.is_false(Controller.IsAnyMenuOpen())
-        end)
+            Nui.send_changes(menu)
+            Nui.send_changes(menu)
+            assert.are.equal(1, #messages())
 
-        it('disables menu buttons globally', function()
-            local menu = menu_with_items(2)
-            local list = Items.MenuListItem.new('Hats', { 'a', 'b' }, 0)
-            menu:AddMenuItem(list)
-            menu:OpenMenu()
-            menu:SetCurrentIndex(2)
-
-            Controller.DisableMenuButtons = true
-            menu:GoRight()
-            assert.equal(0, list.ListIndex)
-
-            Controller.DisableMenuButtons = false
-            menu:GoRight()
-            assert.equal(1, list.ListIndex)
-        end)
-    end)
-
-    describe('item removal', function()
-        it('adjusts the current index like MenuAPI', function()
-            local menu = menu_with_items(4)
-            menu:OpenMenu()
-            menu:SetCurrentIndex(2)
-
-            menu:RemoveMenuItem(1)
-            assert.equal(3, menu:Size())
-            assert.equal(1, menu.CurrentIndex)
-        end)
-
-        it('removes by item object', function()
-            local menu = menu_with_items(3)
-            local second = menu:GetMenuItems()[2]
-            menu:RemoveMenuItem(second)
-            assert.equal(2, menu:Size())
-            assert.equal(-1, second:Index() >= 0 and second:Index() or -1)
+            menu:GetMenuItems()[2].Text = 'Renamed'
+            Nui.send_changes(menu)
+            assert.are.equal(2, #messages())
+            assert.matches('Renamed', messages()[2])
         end)
     end)
 end)

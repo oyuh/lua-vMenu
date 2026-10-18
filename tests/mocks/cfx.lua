@@ -802,6 +802,29 @@ local NATIVE_DEFAULTS = {
     { 'NetworkFadeOutEntity' },
     { 'NetworkFadeInEntity' },
     { 'SetEntityHeading' },
+    -- MenuAPI (menu/*): NUI and HUD state
+    { 'SendNuiMessage' },
+    { 'RegisterNUICallback' },
+    { 'IsHudComponentActive', false },
+    { 'GetScreenAspectRatio', 16 / 9 },
+    {
+        'GetHudColour',
+        function()
+            return 255, 255, 255, 255
+        end,
+    },
+    { 'HasStreamedTextureDictLoaded', true },
+    { 'RequestStreamedTextureDict' },
+    { 'SetStreamedTextureDictAsNoLongerNeeded' },
+    { 'IsPlayerDead', false },
+    { 'IsInputDisabled', true },
+    { 'PlaySoundFrontend' },
+    {
+        'GetFinalRenderedCamRot',
+        function()
+            return { x = 0.0, y = 0.0, z = 0.0 }
+        end,
+    },
 }
 
 -- Exported so .luacheckrc can declare every faked native as a known global

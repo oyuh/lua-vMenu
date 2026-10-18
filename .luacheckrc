@@ -29,7 +29,10 @@ read_globals = {
     -- game state / hud (rendering layer)
     'IsPauseMenuActive', 'IsPauseMenuRestarting', 'IsScreenFadedIn',
     'IsPlayerSwitchInProgress', 'IsEntityDead', 'IsWarningMessageActive',
-    'PlaySoundFrontend',
+    'PlaySoundFrontend', 'IsPlayerDead', 'IsHudComponentActive', 'GetScreenAspectRatio',
+    'GetHudColour', 'GetFinalRenderedCamRot',
+    -- NUI
+    'SendNuiMessage', 'RegisterNUICallback',
     -- controls
     'IsControlPressed', 'IsDisabledControlPressed', 'IsControlJustPressed',
     'IsDisabledControlJustPressed', 'IsControlJustReleased', 'IsDisabledControlJustReleased',

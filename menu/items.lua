@@ -1,162 +1,149 @@
--- Port of MenuAPI/items/*.cs: the menu item model.
---
--- Public API deliberately mirrors MenuAPI (PascalCase members, 0-based
--- indices) so upstream vMenu menu code ports line-for-line. Rendering state
--- (icons, labels) is carried here; drawing happens in menu/draw.lua.
+-- Port of MenuAPI/items/*.cs. Indices (Index, ListIndex) are 0-based like the
+-- C#. Icons are named by their C# enum name ('LOCK', 'STAR', ...), see
+-- menu/icons.lua. Colors are { r, g, b }.
 
+local Class = require('menu.class')
 local Sounds = require('menu.sounds')
 
 local Items = {}
 
--- MenuItem.Icon enum (order matters: serialized as numbers in category KVPs).
-Items.Icon = {
-    NONE = 0,
-    LOCK = 1,
-    STAR = 2,
-    WARNING = 3,
-    CROWN = 4,
-    MEDAL_BRONZE = 5,
-    MEDAL_GOLD = 6,
-    MEDAL_SILVER = 7,
-    CASH = 8,
-    COKE = 9,
-    HEROIN = 10,
-    METH = 11,
-    WEED = 12,
-    AMMO = 13,
-    ARMOR = 14,
-    BARBER = 15,
-    CLOTHING = 16,
-    FRANKLIN = 17,
-    BIKE = 18,
-    CAR = 19,
-    GUN = 20,
-    HEALTH_HEART = 21,
-    MAKEUP_BRUSH = 22,
-    MASK = 23,
-    MICHAEL = 24,
-    TATTOO = 25,
-    TICK = 26,
-    TREVOR = 27,
-    FEMALE = 28,
-    MALE = 29,
-    LOCK_ARENA = 30,
-    ADVERSARY = 31,
-    BASE_JUMPING = 32,
-    BRIEFCASE = 33,
-    MISSION_STAR = 34,
-    DEATHMATCH = 35,
-    CASTLE = 36,
-    TROPHY = 37,
-    RACE_FLAG = 38,
-    RACE_FLAG_PLANE = 39,
-    RACE_FLAG_BICYCLE = 40,
-    RACE_FLAG_PERSON = 41,
-    RACE_FLAG_CAR = 42,
-    RACE_FLAG_BOAT_ANCHOR = 43,
-    ROCKSTAR = 44,
-    STUNT = 45,
-    STUNT_PREMIUM = 46,
-    RACE_FLAG_STUNT_JUMP = 47,
-    SHIELD = 48,
-    TEAM_DEATHMATCH = 49,
-    VEHICLE_DEATHMATCH = 50,
-}
-
--- ---------------------------------------------------------------------------
--- MenuItem (base)
--- ---------------------------------------------------------------------------
-
-local MenuItem = {}
-MenuItem.__index = MenuItem
-Items.MenuItem = MenuItem
-
-function MenuItem.new(text, description)
-    return setmetatable({
-        Text = text,
-        Description = description,
-        Label = nil,
-        LeftIcon = Items.Icon.NONE,
-        RightIcon = Items.Icon.NONE,
-        Enabled = true,
-        ItemData = nil,
-        ParentMenu = nil,
-        PositionOnScreen = 0,
-    }, MenuItem)
+local function navigates_back(item)
+    -- Required lazily: the controller requires the menu, which requires this.
+    local Controller = require('menu.controller')
+    return Controller.NavigateMenuUsingArrows
+        and not Controller.DisableBackButton
+        and not (Controller.PreventExitingMenu and item.ParentMenu and item.ParentMenu.ParentMenu == nil)
 end
 
--- 0-based index within the parent menu's active (possibly filtered) item
--- list, -1 when orphaned, exactly like MenuAPI's computed Index property.
+-- MenuItem --------------------------------------------------------------------------
+
+local MenuItem = Class.new(nil, { 'Text', 'Label', 'LeftIcon', 'RightIcon', 'Enabled', 'Description' })
+Items.MenuItem = MenuItem
+
+-- Fields that are not drawn: ParentMenu (set by Menu:AddMenuItem) and
+-- ItemData (yours, to identify the item by).
+function MenuItem.new(text, description)
+    local self = Class.instance(MenuItem)
+    self.Text = text or ''
+    self.Description = description
+    self.LeftIcon = 'NONE'
+    self.RightIcon = 'NONE'
+    self.Enabled = true
+    return self
+end
+
+-- The page's row kind, plus 'list' and 'dynamic_list' for the value items.
+function MenuItem:Kind()
+    return 'item'
+end
+
+-- The position in the parent menu's active list, or -1.
 function MenuItem:Index()
-    if self.ParentMenu then
-        return self.ParentMenu:IndexOf(self)
-    end
-    return -1
+    return self.ParentMenu and self.ParentMenu:IndexOf(self) or -1
 end
 
 function MenuItem:Selected()
-    if self.ParentMenu then
-        return self.ParentMenu.CurrentIndex == self:Index()
+    return self.ParentMenu ~= nil and self.ParentMenu.CurrentIndex == self:Index()
+end
+
+function MenuItem:PrepareForDisplay() end
+
+function MenuItem:GoRight()
+    if self.Enabled and self.ParentMenu then
+        self.ParentMenu:SelectItem(self)
     end
-    return false
+end
+
+function MenuItem:GoLeft()
+    if self.ParentMenu and navigates_back(self) then
+        self.ParentMenu:GoBack()
+    end
 end
 
 function MenuItem:Select()
-    self.ParentMenu:ItemSelectedEvent(self, self:Index())
+    if self.ParentMenu then
+        self.ParentMenu:ItemSelectedEvent(self, self:Index())
+    end
 end
 
-function MenuItem:GoLeft() end -- luacheck: ignore 212
+-- MenuCheckboxItem ------------------------------------------------------------------
 
-function MenuItem:GoRight() end -- luacheck: ignore 212
-
-local function subclass(base)
-    local class = setmetatable({}, { __index = base })
-    class.__index = class
-    return class
-end
-
--- ---------------------------------------------------------------------------
--- MenuCheckboxItem
--- ---------------------------------------------------------------------------
-
-local MenuCheckboxItem = subclass(MenuItem)
+local MenuCheckboxItem = Class.new(MenuItem, { 'Checked', 'Style' })
 Items.MenuCheckboxItem = MenuCheckboxItem
 
--- Checkbox visual styles.
-MenuCheckboxItem.Style = { Tick = 0, Cross = 1 }
-
+-- style: 'Tick' (default) or 'Cross'.
 function MenuCheckboxItem.new(text, description, checked)
-    local item = MenuItem.new(text, description)
-    item.Checked = checked == true
-    item.CheckboxStyle = MenuCheckboxItem.Style.Tick
-    return setmetatable(item, MenuCheckboxItem)
+    local self = MenuItem.new(text, description)
+    setmetatable(self, MenuCheckboxItem)
+    self.Checked = checked == true
+    self.Style = 'Tick'
+    return self
+end
+
+function MenuCheckboxItem:Kind()
+    return 'checkbox'
+end
+
+function MenuCheckboxItem:GetSpriteName(selected)
+    local suffix = selected and 'b' or ''
+    if not self.Checked then
+        return 'shop_box_blank' .. suffix
+    end
+    if self.Style == 'Cross' then
+        return 'shop_box_cross' .. suffix
+    end
+    return 'shop_box_tick' .. suffix
+end
+
+function MenuCheckboxItem:PrepareForDisplay()
+    self.RightIcon = 'NONE'
+    self.Label = nil
+end
+
+function MenuCheckboxItem:GoRight()
+    if self.ParentMenu then
+        self.ParentMenu:SelectItem(self)
+    end
 end
 
 function MenuCheckboxItem:Select()
     self.Checked = not self.Checked
-    self.ParentMenu:CheckboxChangedEvent(self, self:Index(), self.Checked)
+    if self.ParentMenu then
+        self.ParentMenu:CheckboxChangedEvent(self, self:Index(), self.Checked)
+    end
 end
 
--- MenuAPI quirk: pressing right on a checkbox toggles it.
-function MenuCheckboxItem:GoRight()
-    self.ParentMenu:SelectItem(self)
-end
+-- MenuListItem ----------------------------------------------------------------------
 
--- ---------------------------------------------------------------------------
--- MenuListItem
--- ---------------------------------------------------------------------------
-
-local MenuListItem = subclass(MenuItem)
+local MenuListItem = Class.new(MenuItem, {
+    'ListIndex',
+    'ListItems',
+    'HideArrowsWhenNotSelected',
+    'ShowOpacityPanel',
+    'ShowColorPanel',
+    'ColorPanelColorType',
+    'OpacityPercent',
+})
 Items.MenuListItem = MenuListItem
 
+-- items: a Lua array of strings. Assign a new array to ListItems to change the
+-- values; editing the array in place does not redraw an open menu.
+-- ColorPanelColorType is 'Hair' (default) or 'Makeup'.
 function MenuListItem.new(text, items, index, description)
-    local item = MenuItem.new(text, description)
-    item.ListItems = items or {}
-    item.ListIndex = index or 0 -- 0-based, like MenuAPI
-    item.HideArrowsWhenNotSelected = false
-    item.ShowOpacityPanel = false
-    item.ShowColorPanel = false
-    return setmetatable(item, MenuListItem)
+    local self = MenuItem.new(text, description)
+    setmetatable(self, MenuListItem)
+    self.ListItems = items or {}
+    self.ListIndex = index or 0
+    self.HideArrowsWhenNotSelected = false
+    self.ShowOpacityPanel = false
+    self.ShowColorPanel = false
+    self.ColorPanelColorType = 'Hair'
+    self.OpacityPercent = 0
+    return self
+end
+
+function MenuListItem:Kind()
+    return 'list'
 end
 
 function MenuListItem:ItemsCount()
@@ -164,126 +151,208 @@ function MenuListItem:ItemsCount()
 end
 
 function MenuListItem:GetCurrentSelection()
-    return self.ListItems[self.ListIndex + 1]
+    local count = self:ItemsCount()
+    if count > 0 and self.ListIndex >= 0 and self.ListIndex < count then
+        return self.ListItems[self.ListIndex + 1]
+    end
+    return nil
+end
+
+function MenuListItem:SetOpacityPercent(percent)
+    self.OpacityPercent = math.max(0, math.min(100, percent))
+end
+
+function MenuListItem:ResolvedOpacityPercent()
+    if self.ShowColorPanel then
+        return self.OpacityPercent
+    end
+    return math.max(0, math.min(100, self.ListIndex * 10))
+end
+
+function MenuListItem:PrepareForDisplay()
+    if self:ItemsCount() < 1 then
+        -- A placeholder value, so the index wrapping below cannot loop forever.
+        self.ListItems = { 'N/A' }
+    end
+    local count = self:ItemsCount()
+    self.ListIndex = self.ListIndex % count
+    if self.HideArrowsWhenNotSelected and not self:Selected() then
+        self.Label = self:GetCurrentSelection() or '~r~N/A'
+    else
+        self.Label = ('~s~← %s ~s~→'):format(self:GetCurrentSelection() or '~r~N/A~s~')
+    end
+end
+
+local function change_list_index(self, new_index)
+    local old_index = self.ListIndex
+    self.ListIndex = new_index
+    if self.ParentMenu then
+        self.ParentMenu:ListItemIndexChangeEvent(self.ParentMenu, self, old_index, new_index, self:Index())
+    end
+    Sounds.nav_left_right()
 end
 
 function MenuListItem:GoRight()
     local count = self:ItemsCount()
     if count > 0 then
-        local old_index = self.ListIndex
-        local new_index = old_index
-        if old_index >= count - 1 then
-            new_index = 0
-        else
-            new_index = new_index + 1
-        end
-        self.ListIndex = new_index
-        self.ParentMenu:ListItemIndexChangeEvent(self.ParentMenu, self, old_index, new_index, self:Index())
-        Sounds.nav_left_right()
+        change_list_index(self, self.ListIndex >= count - 1 and 0 or self.ListIndex + 1)
     end
 end
 
 function MenuListItem:GoLeft()
     local count = self:ItemsCount()
     if count > 0 then
-        local old_index = self.ListIndex
-        local new_index = old_index
-        if old_index < 1 then
-            new_index = count - 1
-        else
-            new_index = new_index - 1
-        end
-        self.ListIndex = new_index
-        self.ParentMenu:ListItemIndexChangeEvent(self.ParentMenu, self, old_index, new_index, self:Index())
-        Sounds.nav_left_right()
+        change_list_index(self, self.ListIndex < 1 and count - 1 or self.ListIndex - 1)
     end
 end
 
 function MenuListItem:Select()
-    self.ParentMenu:ListItemSelectEvent(self.ParentMenu, self, self.ListIndex, self:Index())
+    if self.ParentMenu then
+        self.ParentMenu:ListItemSelectEvent(self.ParentMenu, self, self.ListIndex, self:Index())
+    end
 end
 
--- ---------------------------------------------------------------------------
--- MenuSliderItem
--- ---------------------------------------------------------------------------
+-- MenuSliderItem --------------------------------------------------------------------
 
-local MenuSliderItem = subclass(MenuItem)
+local MenuSliderItem = Class.new(
+    MenuItem,
+    { 'ShowDivider', 'Position', 'SliderLeftIcon', 'SliderRightIcon', 'BackgroundColor', 'BarColor' }
+)
 Items.MenuSliderItem = MenuSliderItem
 
-function MenuSliderItem.new(text, min, max, position, description)
-    local item = MenuItem.new(text, description)
-    item.Min = min or 0
-    item.Max = max or 10
-    item.Position = position or 0
-    item.ShowDivider = false
-    item.SliderLeftIcon = Items.Icon.NONE
-    item.SliderRightIcon = Items.Icon.NONE
-    -- MenuAPI slider bar colors ({r,g,b,a}); verify against C# in-game (docs/VERIFY.md)
-    item.BackgroundColor = { 23, 55, 93, 255 }
-    item.BarColor = { 93, 182, 229, 255 }
-    return setmetatable(item, MenuSliderItem)
+function MenuSliderItem.new(text, min, max, position, description, show_divider)
+    local self = MenuItem.new(text, description)
+    setmetatable(self, MenuSliderItem)
+    rawset(self, 'Min', min)
+    rawset(self, 'Max', max)
+    self.Position = position
+    self.ShowDivider = show_divider == true
+    self.SliderLeftIcon = 'NONE'
+    self.SliderRightIcon = 'NONE'
+    self.BackgroundColor = { 24, 93, 151 }
+    self.BarColor = { 53, 165, 223 }
+    return self
 end
 
-function MenuSliderItem:GoLeft()
-    if self.Position > self.Min then
-        self.Position = self.Position - 1
-        self.ParentMenu:SliderItemChangedEvent(self.ParentMenu, self, self.Position + 1, self.Position, self:Index())
-        Sounds.nav_left_right()
-    else
-        Sounds.error_()
+function MenuSliderItem:Kind()
+    return 'slider'
+end
+
+function MenuSliderItem:PrepareForDisplay()
+    self.RightIcon = self.SliderRightIcon
+    self.Label = nil
+    if self.Position > self.Max or self.Position < self.Min then
+        self.Position = (self.Max - self.Min) // 2
     end
 end
 
-function MenuSliderItem:GoRight()
-    if self.Position < self.Max then
-        self.Position = self.Position + 1
-        self.ParentMenu:SliderItemChangedEvent(self.ParentMenu, self, self.Position - 1, self.Position, self:Index())
-        Sounds.nav_left_right()
-    else
+local function move_slider(self, step)
+    local target = self.Position + step
+    if target > self.Max or target < self.Min then
         Sounds.error_()
-    end
-end
-
-function MenuSliderItem:Select()
-    self.ParentMenu:SliderSelectedEvent(self.ParentMenu, self, self.Position, self:Index())
-end
-
--- ---------------------------------------------------------------------------
--- MenuDynamicListItem
--- ---------------------------------------------------------------------------
-
-local MenuDynamicListItem = subclass(MenuItem)
-Items.MenuDynamicListItem = MenuDynamicListItem
-
--- callback(item, going_left) -> new CurrentItem string
-function MenuDynamicListItem.new(text, current_item, callback, description)
-    local item = MenuItem.new(text, description)
-    item.CurrentItem = current_item
-    item.Callback = callback
-    return setmetatable(item, MenuDynamicListItem)
-end
-
-local function dynamic_change(self, going_left)
-    if not self.Callback then
         return
     end
-    local old_value = self.CurrentItem
-    local new_value = self.Callback(self, going_left)
-    self.CurrentItem = new_value
-    self.ParentMenu:DynamicListItemCurrentItemChanged(self.ParentMenu, self, old_value, new_value)
+    self.Position = target
+    if self.ParentMenu then
+        self.ParentMenu:SliderItemChangedEvent(self.ParentMenu, self, target - step, target, self:Index())
+    end
     Sounds.nav_left_right()
 end
 
-function MenuDynamicListItem:GoLeft()
-    dynamic_change(self, true)
+function MenuSliderItem:GoRight()
+    move_slider(self, 1)
+end
+
+function MenuSliderItem:GoLeft()
+    move_slider(self, -1)
+end
+
+function MenuSliderItem:Select()
+    if self.ParentMenu then
+        self.ParentMenu:SliderSelectedEvent(self.ParentMenu, self, self.Position, self:Index())
+    end
+end
+
+-- MenuDynamicListItem ---------------------------------------------------------------
+
+local MenuDynamicListItem = Class.new(MenuItem, { 'HideArrowsWhenNotSelected', 'CurrentItem' })
+Items.MenuDynamicListItem = MenuDynamicListItem
+
+-- callback(item, left) returns the new current value.
+function MenuDynamicListItem.new(text, current_item, callback, description)
+    local self = MenuItem.new(text, description)
+    setmetatable(self, MenuDynamicListItem)
+    self.CurrentItem = current_item
+    self.HideArrowsWhenNotSelected = false
+    rawset(self, 'Callback', callback)
+    return self
+end
+
+function MenuDynamicListItem:Kind()
+    return 'dynamic_list'
+end
+
+function MenuDynamicListItem:PrepareForDisplay()
+    if self.HideArrowsWhenNotSelected and not self:Selected() then
+        self.Label = self.CurrentItem or '~r~N/A'
+    else
+        self.Label = ('~s~← %s ~s~→'):format(self.CurrentItem or '~r~N/A~s~')
+    end
+end
+
+local function change_dynamic(self, left)
+    local old_value = self.CurrentItem
+    local new_value = self.Callback(self, left)
+    self.CurrentItem = new_value
+    if self.ParentMenu then
+        self.ParentMenu:DynamicListItemCurrentItemChanged(self.ParentMenu, self, old_value, new_value)
+    end
+    Sounds.nav_left_right()
 end
 
 function MenuDynamicListItem:GoRight()
-    dynamic_change(self, false)
+    change_dynamic(self, false)
+end
+
+function MenuDynamicListItem:GoLeft()
+    change_dynamic(self, true)
 end
 
 function MenuDynamicListItem:Select()
-    self.ParentMenu:DynamicListItemSelectEvent(self.ParentMenu, self, self.CurrentItem)
+    if self.ParentMenu then
+        self.ParentMenu:DynamicListItemSelectEvent(self.ParentMenu, self, self.CurrentItem)
+    end
+end
+
+-- SeparatorMenuItem -----------------------------------------------------------------
+-- A label, not a row: it never selects, and Menu:SelectItem turns it away
+-- silently instead of with the error sound a disabled row gets.
+
+local SeparatorMenuItem = Class.new(MenuItem, { 'ShowArrows' })
+Items.SeparatorMenuItem = SeparatorMenuItem
+
+function SeparatorMenuItem.new(text, description, show_arrows)
+    local self = MenuItem.new(text, description)
+    setmetatable(self, SeparatorMenuItem)
+    self.ShowArrows = show_arrows ~= false
+    -- What the controller's left and right handling checks.
+    self.Enabled = false
+    return self
+end
+
+function SeparatorMenuItem:Kind()
+    return 'separator'
+end
+
+function SeparatorMenuItem:Select() end
+function SeparatorMenuItem:GoLeft() end
+function SeparatorMenuItem:GoRight() end
+
+-- Whether left and right change a value on this item instead of paging or
+-- going back.
+function Items.holds_value(item)
+    local kind = item and item:Kind()
+    return kind == 'list' or kind == 'slider' or kind == 'dynamic_list'
 end
 
 return Items

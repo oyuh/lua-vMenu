@@ -1,0 +1,85 @@
+:root {
+    --accent: #3b8bf5;
+    --panel: rgba(18, 18, 20, 0.94);
+    --row: rgba(255, 255, 255, 0.05);
+    --text: #f2f2f2;
+    --muted: rgba(242, 242, 242, 0.55);
+    --edge: rgba(255, 255, 255, 0.08);
+
+    --hud-panel-bg: rgba(12, 14, 19, 0.34);
+    --hud-panel-edge: rgba(255, 255, 255, 0.09);
+    --hud-panel-radius: 0.7rem;
+    --hud-panel-shadow: 0 0.1rem 0.7rem rgba(0, 0, 0, 0.25);
+    --hud-panel-text-shadow: 0 0.08rem 0.35rem rgba(0, 0, 0, 0.85);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    color: var(--text);
+}
+
+/* The page is rendered at the game's own resolution, so a rem fixed at 16px shrinks to nothing on a
+   4K screen. Tying the root to viewport height is how the game scales its own HUD too, and width is
+   left out of it so an ultrawide monitor does not inflate the text. */
+html {
+    font-size: clamp(13px, 1.6vh, 40px);
+}
+
+#hud-left {
+    /* Every one of these is overwritten by the client, the only side that can see where the minimap
+       starts and ends. These are the 16:9 defaults, for a message that arrives without an anchor. */
+    position: fixed;
+    left: 2%;
+    bottom: 20%;
+    width: 14%;
+    min-width: 12rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    pointer-events: none;
+    transition: bottom 0.3s ease;
+}
+
+#hud-info {
+    display: none;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.45rem 0.7rem 0.5rem;
+    border-radius: var(--hud-panel-radius);
+    border: 1px solid var(--hud-panel-edge);
+    background: var(--hud-panel-bg);
+    box-shadow: var(--hud-panel-shadow);
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+    text-shadow: var(--hud-panel-text-shadow);
+}
+
+#hud-info.shown {
+    display: flex;
+}
+
+#hud-top {
+    position: fixed;
+    top: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 34%;
+
+    /* So it stays readable on an ultrawide, where a third of the screen is a very long line. */
+    max-width: 32rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    pointer-events: none;
+}

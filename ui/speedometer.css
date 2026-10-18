@@ -1,0 +1,141 @@
+:root {
+    --speedo-accent: rgba(138, 190, 255, 0.9);
+}
+
+#speedometer {
+    position: fixed;
+    right: 2.5%;
+    bottom: 2.5%;
+    min-width: 9.5rem;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+    padding: 0.55rem 0.9rem 0.5rem;
+    border-radius: var(--hud-panel-radius);
+    border: 1px solid var(--hud-panel-edge);
+    background: var(--hud-panel-bg);
+    box-shadow: var(--hud-panel-shadow);
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+    text-shadow: var(--hud-panel-text-shadow);
+    transition: bottom 0.3s ease;
+}
+
+#speedometer.center {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#speedometer.shown {
+    display: flex;
+}
+
+#speedometer .readout {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    line-height: 1;
+}
+
+#speedometer .readout + .readout {
+    opacity: 0.6;
+}
+
+#speedometer .readout + .readout .value {
+    font-size: 1.45rem;
+}
+
+#speedometer .value {
+    flex: 1 1 auto;
+    text-align: right;
+    font-size: 2.3rem;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    color: var(--text);
+}
+
+#speedometer .unit {
+    flex: 0 0 auto;
+    min-width: 3.6em;
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--speedo-accent);
+}
+
+#speedometer .rail {
+    height: 0.12rem;
+    border-radius: 0.12rem;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+#speedometer .rail > span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--speedo-accent), #ffffff);
+    transition: width 0.12s linear;
+}
+
+#speedometer .health-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.22rem;
+    margin-top: 0.15rem;
+}
+
+#speedometer .health {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+#speedometer .health-label {
+    flex: 0 0 auto;
+    min-width: 2.2em;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--text);
+    opacity: 0.55;
+}
+
+#speedometer .health-rail {
+    flex: 1 1 auto;
+    height: 0.2rem;
+    border-radius: 0.2rem;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+#speedometer .health-rail > span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: var(--health-tone);
+    transition: width 0.15s linear, background 0.3s ease;
+}
+
+#speedometer .health.good {
+    --health-tone: rgba(126, 217, 137, 0.9);
+}
+
+#speedometer .health.fair {
+    --health-tone: rgba(233, 213, 118, 0.9);
+}
+
+#speedometer .health.poor {
+    --health-tone: rgba(233, 163, 98, 0.9);
+}
+
+#speedometer .health.bad {
+    --health-tone: rgba(230, 118, 118, 0.9);
+}
