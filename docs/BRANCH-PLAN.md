@@ -192,7 +192,7 @@ Each phase ends with something that runs on both a Legacy and an Enhanced server
    sets. Display, misc and developer settings. Auto pilot. Data transfer.
 6. **Server extras.** Webhooks, the update checker, integrations.
 7. **Parity.** Audit against upstream, run the `docs/VERIFY.md` checklist on both platforms, tag
-   `stable-v1.0.0`, make `stable` the default branch.
+   `stable-v1.0.0`. (`stable` already became the default branch on 2026-10-18.)
 
 ## Risks and open questions
 
