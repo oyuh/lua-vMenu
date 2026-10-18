@@ -263,6 +263,34 @@ function Json.ordered_pairs(object)
     end
 end
 
+-- Case-insensitive property lookup, like upstream's System.Text.Json with
+-- PropertyNameCaseInsensitive: plugins and saves may write any casing.
+function Json.field(object, name)
+    if type(object) ~= 'table' then
+        return nil
+    end
+    if object[name] ~= nil then
+        return object[name]
+    end
+    local wanted = name:lower()
+    for key, value in pairs(object) do
+        if type(key) == 'string' and key:lower() == wanted then
+            return value
+        end
+    end
+    return nil
+end
+
+-- A JSON array of strings, written by hand: an empty Lua table could come
+-- out as {}, which a C# List<string> refuses.
+function Json.string_array(list)
+    local parts = {}
+    for index, value in ipairs(list) do
+        parts[index] = Json.encode(tostring(value))
+    end
+    return '[' .. table.concat(parts, ',') .. ']'
+end
+
 function Json.is_object(value)
     return type(value) == 'table' and key_order[value] ~= nil
 end

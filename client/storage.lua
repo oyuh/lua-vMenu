@@ -42,19 +42,7 @@ local function encode_envelope(key, value_json, kind, version, merged_by)
     return table.concat(parts)
 end
 
--- Case-insensitive property lookup, like PropertyNameCaseInsensitive.
-local function field(object, name)
-    if object[name] ~= nil then
-        return object[name]
-    end
-    local wanted = name:lower()
-    for key, value in pairs(object) do
-        if type(key) == 'string' and key:lower() == wanted then
-            return value
-        end
-    end
-    return nil
-end
+local field = Json.field
 
 local function read_envelope(raw)
     if raw == nil or raw == '' then

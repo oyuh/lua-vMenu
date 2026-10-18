@@ -6,6 +6,7 @@ local ResourceIdentity = require('shared.data.resource_identity')
 local Config = require('shared.config')
 local ConfigurationExample = require('shared.data.configuration_example')
 local Permissions = require('server.permissions')
+local Plugins = require('server.plugins')
 
 local RESOURCE = GetCurrentResourceName()
 
@@ -25,6 +26,10 @@ end
 Permissions.write_example()
 
 Permissions.register_events()
+Plugins.register_events()
+
+-- Last, so plugins that started first know vMenu is ready for them.
+Plugins.announce_ready()
 
 Log.info(
     ('[Core] Loaded vMenu Enhanced (Lua) v%s on %s.'):format(

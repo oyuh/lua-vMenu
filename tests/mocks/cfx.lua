@@ -57,6 +57,8 @@ local INSTALLED_GLOBALS = {
     'LocalPlayer',
     'Entity',
     'Citizen',
+    'GetInvokingResource',
+    'SetTimeout',
 }
 
 -- Client-side game natives faked as recording no-ops. Each entry is
@@ -1033,6 +1035,12 @@ function Cfx:install()
 
     _G.Wait = function() end
 
+    -- Timers are recorded, never run, like threads.
+    mock.timers = {}
+    _G.SetTimeout = function(ms, fn)
+        table.insert(mock.timers, { ms = ms, fn = fn })
+    end
+
     _G.RegisterCommand = function(name, handler, restricted)
         mock.commands[name] = { handler = handler, restricted = restricted }
     end
@@ -1219,6 +1227,11 @@ function Cfx:install()
         ReturnResultAnyway = function() end,
         ResultAsInteger = function() end,
     }
+
+    -- Set mock.invoking_resource to act as another resource calling in.
+    _G.GetInvokingResource = function()
+        return mock.invoking_resource
+    end
 
     _G.TriggerLatentClientEvent = function(name, target, _bytes_per_second, ...)
         _G.TriggerClientEvent(name, target, ...)
