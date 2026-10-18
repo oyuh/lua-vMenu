@@ -73,4 +73,24 @@ function Natives.activate_rockstar_editor(opened_from)
     Citizen.InvokeNative(0x49DA8145672B2725, opened_from)
 end
 
+-- The game writes five bars into a struct with one 8 byte slot each. A Lua
+-- string over 40 bytes is never shared, so the native can fill this one.
+local function hud_stats(hash, item)
+    local buffer = string.rep(string.char(0), 64)
+    if not truthy(hash, item, buffer) then
+        return nil
+    end
+    local damage, speed, capacity, accuracy, range = string.unpack('<i4 xxxx i4 xxxx i4 xxxx i4 xxxx i4', buffer)
+    return { damage = damage, speed = speed, capacity = capacity, accuracy = accuracy, range = range }
+end
+
+function Natives.weapon_hud_stats(weapon_hash)
+    return hud_stats(0xD92C739EE34C9EBA, weapon_hash)
+end
+
+-- A component's bars are signed: a suppressor takes damage away.
+function Natives.weapon_component_hud_stats(component_hash)
+    return hud_stats(0xB3CAF387AE12E9F8, component_hash)
+end
+
 return Natives

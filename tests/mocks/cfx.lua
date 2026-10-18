@@ -829,6 +829,17 @@ local NATIVE_DEFAULTS = {
             return { x = 0.0, y = 0.0, z = 0.0 }
         end,
     },
+    -- weapons (client/menus/weapons)
+    { 'AddAmmoToPedByType' },
+    {
+        'GetAmmoInClip',
+        function()
+            return false, 0
+        end,
+    },
+    { 'GetPedAmmoTypeFromWeapon', 0 },
+    { 'GetWeaponTintCount', 0 },
+    { 'GiveLoadoutToPed' },
     -- teleport, noclip, recording
     { 'GetBlipInfoIdIterator', 0 },
     { 'GetBlipInfoIdType', 0 },

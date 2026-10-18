@@ -33,6 +33,7 @@ files {
     'client/menus/world/*.lua',
     'client/menus/teleport/*.lua',
     'client/menus/misc/*.lua',
+    'client/menus/weapons/*.lua',
     'client/plugins/*.lua',
     'server/*.lua',
 }

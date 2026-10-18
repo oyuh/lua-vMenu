@@ -23,5 +23,8 @@ return Registry.definition({
     ),
     build = function(menu)
         menu:add(Entries.submenu_for(require('client.menus.player_options')))
+        menu:add(Entries.submenu_for(require('client.menus.weapon_options')))
+        menu:add(Entries.submenu_for(require('client.menus.weapon_loadouts')))
+        menu:add(Entries.submenu_for(require('client.menus.game_loadouts')))
     end,
 })

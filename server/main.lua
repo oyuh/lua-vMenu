@@ -11,6 +11,7 @@ local Actions = require('server.actions')
 local World = require('server.world')
 local Teleport = require('server.teleport')
 local NoClip = require('server.noclip')
+local Weapons = require('server.weapons')
 
 local RESOURCE = GetCurrentResourceName()
 
@@ -30,6 +31,7 @@ end
 Permissions.write_example()
 World.init()
 Teleport.init()
+Weapons.init()
 
 Permissions.register_events()
 Plugins.register_events()
