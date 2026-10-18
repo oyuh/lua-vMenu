@@ -20,8 +20,8 @@ The port follows the phases in [docs/BRANCH-PLAN.md](docs/BRANCH-PLAN.md):
 
 0. Branch setup: done
 1. Foundation (platform layer, settings, permissions, example files, storage): done
-2. Menu engine (MenuAPI 4 on its NUI page, the menu framework, themes, languages, notifications): done in code, waiting for in-game testing
-3. Plugins
+2. Menu engine (MenuAPI 4 on its NUI page, the menu framework, themes, languages, notifications): done
+3. Plugins (both halves of upstream's plugin protocol, standalone menus, menu priority and locks, plugin themes): done in code, waiting for in-game testing. The Plugin Actions menu comes with Online Players in phase 4.
 4. Menus, wave 1
 5. Menus, wave 2
 6. Server extras (webhooks, update checker, integrations)
@@ -47,5 +47,7 @@ busted
 luacheck .
 stylua --check .
 ```
+
+To test plugins by hand, link [tools/test-plugin](tools/test-plugin) into a test server's resources as `vMenu.TestPlugin` and ensure it after `vMenu.Enhanced`. It uses every part of upstream's Lua plugin API, one submenu per area. The release zip doesn't include it.
 
 [docs/UPSTREAM.md](docs/UPSTREAM.md) explains how this branch follows upstream's `enhanced` releases.
