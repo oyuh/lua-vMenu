@@ -25,8 +25,10 @@ files {
     'shared/data/*.lua',
     'menu/*.lua',
     'client/*.lua',
+    'client/events/*.lua',
     'client/framework/*.lua',
     'client/menus/*.lua',
+    'client/menus/players/*.lua',
     'client/plugins/*.lua',
     'server/*.lua',
 }

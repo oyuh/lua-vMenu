@@ -12,7 +12,13 @@ local Skin = require('client.framework.skin')
 local Notifications = require('client.framework.notifications')
 local Registry = require('client.framework.registry')
 local PluginHost = require('client.plugins.host')
+local PlayerToggles = require('client.menus.players.toggles')
+local Jump = require('client.menus.players.jump')
+local MpStats = require('client.menus.players.mp_stats')
+local MoveSpeed = require('client.menus.players.move_speed')
+local Intoxication = require('client.menus.players.intoxication')
 local Controller = require('menu.controller')
+local Ticks = require('menu.ticks')
 
 local RESOURCE = GetCurrentResourceName()
 
@@ -42,10 +48,19 @@ Skin.init()
 Localization.load('vMenu.Enhanced.Languages', Config.value('vMenu.Enhanced.Languages'))
 Controller.init()
 
+-- Player features keep running with the menu closed, so they start here.
+Permissions.on_changed(Ticks.reevaluate)
+PlayerToggles.init()
+Jump.init()
+MpStats.init()
+MoveSpeed.init()
+Intoxication.init()
+
 -- The menus the main menu links to, in order (MainMenuComposition.cs). The
 -- rest join as they are ported. Parenthesized because Lua 5.4's require also
 -- returns the file path, which would become an extra entry.
 local MAIN_MENU = {
+    (require('client.menus.player')),
     (require('client.menus.plugins')),
     (require('client.menus.about')),
 }
