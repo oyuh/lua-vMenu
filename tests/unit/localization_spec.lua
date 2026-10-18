@@ -44,6 +44,14 @@ describe('shared/localization', function()
                     missing[#missing + 1] = path .. ': ' .. key
                 end
             end
+            -- Menu definitions: title_key, subtitle_key and description_key.
+            for _, field in ipairs({ 'title_key', 'subtitle_key', 'description_key' }) do
+                for key in source:gmatch(field .. "%s*=%s*'([^']+)'%s*,") do
+                    if English[key] == nil then
+                        missing[#missing + 1] = path .. ': ' .. key
+                    end
+                end
+            end
         end
         assert.same({}, missing)
     end)
