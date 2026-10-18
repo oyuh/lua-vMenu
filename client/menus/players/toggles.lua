@@ -12,6 +12,7 @@ local UserDefaults = require('client.user_defaults')
 local Ticks = require('menu.ticks')
 local PlayerEvents = require('client.events.player_events')
 local Protection = require('client.menus.players.protection')
+local NoClip = require('client.noclip')
 
 local Toggles = {}
 
@@ -156,6 +157,10 @@ Toggles.freeze = toggle({
     permission = PERMISSION .. 'Freeze',
     watch = REVIVED,
     on_apply = function(on)
+        -- Noclip holds the ped itself and lets go through on_released below.
+        if NoClip.is_active() then
+            return
+        end
         local ped = player_ped()
         if ped then
             FreezeEntityPosition(ped, on)
@@ -300,6 +305,13 @@ function Toggles.init()
         end)
         feature:apply()
     end
+    -- Noclip resets the flags these features set, so they put theirs back.
+    NoClip.on_released(function()
+        Toggles.god_mode:reapply()
+        Toggles.invisible:apply()
+        Toggles.everyone_ignores:apply()
+        Toggles.freeze:apply()
+    end)
 end
 
 return Toggles

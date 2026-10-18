@@ -829,6 +829,18 @@ local NATIVE_DEFAULTS = {
             return { x = 0.0, y = 0.0, z = 0.0 }
         end,
     },
+    -- teleport, noclip, recording
+    { 'GetBlipInfoIdIterator', 0 },
+    { 'GetBlipInfoIdType', 0 },
+    { 'GetNextBlipInfoId', 0 },
+    { 'IsEntityAPed', false },
+    { 'ActivatePhysics' },
+    { 'CallScaleformMovieMethod' },
+    { 'ScaleformMovieMethodAddParamTextureNameString' },
+    { 'SetNewWaypoint' },
+    { 'StartParticleFxNonLoopedAtCoord', 0 },
+    { 'NetworkStartSoloTutorialSession' },
+    { 'NetworkEndTutorialSession' },
     -- world sync (client/menus/world)
     { 'IsPedDeadOrDying', false },
     { 'GetClockDayOfMonth', 1 },

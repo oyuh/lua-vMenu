@@ -9,6 +9,8 @@ local Permissions = require('server.permissions')
 local Plugins = require('server.plugins')
 local Actions = require('server.actions')
 local World = require('server.world')
+local Teleport = require('server.teleport')
+local NoClip = require('server.noclip')
 
 local RESOURCE = GetCurrentResourceName()
 
@@ -27,10 +29,12 @@ if Platform.save_file(ConfigurationExample.RESOURCE_PATH, ConfigurationExample.r
 end
 Permissions.write_example()
 World.init()
+Teleport.init()
 
 Permissions.register_events()
 Plugins.register_events()
 Actions.register_events()
+NoClip.register_events()
 
 -- Last, so plugins that started first know vMenu is ready for them.
 Plugins.announce_ready()

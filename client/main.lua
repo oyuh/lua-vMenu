@@ -25,6 +25,10 @@ local WorldTemperature = require('client.menus.world.temperature')
 local WorldEffects = require('client.menus.world.effects')
 local Snowball = require('client.menus.world.snowball')
 local Forecast = require('client.menus.world.forecast')
+local NoClip = require('client.noclip')
+local NoClipSmoke = require('client.menus.misc.noclip_smoke')
+local TeleportLocations = require('client.menus.teleport.locations')
+local TeleportTargets = require('client.menus.teleport.targets')
 local Controller = require('menu.controller')
 local Ticks = require('menu.ticks')
 
@@ -47,6 +51,7 @@ Log.info(
 Permissions.register_events()
 Notifications.register_events()
 Actions.register_events()
+TeleportLocations.register_events()
 -- Early, so plugins that register before the menus exist are held, not lost.
 PluginHost.register_events()
 Config.init()
@@ -74,12 +79,18 @@ WorldEffects.init()
 Snowball.init()
 Forecast.init()
 
+NoClip.init()
+NoClipSmoke.init()
+TeleportTargets.init()
+
 -- The menus the main menu links to, in order (MainMenuComposition.cs). The
 -- rest join as they are ported. Parenthesized because Lua 5.4's require also
 -- returns the file path, which would become an extra entry.
 local MAIN_MENU = {
     (require('client.menus.player')),
     (require('client.menus.world')),
+    (require('client.menus.teleport')),
+    (require('client.menus.recording')),
     (require('client.menus.plugins')),
     (require('client.menus.about')),
 }
@@ -88,6 +99,7 @@ CreateThread(function()
     while not Permissions.has_received() do
         Wait(0)
     end
+    TeleportLocations.request()
     UserPreferences.restore()
     Registry.build(MAIN_MENU)
     PluginHost.announce_ready()

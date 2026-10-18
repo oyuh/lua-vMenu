@@ -49,4 +49,28 @@ function Natives.foot_vfx_set_override_ice_with_snow(on)
     Citizen.InvokeNative(0xA342A3763B3AFB6C, on)
 end
 
+-- Legacy's database drops the height range upstream passes.
+function Natives.set_vehicle_on_ground_properly(vehicle, range)
+    return truthy(0x49733E92263139D1, vehicle, range + 0.0)
+end
+
+-- The water surface height straight down from x, y, z, or nil when there is none.
+function Natives.test_vertical_probe_against_all_water(x, y, z)
+    local result, height = Citizen.InvokeNative(
+        0x8974647ED222EA5F,
+        x + 0.0,
+        y + 0.0,
+        z + 0.0,
+        0,
+        Citizen.PointerValueFloat(),
+        Citizen.ResultAsInteger()
+    )
+    return result == 1 and height or nil
+end
+
+-- Legacy's database takes no argument for where the editor was opened from.
+function Natives.activate_rockstar_editor(opened_from)
+    Citizen.InvokeNative(0x49DA8145672B2725, opened_from)
+end
+
 return Natives

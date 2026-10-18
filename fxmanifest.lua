@@ -31,6 +31,8 @@ files {
     'client/menus/*.lua',
     'client/menus/players/*.lua',
     'client/menus/world/*.lua',
+    'client/menus/teleport/*.lua',
+    'client/menus/misc/*.lua',
     'client/plugins/*.lua',
     'server/*.lua',
 }

@@ -56,6 +56,8 @@ local function binding_control(command)
     return value
 end
 
+Input.binding_control = binding_control
+
 local function pad_command(command)
     return command .. ':pad'
 end

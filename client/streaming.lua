@@ -28,4 +28,16 @@ function Streaming.clip_set(name)
     return false
 end
 
+-- False when it did not load in time; the request is dropped then.
+function Streaming.ptfx(asset)
+    RequestNamedPtfxAsset(asset)
+    if wait_for(function()
+        return HasNamedPtfxAssetLoaded(asset)
+    end) then
+        return true
+    end
+    RemoveNamedPtfxAsset(asset)
+    return false
+end
+
 return Streaming
